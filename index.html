@@ -711,6 +711,12 @@ function toggleHQCard(idx){
 }
 window.toggleHQCard=toggleHQCard;
 
+// ===== Window exports =====
+window.selectStartProp = selectStartProp;
+window.startChecklist  = startChecklist;
+window.resetStart      = resetStart;
+window.renderOverview  = renderHQ;
+
 // ===== Init =====
 document.getElementById('date-lbl').textContent=new Date().toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'});
 renderPropButtons();
