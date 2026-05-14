@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>葉山 清掃チェックリスト</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F7F6F2;
+  --surface: #FFFFFF;
+  --surface2: #F0EEE8;
+  --border: #E2DED6;
+  --text: #1A1816;
+  --text2: #6B665E;
+  --text3: #A09B93;
+  --accent: #2C5F4A;
+  --accent-light: #EAF2EE;
+  --accent-text: #1A3D2E;
+  --warn: #C04B2B;
+  --warn-light: #FAEAE5;
+  --warn-text: #7A2E1A;
+  --purple: #4A3F8C;
+  --purple-light: #EDEAF8;
+  --purple-text: #2D2660;
+  --amber: #8C6320;
+  --amber-light: #FBF4E6;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; background: var(--bg); font-family: 'Noto Sans JP', sans-serif; color: var(--text); }
+
+/* layout */
+.app { display: flex; flex-direction: column; height: 100vh; max-width: 480px; margin: 0 auto; }
+.header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 16px; flex-shrink: 0; }
+.header-top { display: flex; align-items: center; justify-content: space-between; }
+.header-title { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -.01em; }
+.header-date { font-size: 11px; color: var(--text3); }
+.mode-bar { display: flex; gap: 6px; margin-top: 10px; }
+.mode-btn { flex: 1; padding: 8px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; font-weight: 700; color: var(--text2); background: transparent; cursor: pointer; transition: all .15s; font-family: inherit; letter-spacing: .02em; }
+.mode-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+.scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px 14px 80px; }
+
+/* prop tabs */
+.prop-tabs { display: flex; gap: 5px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+.prop-tabs::-webkit-scrollbar { display: none; }
+.prop-tab { flex-shrink: 0; padding: 7px 13px; border: 1.5px solid var(--border); border-radius: 100px; font-size: 12px; font-weight: 500; color: var(--text2); background: var(--surface); cursor: pointer; white-space: nowrap; transition: all .15s; font-family: inherit; }
+.prop-tab.active { background: var(--purple-light); color: var(--purple-text); border-color: var(--purple); font-weight: 700; }
+.prop-tab.done { border-color: var(--accent); color: var(--accent-text); }
+
+/* sub nav */
+.sub-nav { display: flex; background: var(--surface2); border-radius: var(--radius); padding: 3px; margin-bottom: 14px; gap: 2px; }
+.sub-btn { flex: 1; padding: 8px 4px; border: none; background: transparent; border-radius: 9px; font-size: 11px; font-weight: 500; color: var(--text3); cursor: pointer; transition: all .15s; font-family: inherit; white-space: nowrap; }
+.sub-btn.active { background: var(--surface); color: var(--text); font-weight: 700; box-shadow: var(--shadow); }
+
+/* area selector */
+.area-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+.area-btn { padding: 5px 11px; border: 1.5px solid var(--border); border-radius: 100px; font-size: 11px; font-weight: 500; color: var(--text2); background: var(--surface); cursor: pointer; transition: all .15s; font-family: inherit; }
+.area-btn.active { background: var(--purple-light); color: var(--purple-text); border-color: var(--purple); font-weight: 700; }
+.area-btn.done { border-color: var(--accent); color: var(--accent); }
+
+/* progress */
+.prog-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.prog-bar-wrap { flex: 1; height: 5px; background: var(--border); border-radius: 100px; overflow: hidden; }
+.prog-bar-fill { height: 5px; background: var(--accent); border-radius: 100px; transition: width .3s ease; }
+.prog-label { font-size: 11px; color: var(--text3); white-space: nowrap; }
+
+/* check items */
+.sec-label { font-size: 10px; font-weight: 700; color: var(--text3); letter-spacing: .08em; text-transform: uppercase; margin: 12px 0 6px 2px; }
+.ci { display: flex; align-items: center; gap: 12px; padding: 13px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 5px; cursor: pointer; transition: all .15s; }
+.ci:active { transform: scale(.99); }
+.ci.done { background: var(--surface2); border-color: var(--border); }
+.cb { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .2s; }
+.cb.chk { background: var(--accent); border-color: var(--accent); }
+.cb.chk::after { content: ''; width: 10px; height: 6px; border-left: 2.5px solid #fff; border-bottom: 2.5px solid #fff; transform: rotate(-45deg) translate(1px,-1px); display: block; }
+.cl { font-size: 13px; color: var(--text); flex: 1; line-height: 1.5; }
+.ci.done .cl { color: var(--text3); text-decoration: line-through; }
+.flag-btn { background: none; border: none; cursor: pointer; padding: 4px; color: var(--text3); font-size: 16px; flex-shrink: 0; transition: color .15s; }
+.flag-btn.on { color: var(--warn); }
+
+/* pages */
+.page { display: none; }
+.page.active { display: block; }
+
+/* notice box */
+.notice { background: var(--amber-light); border: 1px solid #D4A855; border-radius: var(--radius); padding: 12px 14px; font-size: 12px; color: #6B4E1A; line-height: 1.7; margin-bottom: 14px; white-space: pre-line; }
+
+/* issues */
+.issue-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; background: var(--warn-light); border: 1px solid #F0B8A8; border-radius: var(--radius); margin-bottom: 5px; }
+.issue-item-text { font-size: 13px; color: var(--warn-text); flex: 1; line-height: 1.5; }
+.issue-area { font-size: 11px; color: var(--warn); margin-top: 2px; }
+
+/* submit */
+.submit-notice { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 14px; }
+.photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 14px; }
+.ph-item { border: 1.5px dashed var(--border); border-radius: var(--radius-sm); padding: 14px 6px; text-align: center; font-size: 11px; color: var(--text3); cursor: pointer; background: var(--surface); transition: all .15s; line-height: 1.5; }
+.ph-item.done { border-style: solid; border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.ph-icon { font-size: 20px; display: block; margin: 0 auto 4px; }
+.txt-area { width: 100%; font-size: 13px; padding: 11px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); resize: none; font-family: inherit; margin-bottom: 8px; line-height: 1.6; }
+.txt-area:focus { outline: none; border-color: var(--accent); }
+.submit-btn { width: 100%; padding: 16px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-size: 15px; font-weight: 700; cursor: pointer; transition: all .15s; font-family: inherit; letter-spacing: .02em; }
+.submit-btn:active { opacity: .85; transform: scale(.99); }
+.submit-btn.sent { background: #888; cursor: default; }
+.submit-btn:disabled { opacity: .4; cursor: default; }
+
+/* HQ */
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+.mc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
+.ml { font-size: 10px; color: var(--text3); margin-bottom: 4px; font-weight: 500; letter-spacing: .04em; }
+.mv { font-size: 20px; font-weight: 700; color: var(--text); }
+.mv.g { color: var(--accent); }
+.mv.r { color: var(--warn); }
+.prop-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 8px; overflow: hidden; }
+.prop-card-hd { display: flex; align-items: center; gap: 8px; padding: 13px 14px; cursor: pointer; }
+.prop-card-name { font-size: 14px; font-weight: 700; color: var(--text); flex: 1; }
+.prop-card-body { border-top: 1px solid var(--border); padding: 12px 14px; display: none; }
+.prop-card-body.open { display: block; }
+.area-rpt-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+.area-rpt-row:last-child { border-bottom: none; }
+.area-rpt-name { font-size: 12px; color: var(--text); flex: 1; }
+.mini-bar { flex: 0 0 70px; height: 4px; background: var(--border); border-radius: 100px; overflow: hidden; }
+.mini-fill { height: 4px; background: var(--accent); border-radius: 100px; }
+.area-rpt-pct { font-size: 11px; color: var(--text3); min-width: 32px; text-align: right; }
+.flag-section { margin-top: 10px; }
+.flag-row { display: flex; gap: 8px; align-items: flex-start; padding: 6px 0; border-bottom: 1px solid var(--border); }
+.flag-row:last-child { border-bottom: none; }
+.flag-row-text { font-size: 12px; color: var(--warn-text); flex: 1; line-height: 1.4; }
+.flag-row-area { font-size: 10px; color: var(--warn); }
+.memo-section { margin-top: 10px; padding: 10px 12px; background: var(--surface2); border-radius: var(--radius-sm); }
+.memo-row { font-size: 12px; color: var(--text2); line-height: 1.6; }
+.memo-label { font-weight: 700; color: var(--text); }
+.sent-badge { font-size: 11px; color: var(--accent); font-weight: 700; }
+
+/* badge */
+.badge { font-size: 11px; padding: 3px 8px; border-radius: 100px; font-weight: 700; white-space: nowrap; }
+.badge-done { background: var(--accent-light); color: var(--accent-text); }
+.badge-warn { background: var(--warn-light); color: var(--warn-text); }
+.badge-prog { background: var(--purple-light); color: var(--purple-text); }
+.badge-none { background: var(--surface2); color: var(--text3); }
+
+/* trouble */
+.tr-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 6px; overflow: hidden; }
+.tr-hd { display: flex; align-items: center; gap: 10px; padding: 13px 14px; cursor: pointer; }
+.tr-title { font-size: 13px; font-weight: 700; color: var(--text); flex: 1; }
+.tr-body { padding: 0 14px 12px; display: none; }
+.tr-body.open { display: block; }
+.step { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; }
+.step-n { width: 22px; height: 22px; background: var(--purple-light); color: var(--purple-text); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.step-t { font-size: 13px; color: var(--text2); line-height: 1.5; padding-top: 2px; }
+.contact-row { display: flex; align-items: center; gap: 12px; padding: 11px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 6px; }
+.contact-name { font-size: 13px; color: var(--text); flex: 1; font-weight: 500; }
+.contact-tel { font-size: 13px; color: var(--purple); font-weight: 700; }
+.contact-icon { font-size: 18px; flex-shrink: 0; }
+
+/* empty state */
+.empty { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 14px; }
+.empty-icon { font-size: 36px; display: block; margin: 0 auto 12px; }
+
+/* chevron */
+.chev { font-size: 14px; color: var(--text3); transition: transform .2s; }
+.chev.open { transform: rotate(180deg); }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-top">
+      <div class="header-title">🏠 葉山 清掃チェックリスト</div>
+      <div class="header-date" id="date-lbl"></div>
+    </div>
+    <div class="mode-bar">
+      <button class="mode-btn active" onclick="setMode('staff')">👤 スタッフ</button>
+      <button class="mode-btn" onclick="setMode('hq')">🏢 本部確認</button>
+    </div>
+  </div>
+
+  <div class="scroll-area" id="scroll-area">
+
+    <!-- ===== STAFF MODE ===== -->
+    <div id="mode-staff" class="page active">
+      <div class="prop-tabs" id="prop-tabs"></div>
+      <div class="sub-nav">
+        <button class="sub-btn active" onclick="staffNav('check')">✅ チェック</button>
+        <button class="sub-btn" onclick="staffNav('issues')">🚩 要確認</button>
+        <button class="sub-btn" onclick="staffNav('submit')">📤 送信</button>
+        <button class="sub-btn" onclick="staffNav('trouble')">🔧 トラブル</button>
+      </div>
+
+      <!-- CHECK PAGE -->
+      <div id="spage-check" class="page active">
+        <div class="area-row" id="area-row"></div>
+        <div class="prog-row">
+          <div class="prog-bar-wrap"><div class="prog-bar-fill" id="prog-fill" style="width:0%"></div></div>
+          <div class="prog-label" id="prog-lbl">0 / 0</div>
+        </div>
+        <div id="check-items"></div>
+      </div>
+
+      <!-- ISSUES PAGE -->
+      <div id="spage-issues" class="page">
+        <div id="issues-content"></div>
+      </div>
+
+      <!-- SUBMIT PAGE -->
+      <div id="spage-submit" class="page">
+        <div class="submit-notice" id="submit-notice"></div>
+        <div class="sec-label">📷 写真撮影チェック</div>
+        <div class="photo-grid" id="photo-grid"></div>
+        <div class="sec-label">補充が必要なもの</div>
+        <textarea class="txt-area" id="supply-txt" rows="2" placeholder="例：ティッシュ、アメニティ"></textarea>
+        <div class="sec-label">修繕・メンテナンス報告</div>
+        <textarea class="txt-area" id="maint-txt" rows="2" placeholder="修繕が必要な箇所など"></textarea>
+        <div class="sec-label">その他メモ</div>
+        <textarea class="txt-area" id="memo-txt" rows="2" placeholder="自由記入"></textarea>
+        <button class="submit-btn" id="submit-btn" onclick="submitReport()">清掃完了・本部へ送信 →</button>
+      </div>
+
+      <!-- TROUBLE PAGE -->
+      <div id="spage-trouble" class="page">
+        <div id="trouble-content"></div>
+        <div class="sec-label" style="margin-top:14px">📞 緊急連絡先</div>
+        <div class="contact-row"><span class="contact-icon">🔥</span><span class="contact-name">ガス — 岡田さん</span><span class="contact-tel">090-5527-5352</span></div>
+        <div class="contact-row"><span class="contact-icon">⚡</span><span class="contact-name">電気 — 大幸さん</span><span class="contact-tel">090-3224-2084</span></div>
+        <div class="contact-row"><span class="contact-icon">💧</span><span class="contact-name">水道小 — クラシアン横須賀</span><span class="contact-tel">0120-500-500</span></div>
+        <div class="contact-row"><span class="contact-icon">🔧</span><span class="contact-name">水道大 — 榎本マー君（夜のみ）</span><span class="contact-tel">080-5544-8114</span></div>
+        <div class="contact-row"><span class="contact-icon">✨</span><span class="contact-name">クリーニング — 宮崎さん</span><span class="contact-tel"></span></div>
+        <div class="contact-row"><span class="contact-icon">❄️</span><span class="contact-name">エアコン — ダイキン</span><span class="contact-tel">0120-881-081</span></div>
+      </div>
+    </div>
+
+    <!-- ===== HQ MODE ===== -->
+    <div id="mode-hq" class="page">
+      <div class="metrics">
+        <div class="mc"><div class="ml">送信済み</div><div class="mv g" id="hq-sent">0/3</div></div>
+        <div class="mc"><div class="ml">全体進捗</div><div class="mv" id="hq-prog">0%</div></div>
+        <div class="mc"><div class="ml">要確認</div><div class="mv r" id="hq-flags">0</div></div>
+      </div>
+      <div id="hq-cards"></div>
+    </div>
+
+  </div><!-- /scroll-area -->
+</div><!-- /app -->
+
+<script>
+const PROPS = [
+  {
+    id:'house', name:'THE HOUSE',
+    notice:'※私物・ペットボトルはテラスに置く。\nチェックイン説明：内鍵必須。エアコンリモコン・ジャグジー・電子レンジは同時使用不可。ジャグジーヒーターは使用時のみ。',
+    photos:['トイレ','キッチン','お風呂場','冷蔵庫','電子レンジ','アメニティ設置','テラス'],
+    areas:[
+      {id:'ht',name:'テラス',items:['ジャグジーの清掃（水滴もとる）','テラスのゴミ、タバコの吸殻','損傷はないか？','お湯は出るか？','溝や隙間、建物の横にゴミは落ちていないか？']},
+      {id:'hk',name:'キッチン＆LDK',items:['シンクの清掃（水滴もとる）','新しいスポンジ、ミニタオルの設置','エスプレッソマシン掃除・豆と水補充','お皿、フォークなどの汚れの確認','電子レンジ、トースターの汚れの確認','冷蔵庫の確認（水配置）','冷凍庫の確認（氷は綺麗であればそのまま）','ゴミ箱関連（見た目も綺麗に）','キッチンの上の棚と下の引き出しも汚れていないか？','ダイニング＆リビング全体の清掃（ソファーの下にゴミはないか？）','テーブルに指紋などはついてないか？','窓のところにゴミやホコリはないか？','ソファーなどにホコリやチリがあれば、コロコロで']},
+      {id:'hto',name:'トイレ',items:['便器のみならず水のところ、ペーパーホルダーもふく','カラータオルを置いたか？','予備のトイレットペーパーは2つあるか？汚物入れの掃除はしたか？']},
+      {id:'hb',name:'2階ベッドルーム',items:['匂いはないか？（枕カバー、毛布）','犬の毛やホコリ、髪の毛はないか？','クッションの下などにもゴミはないか？','各種棚などにホコリはないか？','カーテンレールが外れてないか？']},
+      {id:'ha',name:'お風呂＆アメニティ',items:['お風呂は水滴をとったか？床や壁に髪の毛はついていないか？','アメニティーは人数分あるか？バスマットは二つ用意しているか？','洗面台など鏡は汚れてないか？歯磨き粉などくっついてないか？','お湯は出ているか？']},
+      {id:'ho',name:'その他',items:['倉庫など整理整頓されているか？','キャンドルの電池は入っているか？','電球は切れていないか？','ティッシュは半分以上は入っているか？','ゴミ箱にゴミは残っていないか？（最後確認）','駐車場側のゴミも目立つものは掃除すること']}
+    ],
+    troubles:[
+      {title:'ブレーカーが落ちた',steps:['電気のブレーカーを確認','ブレーカーを復活させる','復活を確認']},
+      {title:'お風呂のお湯が出ない',steps:['電気のブレーカーを確認','ガスの安全装置を確認','給湯ボタンを確認（お風呂と2階キッチン）']}
+    ]
+  },
+  {
+    id:'beach', name:'ON THE BEACH',
+    notice:'※私物・ペットボトルは中庭か3階入口に置く。\nチェックイン説明：暖炉・ジャグジーのヒーターは使用時のみ。\nセルフチェックイン時：室内の明かりをつけ、エアコンを調整。雨の場合は入口にバスタオルを1つ置く。',
+    photos:['トイレ','キッチン','お風呂場','冷蔵庫','電子レンジ','アメニティ設置','テラス'],
+    areas:[
+      {id:'bt',name:'テラス',items:['ジャグジーの清掃（水滴もとる）','テラスが水で濡れてないか？汚れはひどくないか？','どこか損傷はないか？','お湯は出るか？','ラグやクッションが汚れたり、濡れていないか？','溝や隙間、建物の横にゴミは落ちていないか？']},
+      {id:'bk',name:'キッチン＆居室',items:['シンクの清掃（水滴もとる）','新しいスポンジ、タオルの設置','家電製品掃除・豆、紅茶など補充','お皿、フォークなどの汚れの確認','電子レンジ、トースターの汚れの確認','冷蔵庫の確認（水配置＆新品か必ず確認）','冷凍庫の確認（氷は綺麗であればそのまま）アイスクリームなどないか？','ゴミ箱関連（見た目も綺麗に）','キッチンの棚やテーブルは汚れてないか？','ダイニング＆リビング全体の清掃（ソファーの下にゴミはないか？）','窓のところにゴミやホコリはないか？','ソファーなどにホコリやチリがあれば、コロコロで','プフやクッションなどに汚れはないか？']},
+      {id:'bto',name:'トイレ',items:['便器のみならず水のところもふく','カラータオルを置いたか？','予備のトイレットペーパーは2つあるか？汚物入れの掃除はしたか？','洗面所は水をふいてあるか？','最後にトイレクイックルは流したか？']},
+      {id:'bb',name:'ベッドルーム',items:['匂いはないか？（枕カバー、毛布）','犬の毛やホコリ、髪の毛はないか？ラグは汚れてないか？','クッションの下などにもゴミはないか？','ベッドの下にゴミは落ちていないか？','各種棚などにホコリはないか？','窓ガラスは汚れてないか？']},
+      {id:'ba',name:'お風呂＆アメニティ',items:['お風呂や床は水滴をとったか？髪の毛が床や壁についていないか？','アメニティーは人数分あるか？バスマットは二つ用意しているか？','洗面台など鏡は汚れてないか？歯磨き粉などくっついてないか？','お湯は出ているか？']},
+      {id:'bo',name:'その他',items:['倉庫など鍵を閉めたか？','キャンドルの電池は入っているか？','電球は切れていないか？','ティッシュは半分以上は入っているか？','ゴミ箱にゴミは残っていないか？（最後確認）','駐車場、中庭のゴミはないか？']}
+    ],
+    troubles:[
+      {title:'ブレーカーが落ちた',steps:['電気のブレーカーを確認','ブレーカーを復活させる','復活を確認']},
+      {title:'お風呂のお湯が出ない',steps:['電気のブレーカーを確認','ガスの安全装置を確認','給湯ボタンを確認（お風呂のみ）']}
+    ]
+  },
+  {
+    id:'maison', name:'MAISON HAYAMA',
+    notice:'※私物・ペットボトルはテラスに置く。\nチェックイン説明：内鍵必須。\nセルフチェックイン時：室内の明かりをつけ、エアコンを調整。雨の場合は入口にバスタオルを1つ置く。',
+    photos:['トイレ','キッチン','お風呂場','冷蔵庫','電子レンジ','アメニティ設置','テラス'],
+    areas:[
+      {id:'mt',name:'テラス',items:['ミニプールの清掃（水滴もとる）','テラスのゴミ、タバコの吸殻','損傷はないか？','お湯は出るか？','溝や隙間、建物の横にゴミは落ちていないか？','テーブルや家具の清掃']},
+      {id:'mk',name:'キッチン＆LDK',items:['シンクの清掃（水滴もとる）','新しいスポンジ、ミニタオルの設置','コーヒーメーカー、ケトル掃除・豆と水補充','お皿、フォークなどの汚れの確認','電子レンジの汚れの確認','冷蔵庫の確認（水配置）','冷凍庫の確認（氷は綺麗であればそのまま）','ゴミ箱関連（見た目も綺麗に）','キッチンの上の棚と下の引き出しも汚れていないか？','ソーダストリームの炭酸はまだあるか？予備一本','コンポストは稼働しているか？','ダイニング＆リビング全体の清掃（ソファーの下にゴミはないか？）','テーブルに指紋などはついてないか？','窓のところにゴミやホコリはないか？','ソファーなどにホコリやチリがあれば、コロコロで']},
+      {id:'mto',name:'トイレ',items:['便器のみならず水のところ、ペーパーホルダーもふく','カラータオルを置いたか？','予備のトイレットペーパーは2つあるか？汚物入れの掃除はしたか？']},
+      {id:'mb',name:'2階ベッドルーム',items:['匂いはないか？（枕カバー、毛布）','ホコリ、髪の毛はないか？','クッションの下などにもゴミはないか？','各種棚などにホコリはないか？','テレビなどの埃は積もってないか？窓のさんも']},
+      {id:'ma',name:'お風呂＆アメニティ',items:['お風呂は水滴をとったか？床や壁に髪の毛はついていないか？','アメニティーは人数分あるか？バスマットは用意しているか？','洗面台など鏡は汚れてないか？歯磨き粉などくっついてないか？','お湯は出ているか？']},
+      {id:'mo',name:'その他',items:['倉庫など整理整頓されているか？','キャンドルの電池は入っているか？','電球は切れていないか？','ティッシュは半分以上は入っているか？','ゴミ箱にゴミは残っていないか？（最後確認）','玄関前は汚れてないか？','駐車場側のゴミも目立つものは掃除すること']}
+    ],
+    troubles:[
+      {title:'ブレーカーが落ちた',steps:['電気のブレーカーを確認','ブレーカーを復活させる','復活を確認']},
+      {title:'お風呂のお湯が出ない',steps:['電気のブレーカーを確認','ガスの安全装置を確認','給湯ボタンを確認']}
+    ]
+  }
+];
+
+let S = {};
+PROPS.forEach(p => {
+  S[p.id] = { checked:{}, flagged:{}, photos:{}, supply:'', maint:'', memo:'', submitted:false, submittedAt:'' };
+  p.areas.forEach(a => { S[p.id].checked[a.id]={}; S[p.id].flagged[a.id]={}; });
+});
+
+let curProp = PROPS[0].id;
+let curArea = PROPS[0].areas[0].id;
+let curMode = 'staff';
+let curNav = 'check';
+
+function P(id){ return PROPS.find(p=>p.id===(id||curProp)); }
+
+// MODE
+function setMode(m){
+  curMode = m;
+  document.querySelectorAll('.mode-btn').forEach((b,i)=>b.classList.toggle('active',['staff','hq'][i]===m));
+  document.getElementById('mode-staff').classList.toggle('active', m==='staff');
+  document.getElementById('mode-hq').classList.toggle('active', m==='hq');
+  document.getElementById('scroll-area').scrollTop = 0;
+  if(m==='hq') renderHQ();
+}
+
+// PROP TAB
+function renderPropTabs(){
+  document.getElementById('prop-tabs').innerHTML = PROPS.map(p=>`
+    <button class="prop-tab${curProp===p.id?' active':''}${S[p.id].submitted?' done':''}" onclick="selectProp('${p.id}')">
+      ${p.name}${S[p.id].submitted?' ✓':''}
+    </button>`).join('');
+}
+function selectProp(id){
+  curProp = id;
+  curArea = P(id).areas[0].id;
+  renderPropTabs();
+  renderByNav();
+  document.getElementById('scroll-area').scrollTop = 0;
+}
+
+// STAFF NAV
+function staffNav(tab){
+  curNav = tab;
+  document.querySelectorAll('.sub-btn').forEach((b,i)=>b.classList.toggle('active',['check','issues','submit','trouble'][i]===tab));
+  ['check','issues','submit','trouble'].forEach(t=>{
+    document.getElementById('spage-'+t).classList.toggle('active', t===tab);
+  });
+  renderByNav();
+  document.getElementById('scroll-area').scrollTop = 0;
+}
+function renderByNav(){
+  if(curNav==='check') renderCheck();
+  else if(curNav==='issues') renderIssues();
+  else if(curNav==='submit') renderSubmit();
+  else if(curNav==='trouble') renderTrouble();
+}
+
+// CHECK
+function renderCheck(){
+  const prop = P();
+  document.getElementById('area-row').innerHTML = prop.areas.map(a=>{
+    const done = Object.values(S[curProp].checked[a.id]||{}).filter(Boolean).length;
+    const isDone = done === a.items.length;
+    return`<button class="area-btn${curArea===a.id?' active':''}${isDone?' done':''}" onclick="selArea('${a.id}')">${a.name}${isDone?' ✓':''}</button>`;
+  }).join('');
+  const area = prop.areas.find(a=>a.id===curArea);
+  const done = Object.values(S[curProp].checked[curArea]||{}).filter(Boolean).length;
+  const total = area.items.length;
+  document.getElementById('prog-fill').style.width = Math.round(done/total*100)+'%';
+  document.getElementById('prog-lbl').textContent = done+' / '+total+' 完了';
+  document.getElementById('check-items').innerHTML = area.items.map((text,i)=>{
+    const chk = S[curProp].checked[curArea][i];
+    const flg = S[curProp].flagged[curArea][i];
+    return`<div class="ci${chk?' done':''}" onclick="toggleCheck(${i})">
+      <div class="cb${chk?' chk':''}"></div>
+      <div class="cl">${text}</div>
+      <button class="flag-btn${flg?' on':''}" onclick="event.stopPropagation();toggleFlag(${i})" aria-label="要確認フラグ">🚩</button>
+    </div>`;
+  }).join('');
+}
+function selArea(id){ curArea=id; renderCheck(); }
+function toggleCheck(i){ S[curProp].checked[curArea][i]=!S[curProp].checked[curArea][i]; renderCheck(); }
+function toggleFlag(i){ S[curProp].flagged[curArea][i]=!S[curProp].flagged[curArea][i]; renderCheck(); }
+
+// ISSUES
+function renderIssues(){
+  const prop = P();
+  const flags = [];
+  prop.areas.forEach(a=>a.items.forEach((text,i)=>{ if(S[curProp].flagged[a.id][i]) flags.push({area:a.name,text}); }));
+  const el = document.getElementById('issues-content');
+  if(!flags.length){
+    el.innerHTML='<div class="empty"><span class="empty-icon">✅</span>要確認の項目はありません</div>';
+    return;
+  }
+  el.innerHTML = flags.map(({area,text})=>`
+    <div class="issue-item">
+      <span style="font-size:16px;flex-shrink:0;margin-top:1px">🚩</span>
+      <div><div class="issue-item-text">${text}</div><div class="issue-area">${area}</div></div>
+    </div>`).join('');
+}
+
+// SUBMIT
+function renderSubmit(){
+  const prop = P();
+  const ps = S[curProp];
+  const total = prop.areas.reduce((s,a)=>s+a.items.length,0);
+  const done = prop.areas.reduce((s,a)=>s+Object.values(ps.checked[a.id]||{}).filter(Boolean).length,0);
+  const flags = prop.areas.reduce((s,a)=>s+Object.values(ps.flagged[a.id]||{}).filter(Boolean).length,0);
+  document.getElementById('submit-notice').innerHTML =
+    `<strong>${prop.name}</strong>　チェック ${done}/${total}件　🚩 要確認 ${flags}件<br>
+    <span style="font-size:11px;color:#888">全エリアのチェックと写真確認を終えてから送信してください。</span>`;
+  document.getElementById('photo-grid').innerHTML = prop.photos.map((p,i)=>{
+    const d = ps.photos[i];
+    return`<div class="ph-item${d?' done':''}" onclick="togglePhoto(${i})">
+      <span class="ph-icon">${d?'✅':'📷'}</span>${p}</div>`;
+  }).join('');
+  document.getElementById('supply-txt').value = ps.supply||'';
+  document.getElementById('maint-txt').value = ps.maint||'';
+  document.getElementById('memo-txt').value = ps.memo||'';
+  const btn = document.getElementById('submit-btn');
+  if(ps.submitted){
+    btn.textContent = '✓ 送信済み（'+ps.submittedAt+'）';
+    btn.classList.add('sent'); btn.disabled=true;
+  } else {
+    btn.textContent = '清掃完了・本部へ送信 →';
+    btn.classList.remove('sent'); btn.disabled=false;
+  }
+}
+function togglePhoto(i){ S[curProp].photos[i]=!S[curProp].photos[i]; renderSubmit(); }
+function submitReport(){
+  S[curProp].supply = document.getElementById('supply-txt').value;
+  S[curProp].maint  = document.getElementById('maint-txt').value;
+  S[curProp].memo   = document.getElementById('memo-txt').value;
+  const now = new Date();
+  S[curProp].submitted = true;
+  S[curProp].submittedAt = now.getHours()+'時'+String(now.getMinutes()).padStart(2,'0')+'分';
+  renderSubmit(); renderPropTabs();
+}
+
+// TROUBLE
+function renderTrouble(){
+  const prop = P();
+  document.getElementById('trouble-content').innerHTML = prop.troubles.map((t,idx)=>`
+    <div class="tr-card">
+      <div class="tr-hd" onclick="toggleTr(${idx})">
+        <span style="font-size:16px">⚠️</span>
+        <span class="tr-title">${t.title}</span>
+        <span class="chev" id="trchev-${idx}">▼</span>
+      </div>
+      <div class="tr-body" id="trbody-${idx}">
+        ${t.steps.map((s,j)=>`<div class="step"><div class="step-n">${j+1}</div><div class="step-t">${s}</div></div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+function toggleTr(idx){
+  const body = document.getElementById('trbody-'+idx);
+  const chev = document.getElementById('trchev-'+idx);
+  body.classList.toggle('open');
+  chev.classList.toggle('open');
+}
+
+// HQ
+function renderHQ(){
+  const sent = PROPS.filter(p=>S[p.id].submitted).length;
+  const totalAll = PROPS.reduce((s,p)=>s+p.areas.reduce((ss,a)=>ss+a.items.length,0),0);
+  const doneAll  = PROPS.reduce((s,p)=>s+p.areas.reduce((ss,a)=>ss+Object.values(S[p.id].checked[a.id]||{}).filter(Boolean).length,0),0);
+  const flagsAll = PROPS.reduce((s,p)=>s+p.areas.reduce((ss,a)=>ss+Object.values(S[p.id].flagged[a.id]||{}).filter(Boolean).length,0),0);
+  document.getElementById('hq-sent').textContent  = sent+'/'+PROPS.length;
+  document.getElementById('hq-prog').textContent  = Math.round(doneAll/totalAll*100)+'%';
+  document.getElementById('hq-flags').textContent = flagsAll;
+
+  document.getElementById('hq-cards').innerHTML = PROPS.map((p,pi)=>{
+    const ps = S[p.id];
+    const total = p.areas.reduce((s,a)=>s+a.items.length,0);
+    const done  = p.areas.reduce((s,a)=>s+Object.values(ps.checked[a.id]||{}).filter(Boolean).length,0);
+    const flags = p.areas.reduce((s,a)=>s+Object.values(ps.flagged[a.id]||{}).filter(Boolean).length,0);
+    const pct = Math.round(done/total*100);
+    const bc = ps.submitted?'badge-done':flags>0?'badge-warn':pct>0?'badge-prog':'badge-none';
+    const bt = ps.submitted?'送信済み ✓':flags>0?`要確認 ${flags}件`:pct>0?`${pct}%`:'未着手';
+    const flagItems=[];
+    p.areas.forEach(a=>a.items.forEach((text,i)=>{ if(ps.flagged[a.id][i]) flagItems.push({area:a.name,text}); }));
+    const hasMemo = ps.supply||ps.maint||ps.memo;
+    return`<div class="prop-card">
+      <div class="prop-card-hd" onclick="toggleHQCard(${pi})">
+        <span class="prop-card-name">${p.name}</span>
+        ${ps.submitted?`<span class="sent-badge">${ps.submittedAt}</span>`:''}
+        <span class="badge ${bc}">${bt}</span>
+        <span class="chev" id="hqchev-${pi}">▼</span>
+      </div>
+      <div class="prop-card-body" id="hqbody-${pi}">
+        ${p.areas.map(a=>{
+          const ad=Object.values(ps.checked[a.id]||{}).filter(Boolean).length;
+          const at=a.items.length;
+          return`<div class="area-rpt-row">
+            <span class="area-rpt-name">${a.name}</span>
+            <div class="mini-bar"><div class="mini-fill" style="width:${Math.round(ad/at*100)}%"></div></div>
+            <span class="area-rpt-pct">${ad}/${at}</span>
+          </div>`;
+        }).join('')}
+        ${flagItems.length?`<div class="flag-section">
+          <div class="sec-label" style="margin-top:10px">🚩 要確認</div>
+          ${flagItems.map(f=>`<div class="flag-row">
+            <span style="font-size:13px;flex-shrink:0">🚩</span>
+            <div><div class="flag-row-text">${f.text}</div><div class="flag-row-area">${f.area}</div></div>
+          </div>`).join('')}
+        </div>`:''}
+        ${hasMemo?`<div class="memo-section">
+          ${ps.supply?`<div class="memo-row"><span class="memo-label">補充：</span>${ps.supply}</div>`:''}
+          ${ps.maint?`<div class="memo-row"><span class="memo-label">修繕：</span>${ps.maint}</div>`:''}
+          ${ps.memo?`<div class="memo-row"><span class="memo-label">メモ：</span>${ps.memo}</div>`:''}
+        </div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleHQCard(idx){
+  const body = document.getElementById('hqbody-'+idx);
+  const chev = document.getElementById('hqchev-'+idx);
+  body.classList.toggle('open');
+  chev.classList.toggle('open');
+}
+
+// INIT
+document.getElementById('date-lbl').textContent = new Date().toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'});
+renderPropTabs();
+renderCheck();
+</script>
+</body>
+</html>
