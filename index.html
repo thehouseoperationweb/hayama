@@ -166,6 +166,13 @@ html, body { height: 100%; background: var(--bg); font-family: 'Noto Sans JP', s
 .chev { font-size: 14px; color: var(--text3); transition: transform .2s; }
 .chev.open { transform: rotate(180deg); }
 
+/* start screen */
+.start-prop-btn { width:100%; padding:16px; border:1.5px solid var(--border); border-radius:var(--radius); font-size:15px; font-weight:700; color:var(--text); background:var(--surface); cursor:pointer; text-align:left; transition:all .15s; font-family:inherit; }
+.start-prop-btn:active { transform:scale(.99); }
+.start-prop-btn.selected { border-color:var(--accent); background:var(--accent-light); color:var(--accent-text); }
+input[type="text"], input[type="date"] { outline:none; }
+input[type="text"]:focus, input[type="date"]:focus { border-color:var(--accent); }
+
 /* scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -190,7 +197,39 @@ html, body { height: 100%; background: var(--bg); font-family: 'Noto Sans JP', s
 
     <!-- ===== STAFF MODE ===== -->
     <div id="mode-staff" class="page active">
+
+      <!-- START SCREEN -->
+      <div id="sscreen-start" class="page active">
+        <div style="padding: 8px 0 20px;">
+          <p style="font-size:13px;color:var(--text2);margin-bottom:16px;">施設を選んでください</p>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
+            <button class="start-prop-btn" onclick="selectStartProp('house')">🏠 THE HOUSE</button>
+            <button class="start-prop-btn" onclick="selectStartProp('beach')">🌊 ON THE BEACH</button>
+            <button class="start-prop-btn" onclick="selectStartProp('maison')">🏡 MAISON HAYAMA</button>
+          </div>
+          <div id="start-form" style="display:none;">
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;">
+              <div style="margin-bottom:14px;">
+                <label style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:6px;">スタッフ名</label>
+                <input type="text" id="staff-name-input" placeholder="例：田中 花子" style="width:100%;font-size:15px;padding:11px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-family:inherit;">
+              </div>
+              <div>
+                <label style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:6px;">日付</label>
+                <input type="date" id="staff-date-input" style="width:100%;font-size:15px;padding:11px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-family:inherit;">
+              </div>
+            </div>
+            <button class="submit-btn" onclick="startChecklist()" id="start-btn">チェックリストを開始 →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHECKLIST SCREEN -->
+      <div id="sscreen-check" style="display:none;">
       <div class="prop-tabs" id="prop-tabs"></div>
+      <div style="background:var(--surface2);border-radius:var(--radius);padding:10px 12px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+        <span style="font-size:13px;color:var(--text2);flex:1;" id="staff-info-bar">　</span>
+        <button onclick="resetStart()" style="font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px 6px;">変更</button>
+      </div>
       <div class="sub-nav">
         <button class="sub-btn active" onclick="staffNav('check')">✅ チェック</button>
         <button class="sub-btn" onclick="staffNav('issues')">🚩 要確認</button>
@@ -238,6 +277,7 @@ html, body { height: 100%; background: var(--bg); font-family: 'Noto Sans JP', s
         <div class="contact-row"><span class="contact-icon">✨</span><span class="contact-name">クリーニング — 宮崎さん</span><span class="contact-tel"></span></div>
         <div class="contact-row"><span class="contact-icon">❄️</span><span class="contact-name">エアコン — ダイキン</span><span class="contact-tel">0120-881-081</span></div>
       </div>
+      </div><!-- /sscreen-check -->
     </div>
 
     <!-- ===== HQ MODE ===== -->
@@ -320,6 +360,49 @@ let curMode = 'staff';
 let curNav = 'check';
 
 function P(id){ return PROPS.find(p=>p.id===(id||curProp)); }
+
+let staffName = '';
+let staffDate = '';
+let startPropId = '';
+
+function selectStartProp(id) {
+  startPropId = id;
+  document.querySelectorAll('.start-prop-btn').forEach(b => b.classList.remove('selected'));
+  event.target.classList.add('selected');
+  document.getElementById('start-form').style.display = 'block';
+  // set today's date as default
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('staff-date-input').value = today;
+  document.getElementById('staff-name-input').focus();
+}
+
+function startChecklist() {
+  const name = document.getElementById('staff-name-input').value.trim();
+  const date = document.getElementById('staff-date-input').value;
+  if (!name) { document.getElementById('staff-name-input').focus(); return; }
+  if (!date) { document.getElementById('staff-date-input').focus(); return; }
+  staffName = name;
+  staffDate = date;
+  curProp = startPropId;
+  curArea = P(curProp).areas[0].id;
+  // update info bar
+  const d = new Date(date);
+  const fmt = d.toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'});
+  document.getElementById('staff-info-bar').textContent = fmt + '　' + name;
+  // switch screens
+  document.getElementById('sscreen-start').classList.remove('active');
+  document.getElementById('sscreen-check').style.display = 'block';
+  renderPropTabs();
+  renderByNav();
+  document.getElementById('scroll-area').scrollTop = 0;
+}
+
+function resetStart() {
+  document.getElementById('sscreen-start').classList.add('active');
+  document.getElementById('sscreen-check').style.display = 'none';
+  document.querySelectorAll('.start-prop-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('start-form').style.display = 'none';
+}
 
 // MODE
 function setMode(m){
@@ -414,8 +497,9 @@ function renderSubmit(){
   const total = prop.areas.reduce((s,a)=>s+a.items.length,0);
   const done = prop.areas.reduce((s,a)=>s+Object.values(ps.checked[a.id]||{}).filter(Boolean).length,0);
   const flags = prop.areas.reduce((s,a)=>s+Object.values(ps.flagged[a.id]||{}).filter(Boolean).length,0);
+  const dateStr = staffDate ? new Date(staffDate).toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'}) : '';
   document.getElementById('submit-notice').innerHTML =
-    `<strong>${prop.name}</strong>　チェック ${done}/${total}件　🚩 要確認 ${flags}件<br>
+    `<strong>${prop.name}</strong>　${dateStr}　${staffName}<br>チェック ${done}/${total}件　🚩 要確認 ${flags}件<br>
     <span style="font-size:11px;color:#888">全エリアのチェックと写真確認を終えてから送信してください。</span>`;
   document.getElementById('photo-grid').innerHTML = prop.photos.map((p,i)=>{
     const d = ps.photos[i];
@@ -439,6 +523,8 @@ function submitReport(){
   S[curProp].supply = document.getElementById('supply-txt').value;
   S[curProp].maint  = document.getElementById('maint-txt').value;
   S[curProp].memo   = document.getElementById('memo-txt').value;
+  S[curProp].staffName = staffName;
+  S[curProp].staffDate = staffDate;
   const now = new Date();
   S[curProp].submitted = true;
   S[curProp].submittedAt = now.getHours()+'時'+String(now.getMinutes()).padStart(2,'0')+'分';
@@ -491,7 +577,7 @@ function renderHQ(){
     return`<div class="prop-card">
       <div class="prop-card-hd" onclick="toggleHQCard(${pi})">
         <span class="prop-card-name">${p.name}</span>
-        ${ps.submitted?`<span class="sent-badge">${ps.submittedAt}</span>`:''}
+        ${ps.submitted?`<span class="sent-badge">${ps.submittedAt}　${ps.staffName||''}</span>`:''}
         <span class="badge ${bc}">${bt}</span>
         <span class="chev" id="hqchev-${pi}">▼</span>
       </div>
@@ -530,8 +616,7 @@ function toggleHQCard(idx){
 
 // INIT
 document.getElementById('date-lbl').textContent = new Date().toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'});
-renderPropTabs();
-renderCheck();
+// start screen is shown by default, no auto-render needed
 </script>
 </body>
 </html>
