@@ -5,60 +5,221 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>清掃チェックリスト</title>
+<title>葉山 清掃チェックリスト</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #F7F6F2;
-  --surface: #FFFFFF;
-  --surface2: #F0EEE8;
-  --border: #E2DED6;
-  --text: #1A1816;
-  --text2: #6B665E;
-  --text3: #A09B93;
-  --accent: #2C5F4A;
-  --accent-light: #EAF2EE;
+  --bg: #F5F3EE;
+  --surface: #FDFCFA;
+  --surface2: #EDE9E1;
+  --border: #DDD8CE;
+  --border2: #C8C2B6;
+  --text: #1C1915;
+  --text2: #6B6459;
+  --text3: #A89F94;
+  --accent: #2A3D2E;
+  --accent2: #8B7355;
+  --accent-light: #EAF0EB;
   --accent-text: #1A3D2E;
-  --warn: #C04B2B;
-  --warn-light: #FAEAE5;
-  --warn-text: #7A2E1A;
-  --purple: #4A3F8C;
-  --purple-light: #EDEAF8;
-  --purple-text: #2D2660;
-  --amber: #8C6320;
-  --amber-light: #FBF4E6;
-  --radius: 12px;
-  --radius-sm: 8px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --warn: #8B3A2A;
+  --warn-light: #F5EAE7;
+  --warn-text: #5C2218;
+  --gold: #8B7355;
+  --gold-light: #F5F0E8;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 1px 4px rgba(28,25,21,0.08);
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Noto Sans JP', sans-serif;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; background: var(--bg); font-family: 'Noto Sans JP', sans-serif; color: var(--text); }
-.app { display: flex; flex-direction: column; height: 100vh; max-width: 480px; margin: 0 auto; }
-.header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 16px; flex-shrink: 0; }
-.header-top { display: flex; align-items: center; justify-content: space-between; }
-.header-title { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -.01em; }
-.header-date { font-size: 11px; color: var(--text3); }
-.mode-bar { display: flex; gap: 6px; margin-top: 10px; }
-.mode-btn { flex: 1; padding: 8px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; font-weight: 700; color: var(--text2); background: transparent; cursor: pointer; transition: all .15s; font-family: inherit; letter-spacing: .02em; }
-.mode-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-.scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px 14px 80px; }
-.prop-tabs { display: flex; gap: 5px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+html, body { min-height: 100%; background: var(--bg); font-family: var(--sans); color: var(--text); }
+
+/* layout */
+.app { display: flex; flex-direction: column; min-height: 100vh; max-width: 480px; margin: 0 auto; }
+
+/* header */
+.header { background: var(--text); padding: 0 16px; flex-shrink: 0; }
+.header-hero { display: flex; align-items: center; gap: 12px; padding: 14px 0 10px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+.header-hero-img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 1.5px solid rgba(255,255,255,0.25); flex-shrink: 0; }
+.header-hero-text { flex: 1; }
+.header-eyebrow { font-size: 9px; letter-spacing: .18em; color: rgba(255,255,255,0.45); text-transform: uppercase; font-family: var(--sans); margin-bottom: 3px; }
+.header-title { font-family: var(--serif); font-size: 18px; font-weight: 500; color: #fff; letter-spacing: .04em; line-height: 1.2; }
+.header-date { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 1px; letter-spacing: .06em; }
+.mode-bar { display: flex; gap: 1px; padding: 10px 0; }
+.mode-btn { flex: 1; padding: 8px; border: none; background: transparent; font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.4); cursor: pointer; transition: all .15s; font-family: var(--sans); letter-spacing: .1em; text-transform: uppercase; border-bottom: 1.5px solid transparent; }
+.mode-btn.active { color: #fff; border-bottom-color: var(--accent2); }
+
+.scroll-area { padding: 16px 16px 80px; }
+
+/* prop tabs */
+.prop-tabs { display: flex; gap: 5px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
 .prop-tabs::-webkit-scrollbar { display: none; }
-.prop-tab { flex-shrink: 0; padding: 7px 13px; border: 1.5px solid var(--border); border-radius: 100px; font-size: 12px; font-weight: 500; color: var(--text2); background: var(--surface); cursor: pointer; white-space: nowrap; transition: all .15s; font-family: inherit; }
-.prop-tab.active { background: var(--purple-light); color: var(--purple-text); border-color: var(--purple); font-weight: 700; }
-.prop-tab.done { border-color: var(--accent); color: var(--accent-text); }
+.prop-tab { flex-shrink: 0; padding: 6px 14px; border: 1px solid var(--border); border-radius: 100px; font-size: 11px; font-weight: 400; color: var(--text2); background: var(--surface); cursor: pointer; white-space: nowrap; transition: all .15s; font-family: var(--sans); letter-spacing: .04em; }
+.prop-tab.active { background: var(--text); color: #fff; border-color: var(--text); }
+.prop-tab.done { border-color: var(--accent); color: var(--accent-text); background: var(--accent-light); }
+
+/* sub nav */
+.sub-nav { display: flex; background: var(--surface2); border-radius: var(--radius); padding: 3px; margin-bottom: 14px; gap: 2px; }
+.sub-btn { flex: 1; padding: 8px 4px; border: none; background: transparent; border-radius: 8px; font-size: 10px; font-weight: 400; color: var(--text3); cursor: pointer; transition: all .15s; font-family: var(--sans); white-space: nowrap; letter-spacing: .05em; }
+.sub-btn.active { background: var(--surface); color: var(--text); font-weight: 500; box-shadow: var(--shadow); }
+
+/* area selector */
+.area-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+.area-btn { padding: 5px 12px; border: 1px solid var(--border); border-radius: 100px; font-size: 11px; font-weight: 400; color: var(--text2); background: var(--surface); cursor: pointer; transition: all .15s; font-family: var(--sans); letter-spacing: .03em; }
+.area-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
+.area-btn.done { border-color: var(--accent); color: var(--accent-text); background: var(--accent-light); }
+
+/* progress */
+.prog-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.prog-bar-wrap { flex: 1; height: 2px; background: var(--border); border-radius: 100px; overflow: hidden; }
+.prog-bar-fill { height: 2px; background: var(--accent2); border-radius: 100px; transition: width .4s ease; }
+.prog-label { font-size: 10px; color: var(--text3); white-space: nowrap; letter-spacing: .06em; }
+
+/* check items */
+.sec-label { font-size: 9px; font-weight: 400; color: var(--text3); letter-spacing: .14em; text-transform: uppercase; margin: 14px 0 8px 2px; font-family: var(--sans); }
+.ci { display: flex; align-items: center; gap: 12px; padding: 13px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 5px; cursor: pointer; transition: all .15s; }
+.ci:active { opacity: .85; }
+.ci.done { background: var(--surface2); border-color: var(--border); }
+.cb { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .2s; }
+.cb.chk { background: var(--accent); border-color: var(--accent); }
+.cb.chk::after { content: ''; width: 9px; height: 5px; border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff; transform: rotate(-45deg) translate(1px,-1px); display: block; }
+.cl { font-size: 13px; color: var(--text); flex: 1; line-height: 1.6; font-weight: 300; }
+.ci.done .cl { color: var(--text3); text-decoration: line-through; }
+
+/* issues */
+.issue-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
+.issue-prop-label { font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; }
+.issue-notice { background: var(--gold-light); border: 1px solid var(--border2); border-radius: var(--radius-sm); padding: 13px 14px; margin-bottom: 10px; }
+.issue-notice-hd { font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent2); margin-bottom: 6px; }
+.issue-notice-text { font-size: 13px; color: var(--text); line-height: 1.7; font-weight: 300; white-space: pre-wrap; }
+.issue-reply { background: var(--surface2); border-radius: var(--radius-sm); padding: 12px 14px; }
+.issue-reply-hd { font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; }
+.issue-empty { text-align:center; padding: 40px 20px; color: var(--text3); font-size: 13px; font-weight: 300; letter-spacing: .04em; }
+
+/* hq notice editor */
+.notice-editor { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 10px; }
+.notice-editor-hd { font-family: var(--serif); font-size: 15px; color: var(--text); margin-bottom: 12px; letter-spacing: .02em; }
+.notice-prop-select { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; }
+.notice-prop-btn { padding: 5px 12px; border: 1px solid var(--border); border-radius: 100px; font-size: 11px; color: var(--text2); background: var(--bg); cursor: pointer; font-family: var(--sans); transition: all .15s; }
+.notice-prop-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
+.save-notice-btn { width: 100%; padding: 12px; background: var(--accent2); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 11px; font-weight: 400; cursor: pointer; font-family: var(--sans); letter-spacing: .1em; text-transform: uppercase; margin-top: 8px; }
+
+/* pages */
+.page { display: none; }
+.page.active { display: block; }
+.screen { display: none; }
+.screen.active { display: block; }
+
+
+/* notice box */
+.notice { background: var(--gold-light); border: 1px solid var(--border2); border-radius: var(--radius); padding: 13px 15px; font-size: 12px; color: var(--text2); line-height: 1.8; margin-bottom: 14px; white-space: pre-line; font-weight: 300; }
+
+/* submit */
+.submit-notice { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 13px 15px; font-size: 13px; color: var(--text2); line-height: 1.7; margin-bottom: 14px; font-weight: 300; }
+.photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 14px; }
+.ph-item { border: 1px dashed var(--border2); border-radius: var(--radius-sm); padding: 14px 6px; text-align: center; font-size: 11px; color: var(--text3); cursor: pointer; background: var(--surface); transition: all .15s; line-height: 1.5; font-weight: 300; }
+.ph-item.done { border-style: solid; border-color: var(--accent); color: var(--accent-text); background: var(--accent-light); }
+.ph-icon { font-size: 18px; display: block; margin: 0 auto 4px; }
+.txt-area { width: 100%; font-size: 13px; padding: 11px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); resize: none; font-family: var(--sans); margin-bottom: 8px; line-height: 1.6; font-weight: 300; }
+.txt-area:focus { outline: none; border-color: var(--accent2); }
+.submit-btn { width: 100%; padding: 15px; background: var(--text); color: #fff; border: none; border-radius: var(--radius); font-size: 12px; font-weight: 400; cursor: pointer; transition: all .15s; font-family: var(--sans); letter-spacing: .12em; text-transform: uppercase; }
+.submit-btn:active { opacity: .85; }
+.submit-btn.sent { background: #888; cursor: default; }
+.submit-btn:disabled { opacity: .35; cursor: default; }
+
+/* start screen */
+.start-prop-btn { width:100%; padding:16px 18px; border:1px solid var(--border); border-radius:var(--radius); font-size:13px; font-weight:300; color:var(--text); background:var(--surface); cursor:pointer; text-align:left; transition:all .15s; font-family:var(--sans); letter-spacing:.04em; }
+.start-prop-btn:active { opacity:.85; }
+.start-prop-btn.selected { border-color:var(--text); background:var(--text); color:#fff; }
+input[type="text"], input[type="date"] { outline:none; font-weight:300; }
+input[type="text"]:focus, input[type="date"]:focus { border-color:var(--accent2) !important; }
+
+/* HQ */
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+.mc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
+.ml { font-size: 9px; color: var(--text3); margin-bottom: 4px; font-weight: 400; letter-spacing: .1em; text-transform: uppercase; }
+.mv { font-size: 22px; font-weight: 400; color: var(--text); font-family: var(--serif); }
+.mv.g { color: var(--accent); }
+.mv.r { color: var(--warn); }
+.prop-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 8px; overflow: hidden; }
+.prop-card-hd { display: flex; align-items: center; gap: 8px; padding: 13px 14px; cursor: pointer; }
+.prop-card-name { font-size: 13px; font-weight: 400; color: var(--text); flex: 1; letter-spacing: .04em; font-family: var(--serif); font-size: 15px; }
+.prop-card-body { border-top: 1px solid var(--border); padding: 12px 14px; display: none; }
+.prop-card-body.open { display: block; }
+.area-rpt-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+.area-rpt-row:last-child { border-bottom: none; }
+.area-rpt-name { font-size: 12px; color: var(--text); flex: 1; font-weight: 300; }
+.mini-bar { flex: 0 0 70px; height: 2px; background: var(--border); border-radius: 100px; overflow: hidden; }
+.mini-fill { height: 2px; background: var(--accent2); border-radius: 100px; }
+.area-rpt-pct { font-size: 11px; color: var(--text3); min-width: 32px; text-align: right; font-family: var(--serif); }
+.flag-section { margin-top: 10px; }
+.flag-row { display: flex; gap: 8px; align-items: flex-start; padding: 6px 0; border-bottom: 1px solid var(--border); }
+.flag-row:last-child { border-bottom: none; }
+.flag-row-text { font-size: 12px; color: var(--warn-text); flex: 1; line-height: 1.4; font-weight: 300; }
+.flag-row-area { font-size: 10px; color: var(--warn); letter-spacing: .04em; }
+.memo-section { margin-top: 10px; padding: 10px 12px; background: var(--surface2); border-radius: var(--radius-sm); }
+.memo-row { font-size: 12px; color: var(--text2); line-height: 1.6; font-weight: 300; }
+.memo-label { font-weight: 500; color: var(--text); }
+.sent-badge { font-size: 11px; color: var(--accent2); font-weight: 400; letter-spacing: .04em; }
+
+/* badge */
+.badge { font-size: 10px; padding: 3px 9px; border-radius: 100px; font-weight: 400; white-space: nowrap; letter-spacing: .06em; }
+.badge-done { background: var(--accent-light); color: var(--accent-text); border: 1px solid var(--accent); }
+.badge-warn { background: var(--warn-light); color: var(--warn-text); border: 1px solid #DDB8AE; }
+.badge-prog { background: var(--gold-light); color: var(--gold); border: 1px solid var(--border2); }
+.badge-none { background: var(--surface2); color: var(--text3); border: 1px solid var(--border); }
+
+/* trouble */
+.tr-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 6px; overflow: hidden; }
+.tr-hd { display: flex; align-items: center; gap: 10px; padding: 13px 14px; cursor: pointer; }
+.tr-title { font-size: 13px; font-weight: 400; color: var(--text); flex: 1; letter-spacing: .02em; }
+.tr-body { padding: 0 14px 12px; display: none; }
+.tr-body.open { display: block; }
+.step { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; }
+.step-n { width: 20px; height: 20px; background: var(--surface2); color: var(--text2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; flex-shrink: 0; font-family: var(--serif); }
+.step-t { font-size: 13px; color: var(--text2); line-height: 1.5; padding-top: 2px; font-weight: 300; }
+.contact-row { display: flex; align-items: center; gap: 12px; padding: 11px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 5px; }
+.contact-name { font-size: 13px; color: var(--text); flex: 1; font-weight: 300; }
+.contact-tel { font-size: 13px; color: var(--accent2); font-weight: 500; }
+.contact-icon { font-size: 16px; flex-shrink: 0; }
+
+/* empty state */
+.empty { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 13px; font-weight: 300; }
+.empty-icon { font-size: 32px; display: block; margin: 0 auto 12px; }
+
+/* divider */
+.divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+/* chev */
+.chev { font-size: 12px; color: var(--text3); transition: transform .2s; }
+.chev.open { transform: rotate(180deg); }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+
+/* sub nav */
 .sub-nav { display: flex; background: var(--surface2); border-radius: var(--radius); padding: 3px; margin-bottom: 14px; gap: 2px; }
 .sub-btn { flex: 1; padding: 8px 4px; border: none; background: transparent; border-radius: 9px; font-size: 11px; font-weight: 500; color: var(--text3); cursor: pointer; transition: all .15s; font-family: inherit; white-space: nowrap; }
 .sub-btn.active { background: var(--surface); color: var(--text); font-weight: 700; box-shadow: var(--shadow); }
+
+/* area selector */
 .area-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
 .area-btn { padding: 5px 11px; border: 1.5px solid var(--border); border-radius: 100px; font-size: 11px; font-weight: 500; color: var(--text2); background: var(--surface); cursor: pointer; transition: all .15s; font-family: inherit; }
 .area-btn.active { background: var(--purple-light); color: var(--purple-text); border-color: var(--purple); font-weight: 700; }
 .area-btn.done { border-color: var(--accent); color: var(--accent); }
+
+/* progress */
 .prog-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
 .prog-bar-wrap { flex: 1; height: 5px; background: var(--border); border-radius: 100px; overflow: hidden; }
 .prog-bar-fill { height: 5px; background: var(--accent); border-radius: 100px; transition: width .3s ease; }
 .prog-label { font-size: 11px; color: var(--text3); white-space: nowrap; }
+
+/* check items */
 .sec-label { font-size: 10px; font-weight: 700; color: var(--text3); letter-spacing: .08em; text-transform: uppercase; margin: 12px 0 6px 2px; }
 .ci { display: flex; align-items: center; gap: 12px; padding: 13px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 5px; cursor: pointer; transition: all .15s; }
 .ci:active { transform: scale(.99); }
@@ -68,25 +229,9 @@ html, body { height: 100%; background: var(--bg); font-family: 'Noto Sans JP', s
 .cb.chk::after { content: ''; width: 10px; height: 6px; border-left: 2.5px solid #fff; border-bottom: 2.5px solid #fff; transform: rotate(-45deg) translate(1px,-1px); display: block; }
 .cl { font-size: 13px; color: var(--text); flex: 1; line-height: 1.5; }
 .ci.done .cl { color: var(--text3); text-decoration: line-through; }
-.flag-btn { background: none; border: none; cursor: pointer; padding: 4px; color: var(--text3); font-size: 16px; flex-shrink: 0; transition: color .15s; }
-.flag-btn.on { color: var(--warn); }
-.page { display: none; }
-.page.active { display: block; }
-.notice { background: var(--amber-light); border: 1px solid #D4A855; border-radius: var(--radius); padding: 12px 14px; font-size: 12px; color: #6B4E1A; line-height: 1.7; margin-bottom: 14px; white-space: pre-line; }
-.issue-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; background: var(--warn-light); border: 1px solid #F0B8A8; border-radius: var(--radius); margin-bottom: 5px; }
-.issue-item-text { font-size: 13px; color: var(--warn-text); flex: 1; line-height: 1.5; }
-.issue-area { font-size: 11px; color: var(--warn); margin-top: 2px; }
-.submit-notice { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 14px; }
-.photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 14px; }
-.ph-item { border: 1.5px dashed var(--border); border-radius: var(--radius-sm); padding: 14px 6px; text-align: center; font-size: 11px; color: var(--text3); cursor: pointer; background: var(--surface); transition: all .15s; line-height: 1.5; }
-.ph-item.done { border-style: solid; border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
-.ph-icon { font-size: 20px; display: block; margin: 0 auto 4px; }
-.txt-area { width: 100%; font-size: 13px; padding: 11px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); resize: none; font-family: inherit; margin-bottom: 8px; line-height: 1.6; }
-.txt-area:focus { outline: none; border-color: var(--accent); }
-.submit-btn { width: 100%; padding: 16px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-size: 15px; font-weight: 700; cursor: pointer; transition: all .15s; font-family: inherit; letter-spacing: .02em; }
-.submit-btn:active { opacity: .85; transform: scale(.99); }
-.submit-btn.sent { background: #888; cursor: default; }
 .submit-btn:disabled { opacity: .4; cursor: default; }
+
+/* HQ */
 .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
 .mc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
 .ml { font-size: 10px; color: var(--text3); margin-bottom: 4px; font-weight: 500; letter-spacing: .04em; }
@@ -113,11 +258,15 @@ html, body { height: 100%; background: var(--bg); font-family: 'Noto Sans JP', s
 .memo-row { font-size: 12px; color: var(--text2); line-height: 1.6; }
 .memo-label { font-weight: 700; color: var(--text); }
 .sent-badge { font-size: 11px; color: var(--accent); font-weight: 700; }
+
+/* badge */
 .badge { font-size: 11px; padding: 3px 8px; border-radius: 100px; font-weight: 700; white-space: nowrap; }
 .badge-done { background: var(--accent-light); color: var(--accent-text); }
 .badge-warn { background: var(--warn-light); color: var(--warn-text); }
 .badge-prog { background: var(--purple-light); color: var(--purple-text); }
 .badge-none { background: var(--surface2); color: var(--text3); }
+
+/* trouble */
 .tr-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 6px; overflow: hidden; }
 .tr-hd { display: flex; align-items: center; gap: 10px; padding: 13px 14px; cursor: pointer; }
 .tr-title { font-size: 13px; font-weight: 700; color: var(--text); flex: 1; }
@@ -130,18 +279,23 @@ html, body { height: 100%; background: var(--bg); font-family: 'Noto Sans JP', s
 .contact-name { font-size: 13px; color: var(--text); flex: 1; font-weight: 500; }
 .contact-tel { font-size: 13px; color: var(--purple); font-weight: 700; }
 .contact-icon { font-size: 18px; flex-shrink: 0; }
+
+/* empty state */
 .empty { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 14px; }
 .empty-icon { font-size: 36px; display: block; margin: 0 auto 12px; }
+
+/* chevron */
 .chev { font-size: 14px; color: var(--text3); transition: transform .2s; }
 .chev.open { transform: rotate(180deg); }
+
+/* start screen */
 .start-prop-btn { width:100%; padding:16px; border:1.5px solid var(--border); border-radius:var(--radius); font-size:15px; font-weight:700; color:var(--text); background:var(--surface); cursor:pointer; text-align:left; transition:all .15s; font-family:inherit; }
 .start-prop-btn:active { transform:scale(.99); }
 .start-prop-btn.selected { border-color:var(--accent); background:var(--accent-light); color:var(--accent-text); }
-.start-prop-btn.disabled { opacity:.45; cursor:default; pointer-events:none; }
 input[type="text"], input[type="date"] { outline:none; }
 input[type="text"]:focus, input[type="date"]:focus { border-color:var(--accent); }
-.coming-badge { font-size:10px; font-weight:700; color:#fff; background:#A09B93; padding:2px 7px; border-radius:100px; margin-left:8px; vertical-align:middle; }
-.sync-bar { font-size:11px; color:var(--text3); text-align:right; margin-bottom:6px; min-height:16px; }
+
+/* scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
@@ -149,143 +303,150 @@ input[type="text"]:focus, input[type="date"]:focus { border-color:var(--accent);
 </head>
 <body>
 <div class="app">
+  <!-- HEADER -->
   <div class="header">
-    <div class="header-top">
-      <div class="header-title">🏠 清掃チェックリスト</div>
-      <div class="header-date" id="date-lbl"></div>
+    <div class="header-hero">
+      <img class="header-hero-img" src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=120&h=120&fit=crop&crop=center" alt="THE HOUSE" id="header-img" onerror="this.style.display='none'">
+      <div class="header-hero-text">
+        <div class="header-eyebrow">THE HOUSE — CLEANING STAFF</div>
+        <div class="header-title">清掃チェックリスト</div>
+        <div class="header-date" id="date-lbl"></div>
+      </div>
     </div>
     <div class="mode-bar">
-      <button class="mode-btn active" onclick="setMode('staff')">👤 スタッフ</button>
-      <button class="mode-btn" onclick="setMode('hq')">🏢 本部確認</button>
+      <button class="mode-btn active" onclick="setMode('staff')">Staff</button>
+      <button class="mode-btn" onclick="setMode('hq')">Headquarters</button>
     </div>
   </div>
 
   <div class="scroll-area" id="scroll-area">
 
-    <!-- STAFF MODE -->
+    <!-- ===== STAFF MODE ===== -->
     <div id="mode-staff" class="page active">
 
       <!-- START SCREEN -->
-      <div id="sscreen-start" class="page active">
-        <div style="padding:8px 0 20px;">
-          <p style="font-size:13px;color:var(--text2);margin-bottom:16px;">施設を選んでください</p>
-          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;" id="prop-btn-list"></div>
+      <div id="sscreen-start" style="display:block;">
+        <div style="padding: 0 0 20px;">
+          <div style="margin-bottom:16px;">
+            <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">Facility</div>
+            <div style="font-family:var(--serif);font-size:20px;color:var(--text);font-weight:400;letter-spacing:.02em;line-height:1.3;">ご担当の施設を<br>お選びください</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px;">
+            <button class="start-prop-btn" onclick="selectStartProp('house')">THE HOUSE HAYAMA</button>
+            <button class="start-prop-btn" onclick="selectStartProp('beach')">THE HOUSE on the beach</button>
+            <button class="start-prop-btn" onclick="selectStartProp('maison')">MAISON D:E VACANCES 葉山</button>
+          </div>
           <div id="start-form" style="display:none;">
-            <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;">
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;">
               <div style="margin-bottom:14px;">
-                <label style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:6px;">スタッフ名</label>
-                <input type="text" id="staff-name-input" placeholder="例：田中 花子" style="width:100%;font-size:15px;padding:11px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-family:inherit;">
+                <div style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">Staff Name</div>
+                <input type="text" id="staff-name-input" placeholder="スタッフ名を入力" style="width:100%;font-size:15px;padding:11px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:300;">
               </div>
               <div>
-                <label style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:6px;">日付</label>
-                <input type="date" id="staff-date-input" style="width:100%;font-size:15px;padding:11px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-family:inherit;">
+                <div style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">Date</div>
+                <input type="date" id="staff-date-input" style="width:100%;font-size:15px;padding:11px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:300;">
               </div>
             </div>
-            <button class="submit-btn" onclick="startChecklist()">チェックリストを開始 →</button>
+            <button class="submit-btn" onclick="startChecklist()" id="start-btn">Begin Checklist</button>
           </div>
         </div>
       </div>
 
       <!-- CHECKLIST SCREEN -->
       <div id="sscreen-check" style="display:none;">
-        <div class="sync-bar" id="sync-bar"></div>
-        <div class="prop-tabs" id="prop-tabs"></div>
-        <div style="background:var(--surface2);border-radius:var(--radius);padding:10px 12px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
-          <span style="font-size:13px;color:var(--text2);flex:1;" id="staff-info-bar">　</span>
-          <button onclick="resetStart()" style="font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px 6px;">変更</button>
+      <div class="prop-tabs" id="prop-tabs"></div>
+      <div style="background:var(--surface2);border-radius:var(--radius);padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+        <span style="font-size:12px;color:var(--text2);flex:1;font-weight:300;letter-spacing:.02em;" id="staff-info-bar">　</span>
+        <button onclick="resetStart()" style="font-size:10px;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px 6px;letter-spacing:.08em;text-transform:uppercase;">変更</button>
+      </div>
+      <div class="sub-nav">
+        <button class="sub-btn active" onclick="staffNav('check')">Check</button>
+        <button class="sub-btn" onclick="staffNav('issues')">Issues</button>
+        <button class="sub-btn" onclick="staffNav('submit')">Photo</button>
+        <button class="sub-btn" onclick="staffNav('trouble')">Trouble</button>
+      </div>
+
+      <!-- CHECK PAGE -->
+      <div id="spage-check" style="display:block;">
+        <div class="area-row" id="area-row"></div>
+        <div class="prog-row">
+          <div class="prog-bar-wrap"><div class="prog-bar-fill" id="prog-fill" style="width:0%"></div></div>
+          <div class="prog-label" id="prog-lbl">0 / 0</div>
         </div>
-        <div class="sub-nav">
-          <button class="sub-btn active" onclick="staffNav('check')">✅ チェック</button>
-          <button class="sub-btn" onclick="staffNav('issues')">🚩 要確認</button>
-          <button class="sub-btn" onclick="staffNav('submit')">📤 送信</button>
-          <button class="sub-btn" onclick="staffNav('trouble')">🔧 トラブル</button>
-        </div>
-        <div id="spage-check" class="page active">
-          <div class="area-row" id="area-row"></div>
-          <div class="prog-row">
-            <div class="prog-bar-wrap"><div class="prog-bar-fill" id="prog-fill" style="width:0%"></div></div>
-            <div class="prog-label" id="prog-lbl">0 / 0</div>
+        <div id="check-items"></div>
+      </div>
+
+      <!-- ISSUES PAGE -->
+      <div id="spage-issues" style="display:none;">
+        <div id="issues-content"></div>
+      </div>
+
+      <!-- SUBMIT PAGE -->
+      <div id="spage-submit" style="display:none;">
+        <div class="submit-notice" id="submit-notice"></div>
+        <div class="sec-label">📷 写真撮影チェック</div>
+        <div class="photo-grid" id="photo-grid"></div>
+        <div class="sec-label">補充が必要なもの</div>
+        <textarea class="txt-area" id="supply-txt" rows="2" placeholder="例：ティッシュ、アメニティ"></textarea>
+        <div class="sec-label">修繕・メンテナンス報告</div>
+        <textarea class="txt-area" id="maint-txt" rows="2" placeholder="修繕が必要な箇所など"></textarea>
+        <div class="sec-label">その他メモ</div>
+        <textarea class="txt-area" id="memo-txt" rows="2" placeholder="自由記入"></textarea>
+        <button class="submit-btn" id="submit-btn" onclick="submitReport()">本部へ清掃完了報告</button>
+        <p style="text-align:center;font-size:12px;color:var(--text3);margin-top:12px;letter-spacing:.04em;">写真はメッセンジャーに報告ください。</p>
+        <div id="finish-done-wrap" style="display:none;margin-top:10px;">
+          <div style="background:var(--accent-light);border:1px solid var(--accent);border-radius:var(--radius);padding:20px 16px;text-align:center;">
+            <div style="font-family:var(--serif);font-size:28px;color:var(--accent);margin-bottom:8px;">✓</div>
+            <div style="font-family:var(--serif);font-size:16px;font-weight:500;color:var(--accent-text);letter-spacing:.04em;" id="finish-done-msg"></div>
+            <div style="font-size:11px;color:var(--text2);margin-top:6px;letter-spacing:.06em;text-transform:uppercase;">本部に報告されました</div>
           </div>
-          <div id="check-items"></div>
-        </div>
-        <div id="spage-issues" class="page"><div id="issues-content"></div></div>
-        <div id="spage-submit" class="page">
-          <div class="submit-notice" id="submit-notice"></div>
-          <div class="sec-label">📷 写真撮影チェック</div>
-          <div class="photo-grid" id="photo-grid"></div>
-          <div class="sec-label">補充が必要なもの</div>
-          <textarea class="txt-area" id="supply-txt" rows="2" placeholder="例：ティッシュ、アメニティ"></textarea>
-          <div class="sec-label">修繕・メンテナンス報告</div>
-          <textarea class="txt-area" id="maint-txt" rows="2" placeholder="修繕が必要な箇所など"></textarea>
-          <div class="sec-label">その他メモ</div>
-          <textarea class="txt-area" id="memo-txt" rows="2" placeholder="自由記入"></textarea>
-          <button class="submit-btn" id="submit-btn" onclick="submitReport()">清掃完了・本部へ送信 →</button>
-        </div>
-        <div id="spage-trouble" class="page">
-          <div id="trouble-content"></div>
-          <div class="sec-label" style="margin-top:14px">📞 緊急連絡先</div>
-          <div class="contact-row"><span class="contact-icon">🔥</span><span class="contact-name">ガス — 岡田さん</span><span class="contact-tel">090-5527-5352</span></div>
-          <div class="contact-row"><span class="contact-icon">⚡</span><span class="contact-name">電気 — 大幸さん</span><span class="contact-tel">090-3224-2084</span></div>
-          <div class="contact-row"><span class="contact-icon">💧</span><span class="contact-name">水道小 — クラシアン横須賀</span><span class="contact-tel">0120-500-500</span></div>
-          <div class="contact-row"><span class="contact-icon">🔧</span><span class="contact-name">水道大 — 榎本マー君（夜のみ）</span><span class="contact-tel">080-5544-8114</span></div>
-          <div class="contact-row"><span class="contact-icon">✨</span><span class="contact-name">クリーニング — 宮崎さん</span><span class="contact-tel"></span></div>
-          <div class="contact-row"><span class="contact-icon">❄️</span><span class="contact-name">エアコン — ダイキン</span><span class="contact-tel">0120-881-081</span></div>
         </div>
       </div>
+
+      <!-- TROUBLE PAGE -->
+      <div id="spage-trouble" style="display:none;">
+        <div id="trouble-content"></div>
+        <div class="sec-label" style="margin-top:14px">📞 緊急連絡先</div>
+        <div class="contact-row"><span class="contact-icon">🔥</span><span class="contact-name">ガス — 岡田さん</span><span class="contact-tel">090-5527-5352</span></div>
+        <div class="contact-row"><span class="contact-icon">⚡</span><span class="contact-name">電気 — 大幸さん</span><span class="contact-tel">090-3224-2084</span></div>
+        <div class="contact-row"><span class="contact-icon">💧</span><span class="contact-name">水道小 — クラシアン横須賀</span><span class="contact-tel">0120-500-500</span></div>
+        <div class="contact-row"><span class="contact-icon">🔧</span><span class="contact-name">水道大 — 榎本マー君（夜のみ）</span><span class="contact-tel">080-5544-8114</span></div>
+        <div class="contact-row"><span class="contact-icon">✨</span><span class="contact-name">クリーニング — 宮崎さん</span><span class="contact-tel"></span></div>
+        <div class="contact-row"><span class="contact-icon">❄️</span><span class="contact-name">エアコン — ダイキン</span><span class="contact-tel">0120-881-081</span></div>
+      </div>
+      </div><!-- /sscreen-check -->
     </div>
 
-    <!-- HQ MODE -->
+    <!-- ===== HQ MODE ===== -->
     <div id="mode-hq" class="page">
-      <div class="sync-bar" id="hq-sync-bar"></div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div style="font-size:12px;color:var(--text2);">日付でフィルター</div>
-        <input type="date" id="hq-date-filter" style="font-size:13px;padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-family:inherit;" onchange="renderHQ()">
-      </div>
       <div class="metrics">
-        <div class="mc"><div class="ml">送信済み</div><div class="mv g" id="hq-sent">0/0</div></div>
+        <div class="mc"><div class="ml">送信済み</div><div class="mv g" id="hq-sent">0/3</div></div>
         <div class="mc"><div class="ml">全体進捗</div><div class="mv" id="hq-prog">0%</div></div>
-        <div class="mc"><div class="ml">要確認</div><div class="mv r" id="hq-flags">0</div></div>
+        <div class="mc"><div class="ml">完了施設</div><div class="mv g" id="hq-flags">0</div></div>
       </div>
+
+      <!-- 特記事項エディター -->
+      <div class="notice-editor">
+        <div class="notice-editor-hd">特記事項を書き込む</div>
+        <div class="notice-prop-select" id="notice-prop-select"></div>
+        <textarea class="txt-area" id="notice-txt" rows="3" placeholder="スタッフへの連絡・注意事項を入力..."></textarea>
+        <button class="save-notice-btn" onclick="saveNotice()">施設へ送信</button>
+      </div>
+
+      <!-- 既存の特記事項一覧 -->
+      <div id="notice-list"></div>
+
+      <div class="divider"></div>
       <div id="hq-cards"></div>
     </div>
 
-  </div>
-</div>
+  </div><!-- /scroll-area -->
+</div><!-- /app -->
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
-import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-database.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDMIeH-2j1fCE2i1J4UsqUdMxWtdc7alkk",
-  authDomain: "the-house-cleaning-check.firebaseapp.com",
-  databaseURL: "https://the-house-cleaning-check-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "the-house-cleaning-check",
-  storageBucket: "the-house-cleaning-check.firebasestorage.app",
-  messagingSenderId: "305882214266",
-  appId: "1:305882214266:web:affa4deb3b2b14d278f0c3",
-};
-const fbApp = initializeApp(firebaseConfig);
-const db = getDatabase(fbApp);
-
-// ===== MIURA shared checklist (same as THE HOUSE hayama) =====
-const MIURA_AREAS = [
-  {id:'t',name:'テラス',items:['ジャグジーの清掃（水滴もとる）','テラスのゴミ、タバコの吸殻','損傷はないか？','お湯は出るか？','溝や隙間、建物の横にゴミは落ちていないか？']},
-  {id:'k',name:'キッチン＆LDK',items:['シンクの清掃（水滴もとる）','新しいスポンジ、ミニタオルの設置','エスプレッソマシン掃除・豆と水補充','お皿、フォークなどの汚れの確認','電子レンジ、トースターの汚れの確認','冷蔵庫の確認（水配置）','冷凍庫の確認（氷は綺麗であればそのまま）','ゴミ箱関連（見た目も綺麗に）','キッチンの上の棚と下の引き出しも汚れていないか？','ダイニング＆リビング全体の清掃（ソファーの下にゴミはないか？）','テーブルに指紋などはついてないか？','窓のところにゴミやホコリはないか？','ソファーなどにホコリやチリがあれば、コロコロで']},
-  {id:'to',name:'トイレ',items:['便器のみならず水のところ、ペーパーホルダーもふく','カラータオルを置いたか？','予備のトイレットペーパーは2つあるか？汚物入れの掃除はしたか？']},
-  {id:'b',name:'ベッドルーム',items:['匂いはないか？（枕カバー、毛布）','犬の毛やホコリ、髪の毛はないか？','クッションの下などにもゴミはないか？','各種棚などにホコリはないか？','カーテンレールが外れてないか？']},
-  {id:'a',name:'お風呂＆アメニティ',items:['お風呂は水滴をとったか？床や壁に髪の毛はついていないか？','アメニティーは人数分あるか？バスマットは二つ用意しているか？','洗面台など鏡は汚れてないか？歯磨き粉などくっついてないか？','お湯は出ているか？']},
-  {id:'o',name:'その他',items:['倉庫など整理整頓されているか？','キャンドルの電池は入っているか？','電球は切れていないか？','ティッシュは半分以上は入っているか？','ゴミ箱にゴミは残っていないか？（最後確認）','駐車場側のゴミも目立つものは掃除すること']}
-];
-const MIURA_TROUBLES = [
-  {title:'ブレーカーが落ちた',steps:['電気のブレーカーを確認','ブレーカーを復活させる','復活を確認']},
-  {title:'お風呂のお湯が出ない',steps:['電気のブレーカーを確認','ガスの安全装置を確認','給湯ボタンを確認']}
-];
-const MIURA_PHOTOS = ['トイレ','キッチン','お風呂場','冷蔵庫','電子レンジ','アメニティ設置','テラス'];
-
+<script>
 const PROPS = [
   {
-    id:'house', name:'🏠 THE HOUSE', area:'葉山',
+    id:'house', name:'THE HOUSE',
     notice:'※私物・ペットボトルはテラスに置く。\nチェックイン説明：内鍵必須。エアコンリモコン・ジャグジー・電子レンジは同時使用不可。ジャグジーヒーターは使用時のみ。',
     photos:['トイレ','キッチン','お風呂場','冷蔵庫','電子レンジ','アメニティ設置','テラス'],
     areas:[
@@ -302,7 +463,7 @@ const PROPS = [
     ]
   },
   {
-    id:'beach', name:'🌊 ON THE BEACH', area:'葉山',
+    id:'beach', name:'ON THE BEACH',
     notice:'※私物・ペットボトルは中庭か3階入口に置く。\nチェックイン説明：暖炉・ジャグジーのヒーターは使用時のみ。\nセルフチェックイン時：室内の明かりをつけ、エアコンを調整。雨の場合は入口にバスタオルを1つ置く。',
     photos:['トイレ','キッチン','お風呂場','冷蔵庫','電子レンジ','アメニティ設置','テラス'],
     areas:[
@@ -319,7 +480,7 @@ const PROPS = [
     ]
   },
   {
-    id:'maison', name:'🏡 MAISON HAYAMA', area:'葉山',
+    id:'maison', name:'MAISON HAYAMA',
     notice:'※私物・ペットボトルはテラスに置く。\nチェックイン説明：内鍵必須。\nセルフチェックイン時：室内の明かりをつけ、エアコンを調整。雨の場合は入口にバスタオルを1つ置く。',
     photos:['トイレ','キッチン','お風呂場','冷蔵庫','電子レンジ','アメニティ設置','テラス'],
     areas:[
@@ -334,107 +495,55 @@ const PROPS = [
       {title:'ブレーカーが落ちた',steps:['電気のブレーカーを確認','ブレーカーを復活させる','復活を確認']},
       {title:'お風呂のお湯が出ない',steps:['電気のブレーカーを確認','ガスの安全装置を確認','給湯ボタンを確認']}
     ]
-  },
-  {id:'koajiro_pool',  name:'🏠 THE HOUSE 小網代 Pool and Cave',       area:'三浦', notice:'', photos:MIURA_PHOTOS, areas:MIURA_AREAS.map(a=>({...a,id:'kp_'+a.id})), troubles:MIURA_TROUBLES},
-  {id:'koajiro_shower',name:'🏠 THE HOUSE 小網代 Shower living suite',  area:'三浦', notice:'', photos:MIURA_PHOTOS, areas:MIURA_AREAS.map(a=>({...a,id:'ks_'+a.id})), troubles:MIURA_TROUBLES},
-  {id:'koajiro_bed',   name:'🏠 THE HOUSE 小網代 Bed and bath',         area:'三浦', notice:'', photos:MIURA_PHOTOS, areas:MIURA_AREAS.map(a=>({...a,id:'kb_'+a.id})), troubles:MIURA_TROUBLES},
-  {id:'moroso',        name:'🏠 THE HOUSE 諸磯',                        area:'三浦', notice:'', photos:MIURA_PHOTOS, areas:MIURA_AREAS.map(a=>({...a,id:'mo_'+a.id})), troubles:MIURA_TROUBLES},
-  {id:'mitohama',      name:'🏠 THE HOUSE 三戸浜',                      area:'三浦', notice:'', photos:MIURA_PHOTOS, areas:MIURA_AREAS.map(a=>({...a,id:'mi_'+a.id})), troubles:MIURA_TROUBLES, comingSoon:true},
-  {id:'jogashima',     name:'🏰 MAISON 城ヶ島',                         area:'三浦', notice:'', photos:MIURA_PHOTOS, areas:MIURA_AREAS.map(a=>({...a,id:'jo_'+a.id})), troubles:MIURA_TROUBLES},
+  }
 ];
 
-// ===== State =====
 let S = {};
-function initState(pid) {
-  const p = PROPS.find(x=>x.id===pid);
-  S[pid] = { checked:{}, flagged:{}, photos:{}, supply:'', maint:'', memo:'', submitted:false, submittedAt:'', staffName:'', staffDate:'' };
-  p.areas.forEach(a=>{ S[pid].checked[a.id]={}; S[pid].flagged[a.id]={}; });
-}
-PROPS.forEach(p=>initState(p.id));
+PROPS.forEach(p => {
+  S[p.id] = { checked:{}, photos:{}, supply:'', maint:'', memo:'', submitted:false, submittedAt:'', staffName:'', staffDate:'' };
+  p.areas.forEach(a => { S[p.id].checked[a.id]={}; });
+});
 
-let curProp = PROPS[0].id;
+// notices: { propId: { text: '', replies: [{name, text, time}] } }
+let notices = {};
+PROPS.forEach(p => { notices[p.id] = { text: '', replies: [] }; });
+
 let curArea = PROPS[0].areas[0].id;
 let curMode = 'staff';
-let curNav  = 'check';
+let curNav = 'check';
+
+function P(id){ return PROPS.find(p=>p.id===(id||curProp)); }
+
 let staffName = '';
 let staffDate = '';
 let startPropId = '';
 
-function P(id){ return PROPS.find(p=>p.id===(id||curProp)); }
-
-// ===== Firebase helpers =====
-function fbKey(date, propId) {
-  return `cleaning/${date.replace(/-/g,'_')}/${propId}`;
-}
-async function fbSave(propId) {
-  const date = staffDate || new Date().toISOString().split('T')[0];
-  const key = fbKey(date, propId);
-  const data = JSON.parse(JSON.stringify(S[propId]));
-  await set(ref(db, key), data);
-}
-async function fbLoad(date, propId) {
-  const snap = await get(ref(db, fbKey(date, propId)));
-  return snap.exists() ? snap.val() : null;
-}
-async function fbLoadDate(date) {
-  const snap = await get(ref(db, `cleaning/${date.replace(/-/g,'_')}`));
-  return snap.exists() ? snap.val() : {};
-}
-
-function setSyncBar(msg, isHQ=false) {
-  const id = isHQ ? 'hq-sync-bar' : 'sync-bar';
-  document.getElementById(id).textContent = msg;
-}
-
-// ===== Render prop buttons on start screen =====
-function renderPropButtons() {
-  const container = document.getElementById('prop-btn-list');
-  container.innerHTML = PROPS.map(p => {
-    const cs = p.comingSoon;
-    return `<button class="start-prop-btn${cs?' disabled':''}" onclick="${cs?'':'selectStartProp(\''+p.id+'\')'}" ${cs?'disabled':''}>
-      ${p.name}${cs?'<span class="coming-badge">準備中</span>':''}
-      <span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:6px;">${p.area}</span>
-    </button>`;
-  }).join('');
-}
-
 function selectStartProp(id) {
   startPropId = id;
-  document.querySelectorAll('.start-prop-btn').forEach(b=>b.classList.remove('selected'));
-  const btns = document.querySelectorAll('.start-prop-btn');
-  PROPS.forEach((p,i)=>{ if(p.id===id) btns[i].classList.add('selected'); });
+  document.querySelectorAll('.start-prop-btn').forEach(b => b.classList.remove('selected'));
+  event.target.classList.add('selected');
   document.getElementById('start-form').style.display = 'block';
-  document.getElementById('staff-date-input').value = new Date().toISOString().split('T')[0];
+  // set today's date as default
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('staff-date-input').value = today;
   document.getElementById('staff-name-input').focus();
 }
 
-async function startChecklist() {
+function startChecklist() {
   const name = document.getElementById('staff-name-input').value.trim();
   const date = document.getElementById('staff-date-input').value;
   if (!name) { document.getElementById('staff-name-input').focus(); return; }
   if (!date) { document.getElementById('staff-date-input').focus(); return; }
   staffName = name;
   staffDate = date;
-  curProp   = startPropId;
-  curArea   = P(curProp).areas[0].id;
-
-  // Try load existing data from Firebase
-  setSyncBar('データを読み込み中...');
-  const saved = await fbLoad(date, curProp);
-  if (saved) {
-    S[curProp] = saved;
-    setSyncBar('✓ 保存済みデータを読み込みました');
-  } else {
-    initState(curProp);
-    setSyncBar('');
-  }
-  S[curProp].staffName = name;
-  S[curProp].staffDate = date;
-
+  curProp = startPropId;
+  curArea = P(curProp).areas[0].id;
+  // update info bar
   const d = new Date(date);
   const fmt = d.toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'});
-  document.getElementById('staff-info-bar').textContent = fmt+'　'+name;
-  document.getElementById('sscreen-start').classList.remove('active');
+  document.getElementById('staff-info-bar').textContent = fmt + '　' + name;
+  // switch screens
+  document.getElementById('sscreen-start').style.display = 'none';
   document.getElementById('sscreen-check').style.display = 'block';
   renderPropTabs();
   renderByNav();
@@ -442,76 +551,60 @@ async function startChecklist() {
 }
 
 function resetStart() {
-  document.getElementById('sscreen-start').classList.add('active');
+  document.getElementById('sscreen-start').style.display = 'block';
   document.getElementById('sscreen-check').style.display = 'none';
-  document.querySelectorAll('.start-prop-btn').forEach(b=>b.classList.remove('selected'));
+  document.querySelectorAll('.start-prop-btn').forEach(b => b.classList.remove('selected'));
   document.getElementById('start-form').style.display = 'none';
 }
 
-// ===== Mode =====
-function setMode(m) {
+// MODE
+function setMode(m){
   curMode = m;
   document.querySelectorAll('.mode-btn').forEach((b,i)=>b.classList.toggle('active',['staff','hq'][i]===m));
-  document.getElementById('mode-staff').classList.toggle('active',m==='staff');
-  document.getElementById('mode-hq').classList.toggle('active',m==='hq');
+  document.getElementById('mode-staff').classList.toggle('active', m==='staff');
+  document.getElementById('mode-hq').classList.toggle('active', m==='hq');
   document.getElementById('scroll-area').scrollTop = 0;
-  if (m==='hq') {
-    const today = new Date().toISOString().split('T')[0];
-    if (!document.getElementById('hq-date-filter').value) {
-      document.getElementById('hq-date-filter').value = today;
-    }
-    renderHQ();
-  }
+  if(m==='hq') renderHQ();
 }
-window.setMode = setMode;
 
-// ===== Prop tabs =====
-function renderPropTabs() {
-  document.getElementById('prop-tabs').innerHTML = PROPS.map(p=>
-    `<button class="prop-tab${curProp===p.id?' active':''}${S[p.id].submitted?' done':''}" onclick="selectProp('${p.id}')">
+// PROP TAB
+function renderPropTabs(){
+  document.getElementById('prop-tabs').innerHTML = PROPS.map(p=>`
+    <button class="prop-tab${curProp===p.id?' active':''}${S[p.id].submitted?' done':''}" onclick="selectProp('${p.id}')">
       ${p.name}${S[p.id].submitted?' ✓':''}
-    </button>`
-  ).join('');
+    </button>`).join('');
 }
-async function selectProp(id) {
+function selectProp(id){
   curProp = id;
   curArea = P(id).areas[0].id;
-  // load from Firebase
-  setSyncBar('読み込み中...');
-  const saved = await fbLoad(staffDate, id);
-  if (saved) { S[id]=saved; setSyncBar('✓ 読み込み完了'); }
-  else { setSyncBar(''); }
   renderPropTabs();
   renderByNav();
   document.getElementById('scroll-area').scrollTop = 0;
 }
-window.selectProp = selectProp;
 
-// ===== Staff nav =====
-function staffNav(tab) {
+// STAFF NAV
+function staffNav(tab){
   curNav = tab;
   document.querySelectorAll('.sub-btn').forEach((b,i)=>b.classList.toggle('active',['check','issues','submit','trouble'][i]===tab));
   ['check','issues','submit','trouble'].forEach(t=>{
-    document.getElementById('spage-'+t).classList.toggle('active',t===tab);
+    document.getElementById('spage-'+t).style.display = (t===tab)?'block':'none';
   });
   renderByNav();
   document.getElementById('scroll-area').scrollTop = 0;
 }
-window.staffNav = staffNav;
-
-function renderByNav() {
-  if(curNav==='check')   renderCheck();
-  else if(curNav==='issues')  renderIssues();
-  else if(curNav==='submit')  renderSubmit();
+function renderByNav(){
+  if(curNav==='check') renderCheck();
+  else if(curNav==='issues') renderIssues();
+  else if(curNav==='submit') renderSubmit();
   else if(curNav==='trouble') renderTrouble();
 }
 
-// ===== Check =====
-function renderCheck() {
+// CHECK
+function renderCheck(){
   const prop = P();
   document.getElementById('area-row').innerHTML = prop.areas.map(a=>{
     const done = Object.values(S[curProp].checked[a.id]||{}).filter(Boolean).length;
-    const isDone = done===a.items.length;
+    const isDone = done === a.items.length;
     return`<button class="area-btn${curArea===a.id?' active':''}${isDone?' done':''}" onclick="selArea('${a.id}')">${a.name}${isDone?' ✓':''}</button>`;
   }).join('');
   const area = prop.areas.find(a=>a.id===curArea);
@@ -519,107 +612,103 @@ function renderCheck() {
   const total = area.items.length;
   document.getElementById('prog-fill').style.width = Math.round(done/total*100)+'%';
   document.getElementById('prog-lbl').textContent = done+' / '+total+' 完了';
-  if (prop.notice) {
-    document.getElementById('check-items').innerHTML =
-      `<div class="notice">${prop.notice}</div>` +
-      area.items.map((text,i)=>{
-        const chk=S[curProp].checked[curArea][i], flg=S[curProp].flagged[curArea][i];
-        return`<div class="ci${chk?' done':''}" onclick="toggleCheck(${i})">
-          <div class="cb${chk?' chk':''}"></div><div class="cl">${text}</div>
-          <button class="flag-btn${flg?' on':''}" onclick="event.stopPropagation();toggleFlag(${i})">🚩</button>
-        </div>`;
-      }).join('');
-  } else {
-    document.getElementById('check-items').innerHTML = area.items.map((text,i)=>{
-      const chk=S[curProp].checked[curArea][i], flg=S[curProp].flagged[curArea][i];
-      return`<div class="ci${chk?' done':''}" onclick="toggleCheck(${i})">
-        <div class="cb${chk?' chk':''}"></div><div class="cl">${text}</div>
-        <button class="flag-btn${flg?' on':''}" onclick="event.stopPropagation();toggleFlag(${i})">🚩</button>
-      </div>`;
-    }).join('');
-  }
+  document.getElementById('check-items').innerHTML = area.items.map((text,i)=>{
+    const chk = S[curProp].checked[curArea][i];
+    return`<div class="ci${chk?' done':''}" onclick="toggleCheck(${i})">
+      <div class="cb${chk?' chk':''}"></div>
+      <div class="cl">${text}</div>
+    </div>`;
+  }).join('');
 }
 function selArea(id){ curArea=id; renderCheck(); }
-window.selArea = selArea;
+function toggleCheck(i){ S[curProp].checked[curArea][i]=!S[curProp].checked[curArea][i]; renderCheck(); }
 
-function toggleCheck(i) {
-  S[curProp].checked[curArea][i]=!S[curProp].checked[curArea][i];
-  renderCheck();
-  autoSave();
+// ISSUES — 本部特記事項 + スタッフ対応メモ
+function renderIssues(){
+  const el = document.getElementById('issues-content');
+  const n = notices[curProp];
+  if(!n.text){
+    el.innerHTML=`<div class="issue-empty">
+      <div style="font-family:var(--serif);font-size:28px;color:var(--border2);margin-bottom:10px;">—</div>
+      本部からの特記事項はありません
+    </div>`;
+    return;
+  }
+  const repliesHtml = n.replies.length ? n.replies.map(r=>`
+    <div style="padding:8px 0;border-bottom:1px solid var(--border);">
+      <div style="font-size:10px;color:var(--text3);letter-spacing:.06em;margin-bottom:4px;">${r.name}　${r.time}</div>
+      <div style="font-size:13px;color:var(--text);font-weight:300;line-height:1.6;">${r.text}</div>
+    </div>`).join('') : `<div style="font-size:12px;color:var(--text3);font-weight:300;padding:6px 0;">まだ返信はありません</div>`;
+  el.innerHTML=`
+    <div class="issue-notice">
+      <div class="issue-notice-hd">本部からの特記事項</div>
+      <div class="issue-notice-text">${n.text}</div>
+    </div>
+    <div class="issue-reply">
+      <div class="issue-reply-hd">対応メモ</div>
+      ${repliesHtml}
+      <textarea class="txt-area" id="reply-txt" rows="2" placeholder="対応内容を入力..." style="margin-top:10px;margin-bottom:6px;"></textarea>
+      <button onclick="submitReply()" style="width:100%;padding:11px;background:var(--text);color:#fff;border:none;border-radius:var(--radius-sm);font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:var(--sans);">返信する</button>
+    </div>`;
 }
-function toggleFlag(i) {
-  S[curProp].flagged[curArea][i]=!S[curProp].flagged[curArea][i];
-  renderCheck();
-  autoSave();
+function submitReply(){
+  const txt = document.getElementById('reply-txt').value.trim();
+  if(!txt) return;
+  const now = new Date();
+  const time = now.getHours()+'時'+String(now.getMinutes()).padStart(2,'0')+'分';
+  notices[curProp].replies.push({ name: staffName||'スタッフ', text: txt, time });
+  renderIssues();
 }
-window.toggleCheck = toggleCheck;
-window.toggleFlag  = toggleFlag;
 
-let autoSaveTimer = null;
-function autoSave() {
-  clearTimeout(autoSaveTimer);
-  autoSaveTimer = setTimeout(async ()=>{
-    setSyncBar('保存中...');
-    try { await fbSave(curProp); setSyncBar('✓ 自動保存済み'); setTimeout(()=>setSyncBar(''),2000); }
-    catch(e){ setSyncBar('⚠ 保存失敗'); }
-  }, 1500);
-}
-
-// ===== Issues =====
-function renderIssues() {
-  const prop=P(), flags=[];
-  prop.areas.forEach(a=>a.items.forEach((text,i)=>{ if(S[curProp].flagged[a.id][i]) flags.push({area:a.name,text}); }));
-  const el=document.getElementById('issues-content');
-  if(!flags.length){ el.innerHTML='<div class="empty"><span class="empty-icon">✅</span>要確認の項目はありません</div>'; return; }
-  el.innerHTML=flags.map(({area,text})=>`
-    <div class="issue-item"><span style="font-size:16px;flex-shrink:0;margin-top:1px">🚩</span>
-    <div><div class="issue-item-text">${text}</div><div class="issue-area">${area}</div></div></div>`).join('');
-}
-
-// ===== Submit =====
-function renderSubmit() {
-  const prop=P(), ps=S[curProp];
-  const total=prop.areas.reduce((s,a)=>s+a.items.length,0);
-  const done=prop.areas.reduce((s,a)=>s+Object.values(ps.checked[a.id]||{}).filter(Boolean).length,0);
-  const flags=prop.areas.reduce((s,a)=>s+Object.values(ps.flagged[a.id]||{}).filter(Boolean).length,0);
-  const dateStr=staffDate?new Date(staffDate).toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'}):'';
-  document.getElementById('submit-notice').innerHTML=
-    `<strong>${prop.name}</strong>　${dateStr}　${staffName}<br>チェック ${done}/${total}件　🚩 要確認 ${flags}件<br>
+// SUBMIT
+function renderSubmit(){
+  const prop = P();
+  const ps = S[curProp];
+  const total = prop.areas.reduce((s,a)=>s+a.items.length,0);
+  const done = prop.areas.reduce((s,a)=>s+Object.values(ps.checked[a.id]||{}).filter(Boolean).length,0);
+  const dateStr = staffDate ? new Date(staffDate).toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'}) : '';
+  document.getElementById('submit-notice').innerHTML =
+    `<strong>${prop.name}</strong>　${dateStr}　${staffName}<br>チェック ${done}/${total}件完了<br>
     <span style="font-size:11px;color:#888">全エリアのチェックと写真確認を終えてから送信してください。</span>`;
-  document.getElementById('photo-grid').innerHTML=prop.photos.map((p,i)=>{
-    const d=ps.photos[i];
-    return`<div class="ph-item${d?' done':''}" onclick="togglePhoto(${i})"><span class="ph-icon">${d?'✅':'📷'}</span>${p}</div>`;
+  document.getElementById('photo-grid').innerHTML = prop.photos.map((p,i)=>{
+    const d = ps.photos[i];
+    return`<div class="ph-item${d?' done':''}" onclick="togglePhoto(${i})">
+      <span class="ph-icon">${d?'✅':'📷'}</span>${p}</div>`;
   }).join('');
-  document.getElementById('supply-txt').value=ps.supply||'';
-  document.getElementById('maint-txt').value=ps.maint||'';
-  document.getElementById('memo-txt').value=ps.memo||'';
-  const btn=document.getElementById('submit-btn');
-  if(ps.submitted){ btn.textContent='✓ 送信済み（'+ps.submittedAt+'）'; btn.classList.add('sent'); btn.disabled=true; }
-  else { btn.textContent='清掃完了・本部へ送信 →'; btn.classList.remove('sent'); btn.disabled=false; }
+  document.getElementById('supply-txt').value = ps.supply||'';
+  document.getElementById('maint-txt').value = ps.maint||'';
+  document.getElementById('memo-txt').value = ps.memo||'';
+  const btn = document.getElementById('submit-btn');
+  const doneWrap = document.getElementById('finish-done-wrap');
+  if(ps.submitted){
+    btn.style.display = 'none';
+    doneWrap.style.display = 'block';
+    document.getElementById('finish-done-msg').textContent = ps.submittedAt + '　業務完了報告済み';
+  } else {
+    btn.style.display = 'block';
+    btn.textContent = '本部へ清掃完了報告';
+    btn.classList.remove('sent'); btn.disabled=false;
+    doneWrap.style.display = 'none';
+  }
 }
-function togglePhoto(i){ S[curProp].photos[i]=!S[curProp].photos[i]; renderSubmit(); autoSave(); }
-window.togglePhoto=togglePhoto;
-
-async function submitReport() {
-  S[curProp].supply=document.getElementById('supply-txt').value;
-  S[curProp].maint=document.getElementById('maint-txt').value;
-  S[curProp].memo=document.getElementById('memo-txt').value;
-  S[curProp].staffName=staffName;
-  S[curProp].staffDate=staffDate;
-  const now=new Date();
-  S[curProp].submitted=true;
-  S[curProp].submittedAt=now.getHours()+'時'+String(now.getMinutes()).padStart(2,'0')+'分';
-  setSyncBar('送信中...');
-  try { await fbSave(curProp); setSyncBar('✓ 送信・保存完了'); }
-  catch(e){ setSyncBar('⚠ 送信失敗'); }
+function togglePhoto(i){ S[curProp].photos[i]=!S[curProp].photos[i]; renderSubmit(); }
+function submitReport(){
+  S[curProp].supply = document.getElementById('supply-txt').value;
+  S[curProp].maint  = document.getElementById('maint-txt').value;
+  S[curProp].memo   = document.getElementById('memo-txt').value;
+  S[curProp].staffName = staffName;
+  S[curProp].staffDate = staffDate;
+  const now = new Date();
+  const timeStr = now.getHours()+'時'+String(now.getMinutes()).padStart(2,'0')+'分';
+  S[curProp].submitted = true;
+  S[curProp].submittedAt = timeStr;
   renderSubmit(); renderPropTabs();
 }
-window.submitReport=submitReport;
 
-// ===== Trouble =====
-function renderTrouble() {
-  const prop=P();
-  document.getElementById('trouble-content').innerHTML=prop.troubles.map((t,idx)=>`
+// TROUBLE
+function renderTrouble(){
+  const prop = P();
+  document.getElementById('trouble-content').innerHTML = prop.troubles.map((t,idx)=>`
     <div class="tr-card">
       <div class="tr-hd" onclick="toggleTr(${idx})">
         <span style="font-size:16px">⚠️</span>
@@ -632,54 +721,58 @@ function renderTrouble() {
     </div>`).join('');
 }
 function toggleTr(idx){
-  document.getElementById('trbody-'+idx).classList.toggle('open');
-  document.getElementById('trchev-'+idx).classList.toggle('open');
+  const body = document.getElementById('trbody-'+idx);
+  const chev = document.getElementById('trchev-'+idx);
+  body.classList.toggle('open');
+  chev.classList.toggle('open');
 }
-window.toggleTr=toggleTr;
 
-// ===== HQ =====
-async function renderHQ() {
-  const date=document.getElementById('hq-date-filter').value;
-  if(!date) return;
-  setSyncBar('読み込み中...', true);
-  const allData=await fbLoadDate(date);
-  setSyncBar('', true);
+// HQ
+let selectedNoticeProp = PROPS[0].id;
 
-  // merge into local S for display
-  PROPS.forEach(p=>{
-    if(allData[p.id]){ S[p.id]=allData[p.id]; }
-  });
+function renderHQ(){
+  const sent = PROPS.filter(p=>S[p.id].submitted).length;
+  const totalAll = PROPS.reduce((s,p)=>s+p.areas.reduce((ss,a)=>ss+a.items.length,0),0);
+  const doneAll  = PROPS.reduce((s,p)=>s+p.areas.reduce((ss,a)=>ss+Object.values(S[p.id].checked[a.id]||{}).filter(Boolean).length,0),0);
+  document.getElementById('hq-sent').textContent  = sent+'/'+PROPS.length;
+  document.getElementById('hq-prog').textContent  = Math.round(doneAll/totalAll*100)+'%';
+  document.getElementById('hq-flags').textContent = sent;
 
-  const activePROPS=PROPS.filter(p=>!p.comingSoon);
-  const sent=activePROPS.filter(p=>S[p.id]&&S[p.id].submitted).length;
-  const totalAll=activePROPS.reduce((s,p)=>s+p.areas.reduce((ss,a)=>ss+a.items.length,0),0);
-  const doneAll=activePROPS.reduce((s,p)=>s+p.areas.reduce((ss,a)=>ss+Object.values((S[p.id]&&S[p.id].checked&&S[p.id].checked[a.id])||{}).filter(Boolean).length,0),0);
-  const flagsAll=activePROPS.reduce((s,p)=>s+p.areas.reduce((ss,a)=>ss+Object.values((S[p.id]&&S[p.id].flagged&&S[p.id].flagged[a.id])||{}).filter(Boolean).length,0),0);
-  document.getElementById('hq-sent').textContent=sent+'/'+activePROPS.length;
-  document.getElementById('hq-prog').textContent=totalAll?Math.round(doneAll/totalAll*100)+'%':'0%';
-  document.getElementById('hq-flags').textContent=flagsAll;
+  // notice prop selector
+  document.getElementById('notice-prop-select').innerHTML = PROPS.map(p=>`
+    <button class="notice-prop-btn${selectedNoticeProp===p.id?' active':''}" onclick="selectNoticeProp('${p.id}')">${p.name}</button>`).join('');
 
-  document.getElementById('hq-cards').innerHTML=activePROPS.map((p,pi)=>{
-    const ps=S[p.id]||{checked:{},flagged:{},submitted:false};
-    const total=p.areas.reduce((s,a)=>s+a.items.length,0);
-    const done=p.areas.reduce((s,a)=>s+Object.values((ps.checked&&ps.checked[a.id])||{}).filter(Boolean).length,0);
-    const flags=p.areas.reduce((s,a)=>s+Object.values((ps.flagged&&ps.flagged[a.id])||{}).filter(Boolean).length,0);
-    const pct=Math.round(done/total*100);
-    const bc=ps.submitted?'badge-done':flags>0?'badge-warn':pct>0?'badge-prog':'badge-none';
-    const bt=ps.submitted?'送信済み ✓':flags>0?`要確認 ${flags}件`:pct>0?`${pct}%`:'未着手';
-    const flagItems=[];
-    p.areas.forEach(a=>a.items.forEach((text,i)=>{ if(ps.flagged&&ps.flagged[a.id]&&ps.flagged[a.id][i]) flagItems.push({area:a.name,text}); }));
-    const hasMemo=ps.supply||ps.maint||ps.memo;
+  // existing notices list
+  const hasAny = PROPS.some(p=>notices[p.id].text);
+  document.getElementById('notice-list').innerHTML = hasAny ? PROPS.filter(p=>notices[p.id].text).map(p=>`
+    <div style="background:var(--gold-light);border:1px solid var(--border2);border-radius:var(--radius);padding:13px 14px;margin-bottom:8px;">
+      <div style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);margin-bottom:6px;">${p.name} — 特記事項</div>
+      <div style="font-size:13px;color:var(--text);font-weight:300;line-height:1.6;white-space:pre-wrap;">${notices[p.id].text}</div>
+      ${notices[p.id].replies.length?`<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);">
+        <div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">返信</div>
+        ${notices[p.id].replies.map(r=>`<div style="font-size:12px;color:var(--text2);font-weight:300;padding:4px 0;line-height:1.5;"><span style="color:var(--text3);font-size:10px;">${r.name} ${r.time}　</span>${r.text}</div>`).join('')}
+      </div>`:''}
+      <button onclick="clearNotice('${p.id}')" style="margin-top:10px;font-size:10px;color:var(--text3);background:none;border:none;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;">削除</button>
+    </div>`).join('') : '';
+
+  document.getElementById('hq-cards').innerHTML = PROPS.map((p,pi)=>{
+    const ps = S[p.id];
+    const total = p.areas.reduce((s,a)=>s+a.items.length,0);
+    const done  = p.areas.reduce((s,a)=>s+Object.values(ps.checked[a.id]||{}).filter(Boolean).length,0);
+    const pct = Math.round(done/total*100);
+    const bc = ps.submitted?'badge-done':pct>0?'badge-prog':'badge-none';
+    const bt = ps.submitted?'業務完了 ✓':pct>0?`${pct}%`:'未着手';
+    const hasMemo = ps.supply||ps.maint||ps.memo;
     return`<div class="prop-card">
       <div class="prop-card-hd" onclick="toggleHQCard(${pi})">
         <span class="prop-card-name">${p.name}</span>
-        ${ps.submitted?`<span class="sent-badge">${ps.submittedAt}　${ps.staffName||''}</span>`:''}
+        ${ps.submitted?`<span class="sent-badge">🏁 ${ps.submittedAt}　${ps.staffName||''}</span>`:''}
         <span class="badge ${bc}">${bt}</span>
         <span class="chev" id="hqchev-${pi}">▼</span>
       </div>
       <div class="prop-card-body" id="hqbody-${pi}">
         ${p.areas.map(a=>{
-          const ad=Object.values((ps.checked&&ps.checked[a.id])||{}).filter(Boolean).length;
+          const ad=Object.values(ps.checked[a.id]||{}).filter(Boolean).length;
           const at=a.items.length;
           return`<div class="area-rpt-row">
             <span class="area-rpt-name">${a.name}</span>
@@ -687,13 +780,6 @@ async function renderHQ() {
             <span class="area-rpt-pct">${ad}/${at}</span>
           </div>`;
         }).join('')}
-        ${flagItems.length?`<div class="flag-section">
-          <div class="sec-label" style="margin-top:10px">🚩 要確認</div>
-          ${flagItems.map(f=>`<div class="flag-row">
-            <span style="font-size:13px;flex-shrink:0">🚩</span>
-            <div><div class="flag-row-text">${f.text}</div><div class="flag-row-area">${f.area}</div></div>
-          </div>`).join('')}
-        </div>`:''}
         ${hasMemo?`<div class="memo-section">
           ${ps.supply?`<div class="memo-row"><span class="memo-label">補充：</span>${ps.supply}</div>`:''}
           ${ps.maint?`<div class="memo-row"><span class="memo-label">修繕：</span>${ps.maint}</div>`:''}
@@ -703,23 +789,34 @@ async function renderHQ() {
     </div>`;
   }).join('');
 }
-window.renderHQ=renderHQ;
 
-function toggleHQCard(idx){
-  document.getElementById('hqbody-'+idx).classList.toggle('open');
-  document.getElementById('hqchev-'+idx).classList.toggle('open');
+function selectNoticeProp(id){
+  selectedNoticeProp = id;
+  // restore existing text if any
+  document.getElementById('notice-txt').value = notices[id].text || '';
+  renderHQ();
 }
-window.toggleHQCard=toggleHQCard;
+function saveNotice(){
+  const txt = document.getElementById('notice-txt').value.trim();
+  notices[selectedNoticeProp].text = txt;
+  notices[selectedNoticeProp].replies = [];
+  document.getElementById('notice-txt').value = '';
+  renderHQ();
+}
+function clearNotice(propId){
+  notices[propId] = { text:'', replies:[] };
+  renderHQ();
+}
+function toggleHQCard(idx){
+  const body = document.getElementById('hqbody-'+idx);
+  const chev = document.getElementById('hqchev-'+idx);
+  body.classList.toggle('open');
+  chev.classList.toggle('open');
+}
 
-// ===== Window exports =====
-window.selectStartProp = selectStartProp;
-window.startChecklist  = startChecklist;
-window.resetStart      = resetStart;
-window.renderOverview  = renderHQ;
-
-// ===== Init =====
-document.getElementById('date-lbl').textContent=new Date().toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'});
-renderPropButtons();
+// INIT
+document.getElementById('date-lbl').textContent = new Date().toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'});
+// start screen is shown by default, no auto-render needed
 </script>
 </body>
 </html>
