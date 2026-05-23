@@ -332,9 +332,13 @@ input[type="text"]:focus, input[type="date"]:focus { border-color:var(--accent);
             <div style="font-family:var(--serif);font-size:20px;color:var(--text);font-weight:400;letter-spacing:.02em;line-height:1.3;">ご担当の施設を<br>お選びください</div>
           </div>
           <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px;">
-            <button class="start-prop-btn" onclick="selectStartProp('house')">THE HOUSE HAYAMA</button>
             <button class="start-prop-btn" onclick="selectStartProp('beach')">THE HOUSE on the beach</button>
-            <button class="start-prop-btn" onclick="selectStartProp('maison')">MAISON D:E VACANCES 葉山</button>
+            <button class="start-prop-btn" onclick="selectStartProp('hayama')">THE HOUSE 葉山</button>
+            <button class="start-prop-btn" onclick="selectStartProp('shiro')">MAISON D:E VACANCES 城ヶ島</button>
+            <button class="start-prop-btn" onclick="selectStartProp('koajiroBB')">THE HOUSE 小網代 Bed and Bath</button>
+            <button class="start-prop-btn" onclick="selectStartProp('koajiroSLS')">THE HOUSE 小網代 Shower Living Suite</button>
+            <button class="start-prop-btn" onclick="selectStartProp('koajiroPC')">THE HOUSE 小網代 Pool and Cave</button>
+            <button class="start-prop-btn" onclick="selectStartProp('moroso')">THE HOUSE 諸磯</button>
           </div>
           <div id="start-form" style="display:none;">
             <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;">
@@ -356,13 +360,15 @@ input[type="text"]:focus, input[type="date"]:focus { border-color:var(--accent);
       <div id="sscreen-check" style="display:none;">
       <div class="prop-tabs" id="prop-tabs"></div>
       <div style="background:var(--surface2);border-radius:var(--radius);padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
-        <span style="font-size:12px;color:var(--text2);flex:1;font-weight:300;letter-spacing:.02em;" id="staff-info-bar">　</span>
+        <span style="font-family:var(--serif);font-size:15px;font-weight:500;color:var(--text);flex:1;letter-spacing:.03em;" id="staff-info-bar">　</span>
         <button onclick="resetStart()" style="font-size:10px;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px 6px;letter-spacing:.08em;text-transform:uppercase;">変更</button>
       </div>
+      <!-- 現在の施設名 -->
+      <div id="current-prop-label" style="font-family:var(--serif);font-size:18px;font-weight:500;color:var(--text);letter-spacing:.04em;margin-bottom:12px;padding-left:2px;"></div>
       <div class="sub-nav">
         <button class="sub-btn active" onclick="staffNav('check')">Check</button>
         <button class="sub-btn" onclick="staffNav('issues')">Issues</button>
-        <button class="sub-btn" onclick="staffNav('submit')">Photo</button>
+        <button class="sub-btn" onclick="staffNav('submit')">Report</button>
         <button class="sub-btn" onclick="staffNav('trouble')">Trouble</button>
       </div>
 
@@ -374,6 +380,17 @@ input[type="text"]:focus, input[type="date"]:focus { border-color:var(--accent);
           <div class="prog-label" id="prog-lbl">0 / 0</div>
         </div>
         <div id="check-items"></div>
+        <div id="check-submit-wrap" style="display:none;margin-top:16px;">
+          <div style="height:1px;background:var(--border);margin-bottom:16px;"></div>
+          <button class="submit-btn" id="check-submit-btn" onclick="goToReport()">本部へ清掃完了報告 →</button>
+          <p style="text-align:center;font-size:12px;color:var(--text3);margin-top:10px;letter-spacing:.04em;">📷 写真はメッセンジャーに報告ください。</p>
+          <div id="check-done-wrap" style="display:none;margin-top:10px;">
+            <div style="background:var(--accent-light);border:1px solid var(--accent);border-radius:var(--radius);padding:20px 16px;text-align:center;">
+              <div style="font-family:var(--serif);font-size:32px;color:var(--accent);margin-bottom:8px;">✓</div>
+              <div style="font-family:var(--serif);font-size:15px;font-weight:500;color:var(--accent-text);letter-spacing:.04em;" id="check-done-msg"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- ISSUES PAGE -->
@@ -384,8 +401,6 @@ input[type="text"]:focus, input[type="date"]:focus { border-color:var(--accent);
       <!-- SUBMIT PAGE -->
       <div id="spage-submit" style="display:none;">
         <div class="submit-notice" id="submit-notice"></div>
-        <div class="sec-label">📷 写真撮影チェック</div>
-        <div class="photo-grid" id="photo-grid"></div>
         <div class="sec-label">補充が必要なもの</div>
         <textarea class="txt-area" id="supply-txt" rows="2" placeholder="例：ティッシュ、アメニティ"></textarea>
         <div class="sec-label">修繕・メンテナンス報告</div>
@@ -393,12 +408,11 @@ input[type="text"]:focus, input[type="date"]:focus { border-color:var(--accent);
         <div class="sec-label">その他メモ</div>
         <textarea class="txt-area" id="memo-txt" rows="2" placeholder="自由記入"></textarea>
         <button class="submit-btn" id="submit-btn" onclick="submitReport()">本部へ清掃完了報告</button>
-        <p style="text-align:center;font-size:12px;color:var(--text3);margin-top:12px;letter-spacing:.04em;">写真はメッセンジャーに報告ください。</p>
+        <p style="text-align:center;font-size:12px;color:var(--text3);margin-top:10px;letter-spacing:.04em;">📷 写真はメッセンジャーに報告ください。</p>
         <div id="finish-done-wrap" style="display:none;margin-top:10px;">
           <div style="background:var(--accent-light);border:1px solid var(--accent);border-radius:var(--radius);padding:20px 16px;text-align:center;">
-            <div style="font-family:var(--serif);font-size:28px;color:var(--accent);margin-bottom:8px;">✓</div>
-            <div style="font-family:var(--serif);font-size:16px;font-weight:500;color:var(--accent-text);letter-spacing:.04em;" id="finish-done-msg"></div>
-            <div style="font-size:11px;color:var(--text2);margin-top:6px;letter-spacing:.06em;text-transform:uppercase;">本部に報告されました</div>
+            <div style="font-family:var(--serif);font-size:32px;color:var(--accent);margin-bottom:8px;">✓</div>
+            <div style="font-family:var(--serif);font-size:15px;font-weight:500;color:var(--accent-text);letter-spacing:.04em;" id="finish-done-msg"></div>
           </div>
         </div>
       </div>
@@ -409,8 +423,6 @@ input[type="text"]:focus, input[type="date"]:focus { border-color:var(--accent);
         <div class="sec-label" style="margin-top:14px">📞 緊急連絡先</div>
         <div class="contact-row"><span class="contact-icon">🔥</span><span class="contact-name">ガス — 岡田さん</span><span class="contact-tel">090-5527-5352</span></div>
         <div class="contact-row"><span class="contact-icon">⚡</span><span class="contact-name">電気 — 大幸さん</span><span class="contact-tel">090-3224-2084</span></div>
-        <div class="contact-row"><span class="contact-icon">💧</span><span class="contact-name">水道小 — クラシアン横須賀</span><span class="contact-tel">0120-500-500</span></div>
-        <div class="contact-row"><span class="contact-icon">🔧</span><span class="contact-name">水道大 — 榎本マー君（夜のみ）</span><span class="contact-tel">080-5544-8114</span></div>
         <div class="contact-row"><span class="contact-icon">✨</span><span class="contact-name">クリーニング — 宮崎さん</span><span class="contact-tel"></span></div>
         <div class="contact-row"><span class="contact-icon">❄️</span><span class="contact-name">エアコン — ダイキン</span><span class="contact-tel">0120-881-081</span></div>
       </div>
@@ -444,59 +456,7 @@ input[type="text"]:focus, input[type="date"]:focus { border-color:var(--accent);
 </div><!-- /app -->
 
 <script>
-const PROPS = [
-  {
-    id:'house', name:'THE HOUSE',
-    notice:'※私物・ペットボトルはテラスに置く。\nチェックイン説明：内鍵必須。エアコンリモコン・ジャグジー・電子レンジは同時使用不可。ジャグジーヒーターは使用時のみ。',
-    photos:['トイレ','キッチン','お風呂場','冷蔵庫','電子レンジ','アメニティ設置','テラス'],
-    areas:[
-      {id:'ht',name:'テラス',items:['ジャグジーの清掃（水滴もとる）','テラスのゴミ、タバコの吸殻','損傷はないか？','お湯は出るか？','溝や隙間、建物の横にゴミは落ちていないか？']},
-      {id:'hk',name:'キッチン＆LDK',items:['シンクの清掃（水滴もとる）','新しいスポンジ、ミニタオルの設置','エスプレッソマシン掃除・豆と水補充','お皿、フォークなどの汚れの確認','電子レンジ、トースターの汚れの確認','冷蔵庫の確認（水配置）','冷凍庫の確認（氷は綺麗であればそのまま）','ゴミ箱関連（見た目も綺麗に）','キッチンの上の棚と下の引き出しも汚れていないか？','ダイニング＆リビング全体の清掃（ソファーの下にゴミはないか？）','テーブルに指紋などはついてないか？','窓のところにゴミやホコリはないか？','ソファーなどにホコリやチリがあれば、コロコロで']},
-      {id:'hto',name:'トイレ',items:['便器のみならず水のところ、ペーパーホルダーもふく','カラータオルを置いたか？','予備のトイレットペーパーは2つあるか？汚物入れの掃除はしたか？']},
-      {id:'hb',name:'2階ベッドルーム',items:['匂いはないか？（枕カバー、毛布）','犬の毛やホコリ、髪の毛はないか？','クッションの下などにもゴミはないか？','各種棚などにホコリはないか？','カーテンレールが外れてないか？']},
-      {id:'ha',name:'お風呂＆アメニティ',items:['お風呂は水滴をとったか？床や壁に髪の毛はついていないか？','アメニティーは人数分あるか？バスマットは二つ用意しているか？','洗面台など鏡は汚れてないか？歯磨き粉などくっついてないか？','お湯は出ているか？']},
-      {id:'ho',name:'その他',items:['倉庫など整理整頓されているか？','キャンドルの電池は入っているか？','電球は切れていないか？','ティッシュは半分以上は入っているか？','ゴミ箱にゴミは残っていないか？（最後確認）','駐車場側のゴミも目立つものは掃除すること']}
-    ],
-    troubles:[
-      {title:'ブレーカーが落ちた',steps:['電気のブレーカーを確認','ブレーカーを復活させる','復活を確認']},
-      {title:'お風呂のお湯が出ない',steps:['電気のブレーカーを確認','ガスの安全装置を確認','給湯ボタンを確認（お風呂と2階キッチン）']}
-    ]
-  },
-  {
-    id:'beach', name:'ON THE BEACH',
-    notice:'※私物・ペットボトルは中庭か3階入口に置く。\nチェックイン説明：暖炉・ジャグジーのヒーターは使用時のみ。\nセルフチェックイン時：室内の明かりをつけ、エアコンを調整。雨の場合は入口にバスタオルを1つ置く。',
-    photos:['トイレ','キッチン','お風呂場','冷蔵庫','電子レンジ','アメニティ設置','テラス'],
-    areas:[
-      {id:'bt',name:'テラス',items:['ジャグジーの清掃（水滴もとる）','テラスが水で濡れてないか？汚れはひどくないか？','どこか損傷はないか？','お湯は出るか？','ラグやクッションが汚れたり、濡れていないか？','溝や隙間、建物の横にゴミは落ちていないか？']},
-      {id:'bk',name:'キッチン＆居室',items:['シンクの清掃（水滴もとる）','新しいスポンジ、タオルの設置','家電製品掃除・豆、紅茶など補充','お皿、フォークなどの汚れの確認','電子レンジ、トースターの汚れの確認','冷蔵庫の確認（水配置＆新品か必ず確認）','冷凍庫の確認（氷は綺麗であればそのまま）アイスクリームなどないか？','ゴミ箱関連（見た目も綺麗に）','キッチンの棚やテーブルは汚れてないか？','ダイニング＆リビング全体の清掃（ソファーの下にゴミはないか？）','窓のところにゴミやホコリはないか？','ソファーなどにホコリやチリがあれば、コロコロで','プフやクッションなどに汚れはないか？']},
-      {id:'bto',name:'トイレ',items:['便器のみならず水のところもふく','カラータオルを置いたか？','予備のトイレットペーパーは2つあるか？汚物入れの掃除はしたか？','洗面所は水をふいてあるか？','最後にトイレクイックルは流したか？']},
-      {id:'bb',name:'ベッドルーム',items:['匂いはないか？（枕カバー、毛布）','犬の毛やホコリ、髪の毛はないか？ラグは汚れてないか？','クッションの下などにもゴミはないか？','ベッドの下にゴミは落ちていないか？','各種棚などにホコリはないか？','窓ガラスは汚れてないか？']},
-      {id:'ba',name:'お風呂＆アメニティ',items:['お風呂や床は水滴をとったか？髪の毛が床や壁についていないか？','アメニティーは人数分あるか？バスマットは二つ用意しているか？','洗面台など鏡は汚れてないか？歯磨き粉などくっついてないか？','お湯は出ているか？']},
-      {id:'bo',name:'その他',items:['倉庫など鍵を閉めたか？','キャンドルの電池は入っているか？','電球は切れていないか？','ティッシュは半分以上は入っているか？','ゴミ箱にゴミは残っていないか？（最後確認）','駐車場、中庭のゴミはないか？']}
-    ],
-    troubles:[
-      {title:'ブレーカーが落ちた',steps:['電気のブレーカーを確認','ブレーカーを復活させる','復活を確認']},
-      {title:'お風呂のお湯が出ない',steps:['電気のブレーカーを確認','ガスの安全装置を確認','給湯ボタンを確認（お風呂のみ）']}
-    ]
-  },
-  {
-    id:'maison', name:'MAISON HAYAMA',
-    notice:'※私物・ペットボトルはテラスに置く。\nチェックイン説明：内鍵必須。\nセルフチェックイン時：室内の明かりをつけ、エアコンを調整。雨の場合は入口にバスタオルを1つ置く。',
-    photos:['トイレ','キッチン','お風呂場','冷蔵庫','電子レンジ','アメニティ設置','テラス'],
-    areas:[
-      {id:'mt',name:'テラス',items:['ミニプールの清掃（水滴もとる）','テラスのゴミ、タバコの吸殻','損傷はないか？','お湯は出るか？','溝や隙間、建物の横にゴミは落ちていないか？','テーブルや家具の清掃']},
-      {id:'mk',name:'キッチン＆LDK',items:['シンクの清掃（水滴もとる）','新しいスポンジ、ミニタオルの設置','コーヒーメーカー、ケトル掃除・豆と水補充','お皿、フォークなどの汚れの確認','電子レンジの汚れの確認','冷蔵庫の確認（水配置）','冷凍庫の確認（氷は綺麗であればそのまま）','ゴミ箱関連（見た目も綺麗に）','キッチンの上の棚と下の引き出しも汚れていないか？','ソーダストリームの炭酸はまだあるか？予備一本','コンポストは稼働しているか？','ダイニング＆リビング全体の清掃（ソファーの下にゴミはないか？）','テーブルに指紋などはついてないか？','窓のところにゴミやホコリはないか？','ソファーなどにホコリやチリがあれば、コロコロで']},
-      {id:'mto',name:'トイレ',items:['便器のみならず水のところ、ペーパーホルダーもふく','カラータオルを置いたか？','予備のトイレットペーパーは2つあるか？汚物入れの掃除はしたか？']},
-      {id:'mb',name:'2階ベッドルーム',items:['匂いはないか？（枕カバー、毛布）','ホコリ、髪の毛はないか？','クッションの下などにもゴミはないか？','各種棚などにホコリはないか？','テレビなどの埃は積もってないか？窓のさんも']},
-      {id:'ma',name:'お風呂＆アメニティ',items:['お風呂は水滴をとったか？床や壁に髪の毛はついていないか？','アメニティーは人数分あるか？バスマットは用意しているか？','洗面台など鏡は汚れてないか？歯磨き粉などくっついてないか？','お湯は出ているか？']},
-      {id:'mo',name:'その他',items:['倉庫など整理整頓されているか？','キャンドルの電池は入っているか？','電球は切れていないか？','ティッシュは半分以上は入っているか？','ゴミ箱にゴミは残っていないか？（最後確認）','玄関前は汚れてないか？','駐車場側のゴミも目立つものは掃除すること']}
-    ],
-    troubles:[
-      {title:'ブレーカーが落ちた',steps:['電気のブレーカーを確認','ブレーカーを復活させる','復活を確認']},
-      {title:'お風呂のお湯が出ない',steps:['電気のブレーカーを確認','ガスの安全装置を確認','給湯ボタンを確認']}
-    ]
-  }
-];
+const PROPS = [{"id":"beach","name":"THE HOUSE on the beach","areas":[{"id":"beach_0","name":"全体 / はじめにチェック","items":[{"t":"照明は切れていないか","r":true,"p":false,"o":false},{"t":"エアコン作動チェック","r":true,"p":false,"o":false},{"t":"給湯器作動チェック","r":true,"p":false,"o":false},{"t":"プロジェクターチェック","r":true,"p":false,"o":false},{"t":"バスルームのカビチェック（あればキッチンハイターをかけておく）","r":true,"p":true,"o":false}]},{"id":"beach_1","name":"駐車場 / 中庭","items":[{"t":"門や門の鍵など破損はないか、ゴミが飛んできてないか","r":false,"p":false,"o":false},{"t":"ターポリンの結束バンドが外れていないか","r":false,"p":false,"o":false},{"t":"中庭倉庫内整頓されているか","r":false,"p":false,"o":false},{"t":"中庭にゴミ、落ち葉はないか","r":false,"p":false,"o":false},{"t":"定期的に草むしり","r":false,"p":false,"o":false}]},{"id":"beach_2","name":"テラス・ビューバス","items":[{"t":"破損はないか、ゴミが飛んできてないか","r":false,"p":false,"o":false},{"t":"ジャグジーは洗って水滴拭き取ってあるか","r":false,"p":true,"o":false},{"t":"ジャグジーのお湯が出るか","r":false,"p":false,"o":false},{"t":"ジャグジー栓の確認","r":false,"p":false,"o":false},{"t":"ジャグジーは動くか？","r":false,"p":false,"o":false},{"t":"BBQコンロは綺麗か","r":false,"p":false,"o":false},{"t":"窓は綺麗か、網戸に破損はないか","r":false,"p":false,"o":false},{"t":"ジャグジーの裏にゴミは落ちていないか？（あまりにも汚かったら水で流すなども）","r":false,"p":false,"o":false}]},{"id":"beach_3","name":"1F ビューティルーム / ソファスペース / ベッドスペース","items":[{"t":"テーブルの上のものをどかして拭き掃除はしたか？","r":false,"p":false,"o":false},{"t":"ドライヤーは綺麗にしまってあるか（コードを綺麗に巻いておく）","r":false,"p":false,"o":false},{"t":"綿棒、コットンの残量確認と補充","r":false,"p":false,"o":false},{"t":"オブジェは綺麗においてあるか","r":false,"p":false,"o":false},{"t":"ゴミ箱は空で綺麗か、袋がかかっているか","r":false,"p":false,"o":false},{"t":"クッションは揃っているか、ソファは綺麗か、後ろにものは落ちてないか？","r":false,"p":false,"o":false},{"t":"花瓶の水換え","r":false,"p":false,"o":false},{"t":"灯油は補充されているか（冬季）","r":false,"p":false,"o":true},{"t":"ベッドのクッションは汚れていないか？","r":false,"p":false,"o":false},{"t":"ベッドのブランケットに髪の毛や犬の毛はついてないか？","r":false,"p":false,"o":false}]},{"id":"beach_4","name":"バスルーム・洗面所","items":[{"t":"バスタブ、床の水は拭き取ってあるか","r":false,"p":false,"o":false},{"t":"排水溝は綺麗か、髪の毛がないか","r":false,"p":false,"o":false},{"t":"シャワー、蛇口は綺麗に磨かれているか","r":false,"p":false,"o":false},{"t":"バスルームのガラス、鏡は磨かれているか（鏡の歯磨き粉飛びチェック）","r":false,"p":false,"o":false},{"t":"シャンプー、コンディショナー、ボディソープ、ハンドソープ、ボディローション残量確認と補充","r":false,"p":false,"o":false},{"t":"タオル、バスマット、歯ブラシ、歯磨き粉は人数分用意されているか","r":false,"p":false,"o":false},{"t":"洗面台周りは綺麗か","r":false,"p":true,"o":false},{"t":"壁のカビはないか（あれば必ずカビキラーかキッチンハイター）","r":false,"p":true,"o":false}]},{"id":"beach_5","name":"キッチン & カウンター","items":[{"t":"シンク内、蛇口は綺麗か","r":false,"p":true,"o":false},{"t":"排水溝の中綺麗か、ネットをかけてあるか","r":false,"p":false,"o":false},{"t":"コーヒー豆、紅茶、砂糖、岩塩、ブラックペッパー、しょうゆの残量確認・補充","r":true,"p":false,"o":false},{"t":"冷蔵庫の中身確認、綺麗か（野菜の破片やソース汚れは一切NG）","r":true,"p":true,"o":false},{"t":"トースター、電子レンジ、コーヒーメーカーはきれいか","r":false,"p":false,"o":false},{"t":"炊飯器、ホットプレート、IHは綺麗か","r":false,"p":false,"o":false},{"t":"ケトル内に水は残ってないか","r":false,"p":false,"o":false},{"t":"スポンジ、タオルは新しいものがセットしてあるか","r":false,"p":false,"o":false},{"t":"食器用洗剤、ハンドソープ、アルコールスプレー、キッチンペーパーの残量確認・補充","r":false,"p":false,"o":false},{"t":"ゴミ箱は空でゴミ袋かけてあるか、ゴミ箱本体・後ろは綺麗か","r":false,"p":false,"o":false},{"t":"食器棚内、カトラリー引き出し、調理器具棚の中は整っているか","r":false,"p":false,"o":false},{"t":"BBQ使用時のクーラーボックスやプラボックスはきれいか","r":false,"p":false,"o":true},{"t":"カウンター、椅子は綺麗か","r":false,"p":false,"o":false},{"t":"ホットプレートはちゃんと熱くなるか？","r":false,"p":false,"o":false}]},{"id":"beach_6","name":"トイレ","items":[{"t":"便器、手洗いスペース、床が綺麗か","r":false,"p":true,"o":false},{"t":"トイレットペーパーの量は適切か（2/3以下は取り替える）","r":false,"p":false,"o":false},{"t":"サニタリー入れは綺麗か、ゴミ袋がかかっているか","r":false,"p":false,"o":false},{"t":"タオル、マットがセットされているか","r":false,"p":false,"o":false},{"t":"洗面スペースは綺麗か（鏡に石鹸飛びが残ってないか？）","r":false,"p":false,"o":false},{"t":"ゴミ箱は空で綺麗か、袋がかかっているか","r":false,"p":false,"o":false}]},{"id":"beach_7","name":"2階 ベッドスペース・その他","items":[{"t":"ベッドのクッションは汚れていないか？","r":false,"p":false,"o":false},{"t":"ベッドのブランケットに髪の毛や犬の毛はついてないか？","r":false,"p":false,"o":false},{"t":"窓は綺麗か、窓の下部分に埃や虫の死骸がないか","r":false,"p":false,"o":false},{"t":"iPad、スピーカー、プロジェクターなどは整頓されているか、充電はあるか","r":false,"p":false,"o":false},{"t":"プロジェクターとiPad確認、各種アプリのログアウトは確認しているか","r":false,"p":false,"o":false},{"t":"ソファーの隙間に物が落ちていないか、移動して清掃したか？","r":true,"p":false,"o":false},{"t":"7名以上の場合、エキストラベットの準備はしてあるか","r":false,"p":false,"o":true},{"t":"花瓶の水換え","r":false,"p":false,"o":false},{"t":"吹き抜け部分のガラスは綺麗か","r":false,"p":false,"o":false},{"t":"通路側のベッドの横のチェストの上に埃はかぶってないか？","r":false,"p":false,"o":false}]},{"id":"beach_8","name":"階段","items":[{"t":"髪の毛、埃、ゴミなど落ちてないか","r":false,"p":false,"o":false},{"t":"ガラス部分は綺麗か","r":false,"p":false,"o":false}]},{"id":"beach_9","name":"玄関","items":[{"t":"玄関マットは綺麗か","r":false,"p":false,"o":false},{"t":"人数分のスリッパが用意されているか","r":false,"p":false,"o":false},{"t":"入り口チェスト内に予備のタオル、アメニティが適切な量用意されているか","r":false,"p":false,"o":false}]},{"id":"beach_10","name":"全体 / 仕上げ","items":[{"t":"窓ガラスは綺麗か","r":false,"p":false,"o":false},{"t":"高いところに埃、蜘蛛の巣などないか","r":false,"p":false,"o":false},{"t":"オブジェなどに埃がかぶってないか？","r":false,"p":false,"o":false},{"t":"Wi-Fi、Bluetoothは正常か","r":false,"p":false,"o":false},{"t":"ティッシュペーパーの残量確認","r":false,"p":false,"o":false},{"t":"オプション（わんちゃん、BBQなど）がある場合用意してあるか","r":false,"p":false,"o":false},{"t":"フロアにゴミ、髪の毛、埃が落ちていないか","r":false,"p":false,"o":false},{"t":"コロコロ（ラグ、ソファ、ベッド）","r":false,"p":false,"o":false},{"t":"殺虫剤はしっかり残量があるか？","r":false,"p":false,"o":false},{"t":"マニュアルは適材適所に設置してあるか？","r":false,"p":false,"o":false},{"t":"ファブリックスプレーはしたか？","r":false,"p":false,"o":false}]},{"id":"beach_11","name":"オプション","items":[{"t":"BBQセットは揃っているか？着火確認したか？","r":true,"p":false,"o":true},{"t":"BBQや朝食の説明書はつけたか？","r":true,"p":true,"o":true},{"t":"ペットの用意（エサ入れ、トイレ、セットボックス、ワンバーグ、注意書き）","r":true,"p":true,"o":true},{"t":"毎週金曜日：排水溝パイプスルー実施（水回り全て）週に1回","r":false,"p":false,"o":true},{"t":"エアコンのフィルター掃除","r":false,"p":false,"o":true},{"t":"額入れサービス、花、ケーキなど漏れはないか？","r":true,"p":true,"o":false}]},{"id":"beach_12","name":"最後のチェック","items":[{"t":"厳しい目線のお客さんの気持ちでチェックしましたか？","r":false,"p":false,"o":false},{"t":"写真は撮影しましたか？（写真はメッセンジャーに投稿ください）","r":false,"p":false,"o":false},{"t":"倉庫内整理整頓できているか？お客さんが見て問題ないレベルか？鍵はしてあるか？","r":false,"p":false,"o":false}]}]},{"id":"hayama","name":"THE HOUSE 葉山","areas":[{"id":"hayama_0","name":"全体 / はじめにチェック","items":[{"t":"照明は切れていないか","r":true,"p":false,"o":false},{"t":"エアコン作動チェック","r":true,"p":false,"o":false},{"t":"給湯器作動チェック","r":true,"p":false,"o":false},{"t":"プロジェクターチェック","r":true,"p":false,"o":false},{"t":"バスルームのカビチェック（あればキッチンハイターをかけておく）","r":true,"p":true,"o":false}]},{"id":"hayama_1","name":"駐車場","items":[{"t":"外壁、扉など破損はないか、ゴミが飛んできてないか","r":false,"p":false,"o":false},{"t":"ポストの郵便物移動（定期的にOTBポストへ移動）","r":false,"p":false,"o":true},{"t":"倉庫内整理整頓できているか？お客さんが見て問題ないレベルか？","r":false,"p":false,"o":false}]},{"id":"hayama_2","name":"テラス・ビューバス","items":[{"t":"破損はないか、ゴミが飛んできてないか","r":false,"p":false,"o":false},{"t":"ビューバスは洗って水滴拭き取ってあるか","r":false,"p":true,"o":false},{"t":"ビューバスのお湯が出るか","r":false,"p":false,"o":false},{"t":"ビューバス栓の確認","r":false,"p":false,"o":false},{"t":"玄関照明、ビューバスのライトが点くか","r":false,"p":false,"o":false},{"t":"BBQグッズ（コンロ、テーブルなど）は綺麗に仕舞われているか","r":false,"p":false,"o":false},{"t":"蛇腹窓は綺麗か、サンはきれいか","r":true,"p":false,"o":false}]},{"id":"hayama_3","name":"リビング・ダイニング","items":[{"t":"ダイニングテーブル、ローテーブルに指紋手垢などないか","r":false,"p":false,"o":false},{"t":"窓のサンはきれいか（虫の死骸など注意）","r":true,"p":true,"o":false},{"t":"エアコンのリモコンはあるか","r":false,"p":false,"o":false},{"t":"花瓶の水換え","r":false,"p":false,"o":false},{"t":"雨天時・雨天予報時の雨漏り対策（バスマットやバスタオルを予備で入り口に置いておく）","r":true,"p":false,"o":true},{"t":"スリッパは人数分用意してあるか","r":false,"p":false,"o":false}]},{"id":"hayama_4","name":"キッチン","items":[{"t":"シンク内、蛇口は綺麗か","r":false,"p":true,"o":false},{"t":"排水溝の中綺麗か、ネットをかけてあるか","r":false,"p":false,"o":false},{"t":"コーヒー豆、紅茶、砂糖、岩塩、ブラックペッパー、しょうゆの残量確認・補充","r":true,"p":false,"o":false},{"t":"冷蔵庫の中身確認、綺麗か（細かいチリやソースのこびりつきはNG）","r":true,"p":false,"o":false},{"t":"トースター、電子レンジ、コーヒーメーカーはきれいか","r":true,"p":false,"o":false},{"t":"炊飯器、ホットプレート、IHは綺麗か、延長コードがあるか","r":false,"p":false,"o":false},{"t":"ケトル内に水は残ってないか","r":false,"p":false,"o":false},{"t":"スポンジ、タオルは新しいものがセットしてあるか","r":false,"p":false,"o":false},{"t":"食器用洗剤、ハンドソープ、アルコールスプレー、キッチンペーパーの残量確認・補充","r":false,"p":false,"o":false},{"t":"ゴミ箱は空でゴミ袋かけてあるか、ゴミ箱本体は綺麗か","r":false,"p":false,"o":false},{"t":"食器棚内、シンク下、カトラリー引き出しの中は整っているか","r":false,"p":false,"o":false}]},{"id":"hayama_5","name":"トイレ","items":[{"t":"便器、手洗いスペース、床が綺麗か","r":false,"p":true,"o":false},{"t":"トイレットペーパーの量は適切か","r":false,"p":false,"o":false},{"t":"サニタリー入れは綺麗か、ゴミ袋がかかっているか","r":false,"p":false,"o":false},{"t":"タオル、マットがセットされているか","r":false,"p":false,"o":false},{"t":"扉はスムーズに開くか（引っかかるようならシリコンスプレー）","r":false,"p":false,"o":false}]},{"id":"hayama_6","name":"階段","items":[{"t":"髪の毛、埃、ゴミなど落ちてないか","r":false,"p":false,"o":false}]},{"id":"hayama_7","name":"ベッドルーム","items":[{"t":"ベッドのクッションは汚れていないか？","r":false,"p":false,"o":false},{"t":"ベッドのブランケットに髪の毛や犬の毛はついてないか？","r":false,"p":false,"o":false},{"t":"カーテン下、窓のサンは綺麗か","r":false,"p":false,"o":false},{"t":"チェストの上、オブジェに埃はないか","r":false,"p":false,"o":false},{"t":"チェスト内に予備のアメニティは適切な量セットしてあるか","r":false,"p":false,"o":false},{"t":"エアコンのリモコンはあるか","r":false,"p":false,"o":false},{"t":"ベッドサイドのiPad、スピーカー、プロジェクターなどは整頓されているか、充電はあるか","r":false,"p":false,"o":false},{"t":"プロジェクター、iPad確認、各種アプリのログアウトは確認しているか","r":false,"p":false,"o":false},{"t":"LEDキャンドルの電池確認","r":false,"p":false,"o":false},{"t":"3名以上の場合、エキストラのマットレスや寝具は用意してあるか","r":false,"p":false,"o":true},{"t":"加湿器に水は補充されているか（冬季限定）","r":false,"p":false,"o":true}]},{"id":"hayama_8","name":"バスルーム・洗面所","items":[{"t":"バスタブ、床の水は拭き取ってあるか","r":false,"p":false,"o":false},{"t":"排水溝は綺麗か、髪の毛がないか","r":false,"p":false,"o":false},{"t":"シャワー、蛇口は綺麗に磨かれているか","r":false,"p":false,"o":false},{"t":"バスルームのガラスは磨かれているか","r":false,"p":false,"o":false},{"t":"シャンプー、コンディショナー、ボディソープ、ハンドソープ、ボディローション残量確認と補充","r":false,"p":false,"o":false},{"t":"綿棒、コットン、歯磨き粉の残量確認と補充","r":false,"p":true,"o":false},{"t":"タオル、バスマットは人数分用意されているか","r":false,"p":false,"o":false},{"t":"歯ブラシ、コップは人数分用意されているか","r":false,"p":false,"o":false},{"t":"ゴミ箱は空で綺麗か、袋がかかっているか","r":false,"p":false,"o":false},{"t":"チェスト引き出しにドライヤー、マッサージチェアの説明書は整頓されて入っているか","r":false,"p":false,"o":false},{"t":"洗面台の鏡は綺麗か（歯磨き粉などが飛んでないか？）","r":false,"p":false,"o":false},{"t":"ホットプレートはちゃんと熱くなるか？","r":false,"p":false,"o":false}]},{"id":"hayama_9","name":"全体 / 仕上げ","items":[{"t":"窓ガラスは綺麗か","r":false,"p":false,"o":false},{"t":"高いところに埃、蜘蛛の巣などないか（絶対NG）","r":false,"p":false,"o":false},{"t":"オブジェなどに埃がかぶってないか？","r":false,"p":false,"o":false},{"t":"Wi-Fi、Bluetoothは正常か","r":false,"p":false,"o":false},{"t":"ティッシュペーパーの残量確認","r":false,"p":false,"o":false},{"t":"オプション（わんちゃん、BBQなど）がある場合用意してあるか","r":false,"p":false,"o":true},{"t":"フロアにゴミ、髪の毛、埃が落ちていないか","r":false,"p":false,"o":false},{"t":"コロコロ（ラグ、ソファ、ベッド）","r":false,"p":false,"o":false},{"t":"殺虫剤はしっかり残量があるか？","r":false,"p":false,"o":false},{"t":"マニュアルは適材適所に設置してあるか？","r":false,"p":false,"o":false},{"t":"ファブリックスプレーはしたか？","r":false,"p":false,"o":false}]},{"id":"hayama_10","name":"オプション","items":[{"t":"BBQセットは揃っているか？着火確認したか？","r":true,"p":true,"o":true},{"t":"BBQや朝食の説明書はつけたか？","r":true,"p":true,"o":true},{"t":"ペットの用意（エサ入れ、トイレ、セットボックス、ワンバーグ、注意書き）","r":true,"p":false,"o":true},{"t":"毎週金曜日：排水溝パイプスルー実施（水回り全て）週に1回","r":false,"p":false,"o":true},{"t":"エアコンのフィルター掃除","r":false,"p":false,"o":true},{"t":"額入れサービス、花、ケーキなど漏れはないか？","r":true,"p":true,"o":true}]},{"id":"hayama_11","name":"最後のチェック","items":[{"t":"厳しい目線のお客さんの気持ちでチェックしましたか？","r":false,"p":false,"o":false},{"t":"写真は撮影しましたか？（写真はメッセンジャーに投稿ください）","r":false,"p":false,"o":false},{"t":"倉庫内整理整頓できているか？お客さんが見て問題ないレベルか？鍵はしてあるか？","r":false,"p":false,"o":false}]}]},{"id":"shiro","name":"MAISON D:E VACANCES 城ヶ島","areas":[{"id":"shiro_0","name":"全体 / はじめにチェック","items":[{"t":"照明は切れていないか","r":true,"p":false,"o":false},{"t":"エアコン作動チェック","r":true,"p":false,"o":false},{"t":"給湯器作動チェック","r":true,"p":false,"o":false},{"t":"プロジェクターチェック","r":true,"p":false,"o":false},{"t":"バスルームのカビチェック（あればキッチンハイターをかけておく）","r":true,"p":false,"o":false}]},{"id":"shiro_1","name":"駐車場 & 中庭","items":[{"t":"外壁、扉など破損はないか、ゴミが飛んできてないか","r":false,"p":false,"o":false},{"t":"ポストの郵便物移動（定期的に小網代へ移動）","r":false,"p":false,"o":false},{"t":"玄関、テラス、ジャグジー周りは汚れなく水拭きされているか？","r":false,"p":true,"o":false},{"t":"ドアなどの破損、鍵などの締り具合は大丈夫か？","r":false,"p":false,"o":false},{"t":"テラス：落ち葉や汚れはないか？（汚れていたら高圧洗浄機を利用）ハトの糞がないように","r":true,"p":false,"o":false},{"t":"ジャグジーは故障はないか？","r":false,"p":false,"o":false},{"t":"BBQコンロ（ガスOFF確認）、テーブル、椅子に汚れはないか？","r":true,"p":false,"o":true},{"t":"屋外キッチンはきれいか？ゴミなど落ちていないか？","r":false,"p":false,"o":false},{"t":"倉庫内整理整頓できているか？お客さんが見て問題ないレベルか？","r":false,"p":false,"o":false}]},{"id":"shiro_2","name":"2F リビング・ダイニング","items":[{"t":"ゴミ、髪の毛、ほこりは落ちてないか？サッシのサンはきれいか？","r":false,"p":false,"o":false},{"t":"プロジェクターはログアウトしてあるか？正常に稼働するか？","r":false,"p":false,"o":false},{"t":"椅子はきれいか？（椅子の裏も確認）テーブルはきれいか？","r":false,"p":false,"o":false},{"t":"ソファーの下に埃やお菓子のくずなどはないか？","r":false,"p":false,"o":false},{"t":"テーブルの上はきれいか？","r":false,"p":false,"o":false},{"t":"カーテンなどに埃はついていないか？","r":false,"p":false,"o":false},{"t":"ベランダは汚れていないか？","r":false,"p":false,"o":false}]},{"id":"shiro_3","name":"2F キッチン","items":[{"t":"シンク内・蛇口は拭き取ってあるか？","r":false,"p":true,"o":false},{"t":"食器棚・引き出しの中は綺麗に整頓されているか？","r":true,"p":false,"o":false},{"t":"ステンレスに手垢はついていないか？","r":true,"p":false,"o":false},{"t":"コーヒーメーカーのゴミは捨てて、綺麗に洗ってあるか？","r":true,"p":false,"o":false},{"t":"コーヒーの粉、紅茶、砂糖、塩、コショウ、オリーブオイル、しょうゆの補充","r":true,"p":false,"o":false},{"t":"冷蔵庫の中身は無くなっているか？氷は残っていないか？写メを取り報告","r":true,"p":true,"o":false},{"t":"オーブンレンジ、魚焼きグリルの清掃はしてあるか？（中もしっかり確認・写メ報告）","r":true,"p":false,"o":false},{"t":"ケトルの水、ブリタの水は捨てて拭き取ってあるか？","r":false,"p":false,"o":false},{"t":"スポンジは新しいものに変えてあるか？ストッキングはかけてあるか？","r":false,"p":false,"o":false},{"t":"洗剤・ハンドソープ・アルコールの残量はしっかりあるか？","r":false,"p":false,"o":false},{"t":"ゴミ箱の中は空でゴミ袋がかけてあるか？ゴミ箱自体はきれいか？","r":false,"p":false,"o":false},{"t":"食器、鍋類、グラスなどに汚れや指紋、口紅はついていないか？","r":false,"p":false,"o":false},{"t":"新しいタオル、ペーパータオルは用意されているか？","r":false,"p":false,"o":false},{"t":"キッチン上の換気扇に埃はないか？","r":false,"p":false,"o":false},{"t":"キッチン上の照明に埃はないか？","r":false,"p":false,"o":false},{"t":"ホットプレートはちゃんと熱くなるか？","r":false,"p":false,"o":false}]},{"id":"shiro_4","name":"トイレ 2箇所","items":[{"t":"便器、床、洗面台・蛇口はきれいか？","r":false,"p":true,"o":false},{"t":"トイレットペーパーの残量確認（1/3以上）。予備はトイレ内にあるか？","r":false,"p":false,"o":false},{"t":"ハンドタオルはかけたか？","r":false,"p":false,"o":false},{"t":"ゴミ箱、サニタリーボックスは綺麗か？","r":false,"p":false,"o":false}]},{"id":"shiro_5","name":"バスルーム","items":[{"t":"バスタブや床の水は拭き取ってあるか？","r":false,"p":true,"o":false},{"t":"ガラス・ガラス窓も拭いてあるか？","r":false,"p":false,"o":false},{"t":"正しい位置にものは置かれているか？（タオル・アメニティ・足拭きマット）","r":false,"p":true,"o":false},{"t":"シャンプー、コンディショナー、ボディソープは補充・拭いて並べてあるか？","r":false,"p":false,"o":false},{"t":"ドライヤーはきれいに置いてあるか？","r":false,"p":false,"o":false},{"t":"シャワー、蛇口は壊れていないか？","r":false,"p":false,"o":false},{"t":"ハンドタオルはおいてあるか？","r":false,"p":false,"o":false},{"t":"排水口は綺麗か？髪の毛はないか？","r":false,"p":false,"o":false},{"t":"バスタオル、フェイスタオル、歯ブラシセットは用意したか？","r":false,"p":true,"o":false},{"t":"ブラインドが壊れていないか？","r":false,"p":false,"o":false}]},{"id":"shiro_6","name":"1F リビング・ベッドルーム","items":[{"t":"ベッドのクッションは汚れていないか？","r":false,"p":false,"o":false},{"t":"ベッドのブランケットに髪の毛や犬の毛はついてないか？","r":false,"p":false,"o":false},{"t":"ベッドの下にごみやほこりはないか？","r":false,"p":false,"o":false},{"t":"床は水拭きしてあるか？","r":false,"p":false,"o":false},{"t":"リビングのテーブルはきれいか？","r":false,"p":false,"o":false},{"t":"テレビなどに手垢はないか？埃はないか？","r":false,"p":false,"o":false},{"t":"ソファーなどコロコロしてあるか？","r":false,"p":false,"o":false},{"t":"BBQの場合、1Fの食器を全てチェックしなおしたか？（埃や虫の死骸はないか？）","r":true,"p":true,"o":true},{"t":"ジャグジー用のバスタオル、バスマットはあるか？","r":false,"p":false,"o":false}]},{"id":"shiro_7","name":"3F ベッドルーム","items":[{"t":"ベッドのクッションは汚れていないか？","r":false,"p":false,"o":false},{"t":"ベッドのブランケットに髪の毛や犬の毛はついてないか？","r":false,"p":false,"o":false},{"t":"ソファーにゴミが入り込んでいないか？","r":false,"p":false,"o":false},{"t":"ベッドの下にごみやほこりはないか？（要コロコロ）","r":false,"p":false,"o":false},{"t":"テレビは映るか？リモコンも手垢・埃がないように","r":false,"p":false,"o":false},{"t":"ベランダにゴミはないか？","r":false,"p":false,"o":false}]},{"id":"shiro_8","name":"階段","items":[{"t":"髪の毛、埃、ゴミなど落ちてないか","r":false,"p":false,"o":false},{"t":"汚れが目立ったら水拭きを必ずしてください","r":false,"p":false,"o":false}]},{"id":"shiro_9","name":"全体 / 仕上げ","items":[{"t":"窓ガラスは綺麗か","r":false,"p":false,"o":false},{"t":"オブジェなどに埃がかぶってないか？","r":false,"p":false,"o":false},{"t":"高いところに埃、蜘蛛の巣などないか（絶対NG）","r":false,"p":false,"o":false},{"t":"Wi-Fi、Bluetoothは正常か","r":false,"p":false,"o":false},{"t":"ティッシュペーパーの残量確認","r":false,"p":false,"o":false},{"t":"オプション（わんちゃん、BBQなど）がある場合用意してあるか","r":false,"p":false,"o":true},{"t":"フロアにゴミ、髪の毛、埃が落ちていないか","r":false,"p":false,"o":false},{"t":"コロコロ（ラグ、ソファ、ベッド）","r":false,"p":false,"o":false},{"t":"殺虫剤はしっかり残量があるか？","r":false,"p":false,"o":false},{"t":"鍵は鍵入れにあるか？倉庫に鍵はかかっているか？","r":false,"p":false,"o":false},{"t":"全体的に消臭スプレー（香りのスプレー）をしたか？","r":false,"p":false,"o":false},{"t":"加湿器の水は補充されているか？（冬季のみ）","r":false,"p":false,"o":false},{"t":"マニュアルは適材適所に設置してあるか？","r":false,"p":false,"o":false}]},{"id":"shiro_10","name":"オプション","items":[{"t":"BBQセットは揃っているか？着火確認したか？","r":true,"p":true,"o":true},{"t":"BBQや朝食の説明書はつけたか？","r":true,"p":true,"o":true},{"t":"ペット泊の場合はラグを外して倉庫へ","r":false,"p":false,"o":true},{"t":"ペットの用意（エサ入れ、トイレ、セットボックス、ワンバーグ、注意書き）","r":true,"p":true,"o":true},{"t":"毎週金曜日：排水溝パイプスルー実施（水回り全て）週に1回","r":false,"p":false,"o":true},{"t":"エアコンのフィルター掃除","r":false,"p":false,"o":true},{"t":"額入れサービス、花など漏れはないか？","r":false,"p":true,"o":true}]},{"id":"shiro_11","name":"最後のチェック","items":[{"t":"厳しい目線のお客さんの気持ちでチェックしましたか？","r":false,"p":false,"o":false},{"t":"写真は撮影しましたか？（写真はメッセンジャーに投稿ください）","r":false,"p":false,"o":false},{"t":"倉庫内整理整頓できているか？お客さんが見て問題ないレベルか？鍵はしてあるか？","r":false,"p":false,"o":false}]}]},{"id":"koajiroBB","name":"THE HOUSE 小網代 Bed and Bath","areas":[{"id":"koajiroBB_0","name":"全体 / はじめにチェック","items":[{"t":"照明は切れていないか","r":true,"p":false,"o":false},{"t":"エアコン作動チェック","r":true,"p":false,"o":false},{"t":"給湯器作動チェック","r":true,"p":false,"o":false},{"t":"床暖房がついていれば必ず消す","r":true,"p":false,"o":false},{"t":"バスルームのカビチェック（あればキッチンハイターをかけておく）","r":true,"p":false,"o":false},{"t":"ジャグジーは動くか？","r":true,"p":true,"o":false}]},{"id":"koajiroBB_1","name":"ベッドスペース","items":[{"t":"ベッドのクッションは汚れていないか？","r":false,"p":false,"o":false},{"t":"ベッドのブランケットに髪の毛や犬の毛はついてないか？","r":false,"p":false,"o":false},{"t":"ベッドサイドテーブルや照明の上に埃はないか？","r":false,"p":false,"o":false},{"t":"ベッドサイドのベッドヘッドの上に埃はないか？コロコロ必須","r":false,"p":false,"o":false},{"t":"エキストラベットの準備はしてあるか？","r":false,"p":false,"o":true},{"t":"テレビに埃はないか？つくか？リモコンはあるか？","r":false,"p":false,"o":false},{"t":"ファブリックスプレーはしたか？","r":false,"p":false,"o":false}]},{"id":"koajiroBB_2","name":"リビング","items":[{"t":"ソファーのコロコロはやったか？","r":false,"p":false,"o":false},{"t":"テーブルの汚れはないか？手垢はないか？","r":false,"p":false,"o":false},{"t":"ソファーや椅子などの足元に埃などが固まってくっついていないか？","r":false,"p":false,"o":false},{"t":"スピーカーの電源は入るか？","r":false,"p":false,"o":false},{"t":"予備電池確認","r":false,"p":false,"o":false},{"t":"花瓶の水換え","r":false,"p":false,"o":false},{"t":"ガラス窓の下のさんは掃除しましたか？","r":true,"p":false,"o":false},{"t":"各種リモコンは揃っているか？","r":false,"p":false,"o":false},{"t":"虫除けは残量あるか？","r":true,"p":false,"o":false},{"t":"ラグは濡れてないか？綺麗か？コロコロはやったか？","r":false,"p":false,"o":false},{"t":"延長コードが虫除けグッズの位置にあるか","r":false,"p":false,"o":false}]},{"id":"koajiroBB_3","name":"キッチン","items":[{"t":"シンク内、蛇口は綺麗か","r":false,"p":true,"o":false},{"t":"排水溝の中綺麗か、ネットをかけてあるか","r":false,"p":false,"o":false},{"t":"コーヒー豆、紅茶、砂糖、岩塩、ブラックペッパー、しょうゆの残量確認・補充","r":true,"p":false,"o":false},{"t":"冷蔵庫の中身確認、綺麗か（野菜の破片やソース汚れは一切NG）","r":true,"p":true,"o":false},{"t":"トースター、電子レンジ、コーヒーメーカーはきれいか","r":false,"p":false,"o":false},{"t":"炊飯器、ホットプレート、IHは綺麗か","r":false,"p":false,"o":false},{"t":"ケトル内に水は残ってないか","r":false,"p":false,"o":false},{"t":"スポンジ、タオルは新しいものがセットしてあるか","r":false,"p":false,"o":false},{"t":"食器用洗剤、ハンドソープ、アルコールスプレー、キッチンペーパーの残量確認・補充","r":false,"p":false,"o":false},{"t":"ゴミ箱は空でゴミ袋かけてあるか、ゴミ箱本体・後ろは綺麗か","r":false,"p":false,"o":false},{"t":"食器棚内、カトラリー引き出し、調理器具棚の中は整っているか","r":false,"p":false,"o":false},{"t":"ホットプレートはちゃんと熱くなるか？","r":false,"p":false,"o":false}]},{"id":"koajiroBB_4","name":"バスルーム・洗面所・トイレ","items":[{"t":"バスタブ、床の水は拭き取ってあるか","r":false,"p":true,"o":false},{"t":"排水溝は綺麗か、髪の毛がないか","r":false,"p":false,"o":false},{"t":"シャワー、蛇口は綺麗に磨かれているか","r":false,"p":false,"o":false},{"t":"バスルームのガラス、鏡は磨かれているか（鏡の歯磨き粉飛びチェック）","r":true,"p":false,"o":false},{"t":"シャンプー、コンディショナー、ボディソープ、ハンドソープ、ボディローション残量確認と補充","r":false,"p":false,"o":false},{"t":"タオル、バスマット、歯ブラシ、歯磨き粉は人数分用意されているか","r":false,"p":true,"o":false},{"t":"洗面台周り＆トイレは綺麗か","r":false,"p":true,"o":false},{"t":"壁窓のサンは綺麗か？","r":true,"p":false,"o":false},{"t":"足拭きマットは設置したか？","r":false,"p":false,"o":false},{"t":"ミニタオル、ティッシュ、トイレットペーパーは十分あるか？","r":false,"p":false,"o":false},{"t":"洗面所のドライヤーは綺麗にまとめてあるか？","r":false,"p":false,"o":false},{"t":"洗面所の排水口は外して洗ったか？きれいか？","r":false,"p":false,"o":false},{"t":"トイレットペーパーの残りは十分あるか？（1/3以下は取替）","r":false,"p":false,"o":false},{"t":"全ての引き出しを開けて残留物がないかチェックしたか？","r":false,"p":true,"o":false}]},{"id":"koajiroBB_5","name":"入り口","items":[{"t":"ドア周りの細かい埃などは取り除いたか？","r":false,"p":false,"o":false},{"t":"中廊下は綺麗か？","r":false,"p":false,"o":false}]},{"id":"koajiroBB_6","name":"全体 / 仕上げ","items":[{"t":"窓ガラスは綺麗か","r":false,"p":false,"o":false},{"t":"高いところに埃、蜘蛛の巣などないか（絶対NG）","r":false,"p":false,"o":false},{"t":"Wi-Fi、Bluetoothは正常か","r":false,"p":false,"o":false},{"t":"オプション（わんちゃん、BBQなど）がある場合用意してあるか","r":false,"p":false,"o":false},{"t":"フロアにゴミ、髪の毛、埃が落ちていないか","r":false,"p":false,"o":false},{"t":"コロコロ（ラグ、ソファ、ベッド）","r":false,"p":false,"o":false},{"t":"殺虫剤はしっかり残量があるか？","r":true,"p":false,"o":false},{"t":"マニュアルは適材適所に設置してあるか？","r":false,"p":false,"o":false},{"t":"ファブリックスプレーはしたか？","r":false,"p":false,"o":false}]},{"id":"koajiroBB_7","name":"オプション","items":[{"t":"BBQセットは揃っているか？着火確認したか？","r":false,"p":true,"o":true},{"t":"BBQや朝食の説明書はつけたか？","r":false,"p":false,"o":true},{"t":"ルーフトップの清掃は完了しているか？（照明がONになってるかもチェック）","r":false,"p":false,"o":true},{"t":"ペットの用意（エサ入れ、トイレ、セットボックス、ワンバーグ、注意書き）","r":false,"p":true,"o":true},{"t":"毎週金曜日：排水溝パイプスルー実施（水回り全て）週に1回","r":false,"p":false,"o":true},{"t":"エアコンのフィルター掃除","r":false,"p":false,"o":true},{"t":"額入れサービス、花など漏れはないか？","r":false,"p":true,"o":true}]},{"id":"koajiroBB_8","name":"最後のチェック","items":[{"t":"厳しい目線のお客さんの気持ちでチェックしましたか？","r":false,"p":false,"o":false},{"t":"写真は撮影しましたか？（写真はメッセンジャーに投稿ください）","r":false,"p":false,"o":false},{"t":"倉庫内整理整頓できているか？鍵はしてあるか？","r":false,"p":false,"o":false},{"t":"スタッフルーム側の鍵は閉めたか？","r":true,"p":false,"o":false}]}]},{"id":"koajiroSLS","name":"THE HOUSE 小網代 Shower Living Suite","areas":[{"id":"koajiroSLS_0","name":"全体 / はじめにチェック","items":[{"t":"照明は切れていないか","r":true,"p":false,"o":false},{"t":"エアコン作動チェック","r":true,"p":false,"o":false},{"t":"給湯器作動チェック","r":true,"p":false,"o":false},{"t":"プロジェクターチェック","r":true,"p":false,"o":false},{"t":"床暖房がついていれば必ず消す","r":true,"p":false,"o":false},{"t":"バスルームやミニプールのカビチェック（あればキッチンハイターをかけておく）","r":true,"p":true,"o":false}]},{"id":"koajiroSLS_1","name":"ベッドスペース","items":[{"t":"ベッドのクッションは汚れていないか？","r":false,"p":false,"o":false},{"t":"ベッドのブランケットに髪の毛や犬の毛はついてないか？","r":false,"p":false,"o":false},{"t":"ベッドサイドテーブルや照明の上に埃はないか？","r":false,"p":false,"o":false},{"t":"ベッドサイドのベッドヘッドの上に埃はないか？コロコロ必須","r":false,"p":false,"o":false},{"t":"エキストラベットの準備はしてあるか？","r":false,"p":false,"o":false},{"t":"テレビに埃はないか？つくか？リモコンはあるか？","r":false,"p":false,"o":false},{"t":"ファブリックスプレーはしたか？","r":false,"p":false,"o":false}]},{"id":"koajiroSLS_2","name":"リビング","items":[{"t":"ソファーのコロコロはやったか？","r":false,"p":false,"o":false},{"t":"テーブルの汚れはないか？手垢はないか？","r":false,"p":false,"o":false},{"t":"チェストの上の照明は綺麗か？","r":false,"p":false,"o":false},{"t":"チェスト上の雑貨、上など埃はないか？","r":false,"p":false,"o":false},{"t":"ソファーや椅子などの足元に埃などが固まってくっついていないか？","r":false,"p":false,"o":false},{"t":"スピーカーの電源は入るか？","r":false,"p":false,"o":false},{"t":"予備電池確認（チェスト引き出し）","r":false,"p":false,"o":false},{"t":"花瓶の水換え","r":false,"p":false,"o":false},{"t":"ミニプールは拭きあげをしたか？","r":false,"p":true,"o":false},{"t":"ミニプールの外に足拭きマットは置いたか？","r":false,"p":false,"o":false},{"t":"タイルで汚れが目立つところは拭きましたか？","r":false,"p":false,"o":false},{"t":"ガラス窓の下のさんは掃除しましたか？","r":true,"p":false,"o":false},{"t":"ガラス窓とミニプールの間は綺麗ですか？","r":true,"p":true,"o":false},{"t":"各種リモコンは揃っているか？","r":false,"p":false,"o":false},{"t":"虫除けは残量あるか？","r":false,"p":false,"o":false},{"t":"ラグは濡れてないか？綺麗か？コロコロはやったか？","r":false,"p":false,"o":false},{"t":"上からのシャワーの蛇口は手垢がついてないか？","r":false,"p":false,"o":false},{"t":"灯油満タンか確認（冬のみ）","r":false,"p":false,"o":true},{"t":"延長コードが虫除けグッズの位置にあるか","r":false,"p":false,"o":false}]},{"id":"koajiroSLS_3","name":"キッチン","items":[{"t":"シンク内、蛇口は綺麗か","r":false,"p":true,"o":false},{"t":"排水溝の中綺麗か、ネットをかけてあるか","r":true,"p":false,"o":false},{"t":"コーヒー豆、紅茶、砂糖、岩塩、ブラックペッパー、しょうゆの残量確認・補充","r":true,"p":false,"o":false},{"t":"冷蔵庫の中身確認、綺麗か（野菜の破片やソース汚れは一切NG）","r":true,"p":true,"o":false},{"t":"トースター、電子レンジ、コーヒーメーカーはきれいか","r":false,"p":false,"o":false},{"t":"炊飯器、ホットプレート、IHは綺麗か","r":false,"p":false,"o":false},{"t":"ケトル内に水は残ってないか","r":false,"p":false,"o":false},{"t":"スポンジ、タオルは新しいものがセットしてあるか","r":false,"p":false,"o":false},{"t":"食器用洗剤、ハンドソープ、アルコールスプレー、キッチンペーパーの残量確認・補充","r":false,"p":false,"o":false},{"t":"ゴミ箱は空でゴミ袋かけてあるか、ゴミ箱本体・後ろは綺麗か","r":false,"p":false,"o":false},{"t":"食器棚内、カトラリー引き出し、調理器具棚の中は整っているか","r":false,"p":false,"o":false},{"t":"ホットプレートはちゃんと熱くなるか？","r":false,"p":false,"o":false}]},{"id":"koajiroSLS_4","name":"バスルーム・洗面所・トイレ","items":[{"t":"バスタブ、床の水は拭き取ってあるか","r":false,"p":false,"o":false},{"t":"排水溝は綺麗か、髪の毛がないか","r":false,"p":false,"o":false},{"t":"シャワー、蛇口は綺麗に磨かれているか","r":false,"p":false,"o":false},{"t":"バスルームのガラス、鏡は磨かれているか（鏡の歯磨き粉飛びチェック）","r":false,"p":false,"o":false},{"t":"シャンプー、コンディショナー、ボディソープ、ハンドソープ、ボディローション残量確認と補充","r":false,"p":false,"o":false},{"t":"タオル、バスマット、歯ブラシ、歯磨き粉は人数分用意されているか","r":false,"p":true,"o":false},{"t":"洗面台周り、トイレは綺麗か","r":false,"p":true,"o":false},{"t":"壁窓のサンは綺麗か？","r":true,"p":false,"o":false},{"t":"足拭きマットは設置したか？","r":false,"p":false,"o":false},{"t":"ミニタオル、ティッシュ、トイレットペーパーは十分あるか？","r":false,"p":false,"o":false},{"t":"洗面所のドライヤーは綺麗にまとめてあるか？","r":false,"p":false,"o":false},{"t":"洗面所の排水口は外して洗ったか？きれいか？","r":false,"p":false,"o":false},{"t":"トイレットペーパーの残りは十分あるか？（1/3以下は取替）","r":false,"p":false,"o":false},{"t":"全ての引き出しを開けて残留物がないかチェックしたか？","r":true,"p":false,"o":false}]},{"id":"koajiroSLS_5","name":"入り口","items":[{"t":"ドア周りの細かい埃などは取り除いたか？","r":false,"p":false,"o":false},{"t":"中廊下は綺麗か？","r":false,"p":false,"o":false}]},{"id":"koajiroSLS_6","name":"全体 / 仕上げ","items":[{"t":"窓ガラスは綺麗か","r":false,"p":false,"o":false},{"t":"高いところに埃、蜘蛛の巣などないか（絶対NG）","r":false,"p":false,"o":false},{"t":"Wi-Fi、Bluetoothは正常か","r":false,"p":false,"o":false},{"t":"オプション（わんちゃん、BBQなど）がある場合用意してあるか","r":false,"p":false,"o":false},{"t":"フロアにゴミ、髪の毛、埃が落ちていないか","r":false,"p":false,"o":false},{"t":"コロコロ（ラグ、ソファ、ベッド）","r":false,"p":false,"o":false},{"t":"殺虫剤はしっかり残量があるか？","r":false,"p":false,"o":false},{"t":"マニュアルは適材適所に設置してあるか？","r":false,"p":false,"o":false},{"t":"ファブリックスプレーはしたか？","r":false,"p":false,"o":false},{"t":"スタッフルーム側の鍵は閉めたか？","r":false,"p":false,"o":false}]},{"id":"koajiroSLS_7","name":"オプション","items":[{"t":"BBQセットは揃っているか？着火確認したか？","r":true,"p":true,"o":true},{"t":"BBQや朝食の説明書はつけたか？","r":true,"p":true,"o":true},{"t":"ルーフトップの清掃は完了しているか？（照明がONになってるかもチェック）","r":false,"p":false,"o":true},{"t":"ペットの用意（エサ入れ、トイレ、セットボックス、ワンバーグ、注意書き）","r":true,"p":true,"o":true},{"t":"毎週金曜日：排水溝パイプスルー実施（水回り全て）週に1回","r":false,"p":false,"o":true},{"t":"エアコンのフィルター掃除","r":false,"p":false,"o":true},{"t":"額入れサービス、花など漏れはないか？","r":true,"p":false,"o":true}]},{"id":"koajiroSLS_8","name":"最後のチェック","items":[{"t":"厳しい目線のお客さんの気持ちでチェックしましたか？","r":false,"p":false,"o":false},{"t":"写真は撮影しましたか？（写真はメッセンジャーに投稿ください）","r":false,"p":false,"o":false},{"t":"倉庫内整理整頓できているか？鍵はしてあるか？","r":false,"p":false,"o":false},{"t":"スタッフルーム側の鍵は閉めたか？","r":true,"p":false,"o":false}]}]},{"id":"koajiroPC","name":"THE HOUSE 小網代 Pool and Cave","areas":[{"id":"koajiroPC_0","name":"全体 / はじめにチェック","items":[{"t":"照明は切れていないか","r":true,"p":false,"o":false},{"t":"エアコン作動チェック","r":true,"p":false,"o":false},{"t":"給湯器作動チェック","r":true,"p":false,"o":false},{"t":"プロジェクターチェック","r":true,"p":false,"o":false},{"t":"バスルームのカビチェック（あればキッチンハイターをかけておく）","r":true,"p":true,"o":false},{"t":"ランタンの充電開始","r":true,"p":false,"o":false},{"t":"プールの二つのマシンを稼働させる（1時間）","r":true,"p":false,"o":false},{"t":"ジャグジーは動くか？","r":true,"p":false,"o":false}]},{"id":"koajiroPC_1","name":"ベッドスペース","items":[{"t":"ベッドのクッションは汚れていないか？","r":false,"p":false,"o":false},{"t":"ベッドのブランケットに髪の毛や犬の毛はついてないか？","r":false,"p":false,"o":false},{"t":"ベッドサイドテーブルや照明の上に埃はないか？","r":false,"p":false,"o":false},{"t":"ベッドサイドのベッドヘッドの上に埃はないか？コロコロ必須","r":false,"p":false,"o":false},{"t":"プロジェクターとiPad確認、各種アプリのログアウトは確認しているか","r":false,"p":false,"o":false},{"t":"エキストラベットの準備はしてあるか？","r":false,"p":false,"o":false},{"t":"ソファーの隙間に物が落ちていないか、移動して清掃したか？","r":false,"p":false,"o":false}]},{"id":"koajiroPC_2","name":"リビングスペース","items":[{"t":"テレビに埃はないか？つくか？リモコンはあるか？","r":false,"p":false,"o":false},{"t":"ソファーのコロコロはやったか？","r":false,"p":false,"o":false},{"t":"テーブルの汚れはないか？手垢はないか？","r":false,"p":false,"o":false},{"t":"暖炉の上のテーブルの雑貨、テーブルの上など埃はないか？","r":false,"p":true,"o":false},{"t":"電気暖炉のスイッチのところなど埃はないか？","r":false,"p":false,"o":false},{"t":"ソファーや椅子などの足元に埃などが固まってくっついていないか？","r":false,"p":false,"o":false},{"t":"スピーカーの電源は入るか？コードは二種類あるか？","r":false,"p":false,"o":false},{"t":"キャンドル、予備電池確認（チェスト引き出し）","r":false,"p":false,"o":false},{"t":"花瓶の水換え","r":false,"p":false,"o":false},{"t":"ジャグジー側のチェストの上に埃はかぶってないか？","r":false,"p":false,"o":false},{"t":"ジャグジー側のソファーとガラスの間に物が落ちていないか？","r":true,"p":false,"o":false},{"t":"リモコンは揃っているか？","r":false,"p":false,"o":false},{"t":"窓側のチェストに必要なアメニティ、タオルなど入っているか？歯ブラシは衛生的か？","r":false,"p":false,"o":false},{"t":"虫除けは残量あるか？","r":false,"p":false,"o":false},{"t":"屋外用のランタンの充電、電池は満タンか？","r":true,"p":false,"o":false}]},{"id":"koajiroPC_3","name":"キッチン & ダイニング","items":[{"t":"シンク内・蛇口は拭き取ってあるか？","r":false,"p":true,"o":false},{"t":"食器棚・引き出しの中は綺麗に整頓されているか？埃、髪の毛は入ってないか？","r":true,"p":false,"o":false},{"t":"コーヒーメーカーのゴミは捨てて、綺麗に洗ってあるか？","r":true,"p":false,"o":false},{"t":"コーヒーの粉、紅茶、砂糖、塩、コショウ、オリーブオイル、しょうゆの補充","r":true,"p":false,"o":false},{"t":"冷蔵庫の中身は無くなっているか？氷は残っていないか？写メを取り報告","r":true,"p":true,"o":false},{"t":"オーブンレンジ、魚焼きグリルの清掃はしてあるか？（中もしっかり確認・写メ報告）","r":true,"p":true,"o":false},{"t":"食洗機は排水口まで掃除したか？洗剤はわかりやすいところに置いてあるか？","r":false,"p":false,"o":false},{"t":"ケトルの水は捨てて拭き取ってあるか？","r":false,"p":false,"o":false},{"t":"スポンジは新しいものに変えてあるか？ストッキングはかけてあるか？","r":false,"p":false,"o":false},{"t":"洗剤・ハンドソープ・アルコールの残量はしっかりあるか？","r":false,"p":false,"o":false},{"t":"カウンターテーブルの上は綺麗か？","r":false,"p":false,"o":false},{"t":"ゴミ箱の中は空でゴミ袋がかけてあるか？ゴミ箱自体はきれいか？ゴミ箱入れるところに虫は死んでないか？","r":false,"p":false,"o":false},{"t":"食器、鍋類、グラスなどに汚れや指紋、口紅はついていないか？","r":false,"p":false,"o":false},{"t":"新しいタオル、ペーパータオルは用意されているか？","r":false,"p":false,"o":false},{"t":"キッチン上の換気扇に埃はないか？","r":false,"p":false,"o":false},{"t":"キッチン上の照明に埃はないか？","r":false,"p":false,"o":false},{"t":"カウンターの椅子の上は拭いたか？足をかけるところも注意","r":false,"p":false,"o":false},{"t":"ダイニングテーブルの上、椅子は拭いたか？除菌したか？","r":false,"p":false,"o":false},{"t":"ホットプレートはちゃんと熱くなるか？","r":false,"p":false,"o":false}]},{"id":"koajiroPC_4","name":"シャワールーム・洗面所・トイレ","items":[{"t":"シャワールーム：水はけはしっかりしてあるか？シャワーの向きは奥向きか？","r":false,"p":false,"o":false},{"t":"洗面所：ゴミ袋は入れ替えてあるか？洗剤は残っているか？","r":false,"p":false,"o":false},{"t":"ミニタオル、ティッシュ、トイレットペーパー、アメニティは大丈夫か？","r":false,"p":true,"o":false},{"t":"洗面所のドライヤーは綺麗にまとめてあるか？","r":false,"p":false,"o":false},{"t":"洗面所の排水口は外して洗ったか？トイレはきれいか？","r":false,"p":true,"o":false},{"t":"トイレットペーパーの残りは十分あるか？（1/3以下は取替）","r":false,"p":false,"o":false},{"t":"お手ふきタオルは2つずつ洗面所にあるか？アメニティなどの残量はしっかりあるか？","r":false,"p":false,"o":false},{"t":"全ての引き出しを開けて残留物がないかチェックしたか？","r":true,"p":false,"o":false}]},{"id":"koajiroPC_5","name":"部屋全体","items":[{"t":"埃や髪の毛は落ちてないか？","r":false,"p":false,"o":false},{"t":"ジメッとしてないか？していたらシャークモップ（ウェットワイパー）も行う","r":false,"p":false,"o":true},{"t":"隅っこのカビ、埃などは大丈夫か？","r":true,"p":false,"o":false},{"t":"ガラス窓に手垢はないか？（取手の近く要注意）","r":false,"p":false,"o":false},{"t":"ガラス窓のサンは綺麗か？","r":true,"p":false,"o":false}]},{"id":"koajiroPC_6","name":"階段","items":[{"t":"オブジェの台などに埃は積もってないか？","r":false,"p":false,"o":false},{"t":"掃除機の後、気になるところをコロコロしたか？","r":false,"p":false,"o":false},{"t":"ドア周りの細かい埃などは取り除いたか？","r":false,"p":false,"o":false}]},{"id":"koajiroPC_7","name":"プール・テラス & 洞窟","items":[{"t":"プールのマシン動かしたか？","r":false,"p":false,"o":false},{"t":"プールの汚れ残りを取り除いたか？","r":true,"p":false,"o":false},{"t":"プールの水質検査はしたか？","r":false,"p":false,"o":true},{"t":"プールに塩素材は入れたか？","r":true,"p":false,"o":false},{"t":"ジャグジーの汚れはとったか？栓はしてあるか？","r":false,"p":true,"o":false},{"t":"ジャグジーの下の扉の中は汚れていないか？","r":false,"p":false,"o":false},{"t":"螺旋階段に落石などはないか？","r":false,"p":false,"o":false},{"t":"洞窟の中は汚れていないか？（ゴミは拾って捨てる）","r":false,"p":true,"o":false},{"t":"テラスのテーブルは綺麗か？椅子は汚れていないか？","r":false,"p":false,"o":false},{"t":"BBQコンロは貸し出しの場合のみ網をつける","r":false,"p":true,"o":true},{"t":"BBQコンロの清掃は終わっているか？","r":false,"p":false,"o":false},{"t":"最後にプールの水は止めたか？（制御盤は最終体制にしたか？）","r":true,"p":true,"o":false}]},{"id":"koajiroPC_8","name":"全体 / 仕上げ","items":[{"t":"除湿機の水は全て捨てたか？","r":true,"p":false,"o":false},{"t":"窓ガラスは綺麗か","r":false,"p":false,"o":false},{"t":"高いところに埃、蜘蛛の巣などないか","r":false,"p":false,"o":false},{"t":"オブジェなどに埃がかぶってないか？","r":false,"p":false,"o":false},{"t":"Wi-Fi、Bluetoothは正常か","r":false,"p":false,"o":false},{"t":"ティッシュペーパーの残量確認","r":false,"p":false,"o":false},{"t":"オプション（わんちゃん、BBQなど）がある場合用意してあるか","r":false,"p":false,"o":true},{"t":"フロアにゴミ、髪の毛、埃が落ちていないか","r":false,"p":false,"o":false},{"t":"コロコロ（ラグ、ソファ、ベッド）","r":false,"p":false,"o":false},{"t":"殺虫剤はしっかり残量があるか？","r":false,"p":false,"o":false},{"t":"マニュアルは適材適所に設置してあるか？","r":false,"p":false,"o":false},{"t":"照明は適度に、エアコンも適度に","r":false,"p":false,"o":false},{"t":"足拭きマットはテラスの入り口、シャワー室の入り口に2つ置いたか？","r":false,"p":false,"o":false},{"t":"ファブリックスプレーはしたか？","r":false,"p":false,"o":false}]},{"id":"koajiroPC_9","name":"オプション","items":[{"t":"BBQセットは揃っているか？着火確認したか？","r":true,"p":true,"o":true},{"t":"BBQや朝食の説明書はつけたか？","r":true,"p":true,"o":true},{"t":"ペットの用意（エサ入れ、トイレ、セットボックス、ワンバーグ、注意書き）","r":false,"p":true,"o":true},{"t":"毎週金曜日：排水溝パイプスルー実施（水回り全て）週に1回","r":false,"p":false,"o":true},{"t":"エアコンのフィルター掃除","r":false,"p":false,"o":true},{"t":"額入れサービス、花など漏れはないか？","r":true,"p":false,"o":true}]},{"id":"koajiroPC_10","name":"最後のチェック","items":[{"t":"厳しい目線のお客さんの気持ちでチェックしましたか？","r":false,"p":false,"o":false},{"t":"写真は撮影しましたか？（写真はメッセンジャーに投稿ください）","r":false,"p":false,"o":false},{"t":"給湯器ボタンがONのことを確認しましたか？","r":true,"p":true,"o":false}]}]},{"id":"moroso","name":"THE HOUSE 諸磯","areas":[{"id":"moroso_0","name":"全体 / はじめにチェック","items":[{"t":"照明は切れていないか","r":true,"p":false,"o":false},{"t":"エアコン作動チェック","r":true,"p":false,"o":false},{"t":"給湯器作動・湯の残量チェック","r":true,"p":false,"o":false},{"t":"プロジェクターチェック","r":true,"p":false,"o":false},{"t":"バスルームのカビチェック（あればキッチンハイターをかけておく）","r":true,"p":true,"o":false},{"t":"床暖房がついていたらまず全て消す","r":true,"p":false,"o":false},{"t":"ランタンの充電開始","r":true,"p":false,"o":false}]},{"id":"moroso_1","name":"駐車場・施設までのコンディション","items":[{"t":"駐車場（外）にゴミはないか？","r":false,"p":false,"o":false},{"t":"施設までの導線のコンディション確認（草木、水たまりなど）","r":false,"p":false,"o":false}]},{"id":"moroso_2","name":"玄関・テラス周り","items":[{"t":"門は壊れていないか？","r":false,"p":false,"o":false},{"t":"門のライトは切れていないか？","r":false,"p":false,"o":false},{"t":"玄関前蜘蛛の巣はないか？","r":false,"p":false,"o":false},{"t":"玄関のドアの破損、鍵の閉まり具合は大丈夫か？","r":false,"p":false,"o":false},{"t":"玄関、テラスのライトは切れていないか？","r":false,"p":false,"o":false},{"t":"テーブル、椅子、カウンターは、汚れていないか、破損していないか？","r":false,"p":false,"o":false},{"t":"テラスの手すりがぐらついてないか？","r":true,"p":false,"o":false}]},{"id":"moroso_3","name":"リビング・ダイニング","items":[{"t":"照明・ゴミ、髪の毛は落ちていないか？","r":false,"p":false,"o":false},{"t":"窓は綺麗か？","r":true,"p":false,"o":false},{"t":"窓のサン、ブラインドは綺麗か？","r":true,"p":false,"o":false},{"t":"テーブル、椅子は綺麗か？","r":false,"p":false,"o":false},{"t":"クッション、ソファーは綺麗か？","r":false,"p":false,"o":false},{"t":"コロコロはかけたか？","r":false,"p":false,"o":false},{"t":"スピーカーにジャックはついているか？","r":false,"p":false,"o":false},{"t":"マニュアルは適材適所に設置してあるか？","r":false,"p":false,"o":false}]},{"id":"moroso_4","name":"キッチン","items":[{"t":"シンク内・蛇口は拭き取ってあるか？","r":false,"p":true,"o":false},{"t":"食器棚・引き出しの中は綺麗に整頓されているか？","r":false,"p":false,"o":false},{"t":"コーヒーメーカーのゴミは捨てて、綺麗に洗ってあるか？","r":true,"p":false,"o":false},{"t":"コーヒーの粉、紅茶、砂糖、塩、コショウ、オリーブオイル、しょうゆの補充","r":true,"p":false,"o":false},{"t":"冷蔵庫の中身は無くなっているか？氷は残っていないか？写メを取り報告","r":true,"p":true,"o":false},{"t":"オーブンレンジ、魚焼きグリルの清掃はしてあるか？（中もしっかり確認・写メ報告）","r":true,"p":false,"o":false},{"t":"食洗機は排水口まで掃除したか？洗剤はわかりやすいところに置いてあるか？","r":false,"p":false,"o":false},{"t":"ケトルの水は捨てて拭き取ってあるか？","r":false,"p":false,"o":false},{"t":"スポンジは新しいものに変えてあるか？ストッキングはかけてあるか？","r":false,"p":false,"o":false},{"t":"洗剤・ハンドソープ・アルコールの残量はしっかりあるか？","r":false,"p":false,"o":false},{"t":"ゴミ箱の中は空でゴミ袋がかけてあるか？ゴミ箱入れるところに虫は死んでないか？","r":false,"p":false,"o":false},{"t":"食器、鍋類、グラスなどに汚れや指紋、口紅はついていないか？","r":false,"p":false,"o":false},{"t":"新しいタオル、ペーパータオルは用意されているか？","r":false,"p":false,"o":false},{"t":"キッチン上の換気扇に埃はないか？","r":false,"p":false,"o":false},{"t":"キッチン上の照明に埃はないか？","r":false,"p":false,"o":false},{"t":"浄水器に水はしっかり入っているか？","r":false,"p":false,"o":false},{"t":"ホットプレートはちゃんと熱くなるか？","r":false,"p":false,"o":false}]},{"id":"moroso_5","name":"バスルーム・洗面所","items":[{"t":"バスタブ、床の水は拭き取ってあるか","r":false,"p":true,"o":false},{"t":"排水溝は綺麗か、髪の毛がないか","r":false,"p":false,"o":false},{"t":"シャワー、蛇口は綺麗に磨かれているか","r":false,"p":false,"o":false},{"t":"バスルームのガラス、鏡は磨かれているか（鏡の歯磨き粉飛びチェック）","r":false,"p":false,"o":false},{"t":"シャンプー、コンディショナー、ボディソープ、ハンドソープ、ボディローション残量確認と補充","r":false,"p":false,"o":false},{"t":"タオル、バスマット、歯ブラシ、歯磨き粉は人数分用意されているか","r":false,"p":true,"o":false},{"t":"洗面台周りは綺麗か","r":false,"p":false,"o":false},{"t":"壁のカビはないか（あれば必ずカビキラーかキッチンハイター）","r":false,"p":false,"o":false},{"t":"電池などの予備は棚の中にあるか？","r":false,"p":false,"o":false},{"t":"洗面所のフナムシ対策のテープが汚れてたら取り替える","r":true,"p":false,"o":false},{"t":"洗面所の引き出しに何か入ってないか？","r":false,"p":false,"o":false}]},{"id":"moroso_6","name":"トイレ","items":[{"t":"便器、手洗いスペース、床が綺麗か","r":false,"p":true,"o":false},{"t":"トイレットペーパーの量は適切か（1/3以下は取替）","r":false,"p":false,"o":false},{"t":"サニタリー入れは綺麗か、ゴミ袋がかかっているか","r":false,"p":false,"o":false},{"t":"タオル、マットがセットされているか","r":false,"p":false,"o":false},{"t":"洗面所のフナムシ対策のテープが汚れてたら取り替える","r":true,"p":false,"o":false}]},{"id":"moroso_7","name":"ベッドルーム 2ヶ所","items":[{"t":"ベッドのクッションは汚れていないか？コロコロはしたか？","r":false,"p":false,"o":false},{"t":"ベッドのブランケットに髪の毛や犬の毛はついてないか？","r":false,"p":false,"o":false},{"t":"床にゴミ、髪の毛は落ちていないか？（虫、死骸）","r":false,"p":false,"o":false},{"t":"オブジェなどに埃はかぶってないか？ベッドヘッドの上もチェック","r":false,"p":false,"o":false},{"t":"ファブリックスプレーはしたか？","r":false,"p":false,"o":false}]},{"id":"moroso_8","name":"全体 / 仕上げ","items":[{"t":"窓ガラスは綺麗か","r":false,"p":false,"o":false},{"t":"高いところに埃、蜘蛛の巣などないか","r":false,"p":false,"o":false},{"t":"オブジェなどに埃がかぶってないか？","r":false,"p":false,"o":false},{"t":"Wi-Fi、Bluetoothは正常か","r":false,"p":false,"o":false},{"t":"ティッシュペーパーの残量確認","r":false,"p":false,"o":false},{"t":"オプション（わんちゃん、BBQなど）がある場合用意してあるか","r":false,"p":false,"o":true},{"t":"フロアにゴミ、髪の毛、埃が落ちていないか","r":false,"p":false,"o":false},{"t":"コロコロ（ラグ、ソファ、ベッド）","r":false,"p":false,"o":false},{"t":"殺虫剤はしっかり残量があるか？","r":true,"p":false,"o":false},{"t":"マニュアルは適材適所に設置してあるか？","r":false,"p":false,"o":false}]},{"id":"moroso_9","name":"オプション","items":[{"t":"BBQセットは揃っているか？着火確認したか？","r":false,"p":true,"o":true},{"t":"BBQや朝食の説明書はつけたか？","r":true,"p":true,"o":true},{"t":"ペットの用意（エサ入れ、トイレ、セットボックス、ワンバーグ、注意書き）","r":false,"p":true,"o":true},{"t":"毎週金曜日：排水溝パイプスルー実施（水回り全て）週に1回","r":false,"p":false,"o":true},{"t":"エアコンのフィルター掃除","r":false,"p":false,"o":true},{"t":"額入れサービス、花など漏れはないか？","r":true,"p":false,"o":true}]},{"id":"moroso_10","name":"最後のチェック","items":[{"t":"厳しい目線のお客さんの気持ちでチェックしましたか？","r":false,"p":false,"o":false},{"t":"写真は撮影しましたか？（写真はメッセンジャーに投稿ください）","r":true,"p":false,"o":false},{"t":"倉庫内整理整頓できているか？お客さんが見て問題ないレベルか？鍵はしてあるか？","r":false,"p":false,"o":false}]}]}];
 
 let S = {};
 PROPS.forEach(p => {
@@ -504,10 +464,11 @@ PROPS.forEach(p => {
   p.areas.forEach(a => { S[p.id].checked[a.id]={}; });
 });
 
-// notices: { propId: { text: '', replies: [{name, text, time}] } }
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyAV6Lu0jXcUhsytPxRgD7eCIZfGLQmnFm-9sL4CTFv-xFW0ZFtROzWZOCtNVrz5YXSVQ/exec';
 let notices = {};
 PROPS.forEach(p => { notices[p.id] = { text: '', replies: [] }; });
 
+let curProp = PROPS[0].id;
 let curArea = PROPS[0].areas[0].id;
 let curMode = 'staff';
 let curNav = 'check';
@@ -602,26 +563,67 @@ function renderByNav(){
 // CHECK
 function renderCheck(){
   const prop = P();
+  const lbl = document.getElementById('current-prop-label');
+  if(lbl) lbl.textContent = prop.name;
   document.getElementById('area-row').innerHTML = prop.areas.map(a=>{
-    const done = Object.values(S[curProp].checked[a.id]||{}).filter(Boolean).length;
-    const isDone = done === a.items.length;
+    const chkd = S[curProp].checked[a.id]||{};
+    const reqDone = a.items.filter((it,i)=>!it.o && chkd[i]).length;
+    const reqTotal = a.items.filter(it=>!it.o).length;
+    const isDone = reqTotal > 0 && reqDone === reqTotal;
     return`<button class="area-btn${curArea===a.id?' active':''}${isDone?' done':''}" onclick="selArea('${a.id}')">${a.name}${isDone?' ✓':''}</button>`;
   }).join('');
   const area = prop.areas.find(a=>a.id===curArea);
+  const requiredItems = area.items.filter(item => !item.o);
+  const doneRequired = area.items.reduce((s,item,i) => s + ((!item.o && S[curProp].checked[curArea][i]) ? 1 : 0), 0);
   const done = Object.values(S[curProp].checked[curArea]||{}).filter(Boolean).length;
   const total = area.items.length;
+  const reqTotal = requiredItems.length;
   document.getElementById('prog-fill').style.width = Math.round(done/total*100)+'%';
-  document.getElementById('prog-lbl').textContent = done+' / '+total+' 完了';
-  document.getElementById('check-items').innerHTML = area.items.map((text,i)=>{
+  document.getElementById('prog-lbl').textContent = done+' / '+total+' 完了（必須 '+doneRequired+'/'+reqTotal+'）';
+  document.getElementById('check-items').innerHTML = area.items.map((item,i)=>{
+    const text = item.t;
     const chk = S[curProp].checked[curArea][i];
+    const isRed = item.r;
+    const hasPhoto = item.p;
+    const isOptional = item.o;
+    const label = (isRed ? `<span style="color:var(--warn);font-weight:500">${text}</span>` : text)
+      + (hasPhoto ? ' <span style="font-size:13px" title="写真報告が必要">📷</span>' : '');
     return`<div class="ci${chk?' done':''}" onclick="toggleCheck(${i})">
       <div class="cb${chk?' chk':''}"></div>
-      <div class="cl">${text}</div>
+      <div class="cl">${label}${isOptional?'<span style="font-size:10px;color:var(--text3);margin-left:6px;letter-spacing:.04em;">任意</span>':''}</div>
     </div>`;
   }).join('');
+  updateCheckSubmitBtn();
 }
 function selArea(id){ curArea=id; renderCheck(); }
-function toggleCheck(i){ S[curProp].checked[curArea][i]=!S[curProp].checked[curArea][i]; renderCheck(); }
+function toggleCheck(i){ S[curProp].checked[curArea][i]=!S[curProp].checked[curArea][i]; renderCheck(); updateCheckSubmitBtn(); }
+
+function updateCheckSubmitBtn(){
+  const prop = P();
+  const ps = S[curProp];
+  const reqTotal = prop.areas.reduce((s,a)=>s+a.items.filter(it=>!it.o).length,0);
+  const reqDone = prop.areas.reduce((s,a)=>s+a.items.filter((it,i)=>!it.o&&(ps.checked[a.id]||{})[i]).length,0);
+  const allReqDone = reqDone >= reqTotal;
+  const wrap = document.getElementById('check-submit-wrap');
+  if(!wrap) return;
+  if(ps.submitted){
+    wrap.style.display = 'block';
+    document.getElementById('check-submit-btn').style.display = 'none';
+    document.getElementById('check-done-wrap').style.display = 'block';
+    document.getElementById('check-done-msg').innerHTML = ps.submittedAt+'　業務完了報告済み<br><span style="font-size:13px;font-weight:300;line-height:1.8;display:block;margin-top:6px;">これでお客様も快適にお過ごしいただけます。<br>いつもありがとう！お疲れ様でした！🙏</span><span style="font-size:12px;font-weight:300;color:var(--text2);line-height:1.7;display:block;margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,0.1);">📷 撮影写真はいつものメッセンジャーに必ず投稿ください。<br>それで清掃完了になります。</span>';
+  } else if(allReqDone){
+    wrap.style.display = 'block';
+    document.getElementById('check-submit-btn').style.display = 'block';
+    document.getElementById('check-submit-btn').textContent = '本部へ清掃完了報告 →';
+    document.getElementById('check-done-wrap').style.display = 'none';
+  } else {
+    wrap.style.display = 'none';
+  }
+}
+
+function goToReport(){
+  staffNav('submit');
+}
 
 // ISSUES — 本部特記事項 + スタッフ対応メモ
 function renderIssues(){
@@ -666,15 +668,13 @@ function renderSubmit(){
   const ps = S[curProp];
   const total = prop.areas.reduce((s,a)=>s+a.items.length,0);
   const done = prop.areas.reduce((s,a)=>s+Object.values(ps.checked[a.id]||{}).filter(Boolean).length,0);
+  const reqTotal = prop.areas.reduce((s,a)=>s+a.items.filter(it=>!it.o).length,0);
+  const reqDone = prop.areas.reduce((s,a)=>s+a.items.filter((it,i)=>!it.o&&(ps.checked[a.id]||{})[i]).length,0);
+  const allReqDone = reqDone >= reqTotal;
   const dateStr = staffDate ? new Date(staffDate).toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'}) : '';
   document.getElementById('submit-notice').innerHTML =
-    `<strong>${prop.name}</strong>　${dateStr}　${staffName}<br>チェック ${done}/${total}件完了<br>
-    <span style="font-size:11px;color:#888">全エリアのチェックと写真確認を終えてから送信してください。</span>`;
-  document.getElementById('photo-grid').innerHTML = prop.photos.map((p,i)=>{
-    const d = ps.photos[i];
-    return`<div class="ph-item${d?' done':''}" onclick="togglePhoto(${i})">
-      <span class="ph-icon">${d?'✅':'📷'}</span>${p}</div>`;
-  }).join('');
+    `<strong>${prop.name}</strong>　${dateStr}　${staffName}<br>必須チェック ${reqDone}/${reqTotal}件完了<br>
+    <span style="font-size:11px;color:#888">必須項目を全てチェックしてから送信してください。写真はメッセンジャーへ。</span>`;
   document.getElementById('supply-txt').value = ps.supply||'';
   document.getElementById('maint-txt').value = ps.maint||'';
   document.getElementById('memo-txt').value = ps.memo||'';
@@ -683,15 +683,18 @@ function renderSubmit(){
   if(ps.submitted){
     btn.style.display = 'none';
     doneWrap.style.display = 'block';
-    document.getElementById('finish-done-msg').textContent = ps.submittedAt + '　業務完了報告済み';
+    document.getElementById('finish-done-msg').innerHTML = ps.submittedAt + '　業務完了報告済み<br><span style="font-size:13px;font-weight:300;color:var(--accent-text);line-height:1.8;display:block;margin-top:8px;">これでお客様も快適にお過ごしいただけます。<br>いつもありがとう！お疲れ様でした！🙏</span><span style="font-size:12px;font-weight:300;color:var(--text2);line-height:1.7;display:block;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">📷 撮影写真はいつものメッセンジャーに必ず投稿ください。<br>それで清掃完了になります。</span>';
   } else {
     btn.style.display = 'block';
-    btn.textContent = '本部へ清掃完了報告';
-    btn.classList.remove('sent'); btn.disabled=false;
+    btn.textContent = allReqDone ? '本部へ清掃完了報告' : `必須項目が残っています（${reqTotal-reqDone}件）`;
+    btn.disabled = !allReqDone;
+    btn.style.opacity = allReqDone ? '1' : '0.4';
+    btn.style.cursor = allReqDone ? 'pointer' : 'default';
+    btn.classList.remove('sent');
     doneWrap.style.display = 'none';
   }
 }
-function togglePhoto(i){ S[curProp].photos[i]=!S[curProp].photos[i]; renderSubmit(); }
+function togglePhoto(i){ /* photos managed externally */ }
 function submitReport(){
   S[curProp].supply = document.getElementById('supply-txt').value;
   S[curProp].maint  = document.getElementById('maint-txt').value;
@@ -702,23 +705,48 @@ function submitReport(){
   const timeStr = now.getHours()+'時'+String(now.getMinutes()).padStart(2,'0')+'分';
   S[curProp].submitted = true;
   S[curProp].submittedAt = timeStr;
-  renderSubmit(); renderPropTabs();
+
+  // Googleスプレッドシートに送信
+  const prop = P();
+  const ps = S[curProp];
+  const reqTotal = prop.areas.reduce((s,a)=>s+a.items.filter(it=>!it.o).length,0);
+  const reqDone  = prop.areas.reduce((s,a)=>s+a.items.filter((it,i)=>!it.o&&(ps.checked[a.id]||{})[i]).length,0);
+  const payload = {
+    propName: prop.name,
+    staffName: staffName,
+    staffDate: staffDate,
+    reqDone: reqDone,
+    reqTotal: reqTotal,
+    submittedAt: timeStr,
+    supply: ps.supply||'',
+    maint: ps.maint||'',
+    memo: ps.memo||''
+  };
+  fetch(GAS_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  }).catch(err => console.log('送信エラー:', err));
+
+  renderSubmit(); renderPropTabs(); updateCheckSubmitBtn();
 }
 
 // TROUBLE
 function renderTrouble(){
-  const prop = P();
-  document.getElementById('trouble-content').innerHTML = prop.troubles.map((t,idx)=>`
-    <div class="tr-card">
-      <div class="tr-hd" onclick="toggleTr(${idx})">
-        <span style="font-size:16px">⚠️</span>
-        <span class="tr-title">${t.title}</span>
-        <span class="chev" id="trchev-${idx}">▼</span>
-      </div>
-      <div class="tr-body" id="trbody-${idx}">
-        ${t.steps.map((s,j)=>`<div class="step"><div class="step-n">${j+1}</div><div class="step-t">${s}</div></div>`).join('')}
-      </div>
-    </div>`).join('');
+  document.getElementById('trouble-content').innerHTML = `
+    <div class="tr-card"><div class="tr-hd" onclick="toggleTr(0)"><span style="font-size:16px">⚠️</span><span class="tr-title">ブレーカーが落ちた</span><span class="chev" id="trchev-0">▼</span></div>
+      <div class="tr-body" id="trbody-0">
+        <div class="step"><div class="step-n">1</div><div class="step-t">電気のブレーカーを確認</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-t">ブレーカーを復活させる</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-t">復活を確認</div></div>
+      </div></div>
+    <div class="tr-card"><div class="tr-hd" onclick="toggleTr(1)"><span style="font-size:16px">⚠️</span><span class="tr-title">お風呂のお湯が出ない</span><span class="chev" id="trchev-1">▼</span></div>
+      <div class="tr-body" id="trbody-1">
+        <div class="step"><div class="step-n">1</div><div class="step-t">電気のブレーカーを確認</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-t">ガスの安全装置を確認</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-t">給湯ボタンを確認</div></div>
+      </div></div>`;
 }
 function toggleTr(idx){
   const body = document.getElementById('trbody-'+idx);
