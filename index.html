@@ -250,10 +250,14 @@ input[type="text"]:focus, input[type="date"]:focus { border-color:var(--accent);
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 <script>
-firebase.initializeApp({
+// Inline Firebase compat initialization without CDN
+</script>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, set, get, onValue } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const firebaseApp = initializeApp({
   apiKey: "AIzaSyDMIeH-2j1fCE2i1J4UsqUdMxWtdc7alkk",
   authDomain: "the-house-cleaning-check.firebaseapp.com",
   databaseURL: "https://the-house-cleaning-check-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -262,7 +266,18 @@ firebase.initializeApp({
   messagingSenderId: "305882214266",
   appId: "1:305882214266:web:affa4deb3b2b14d278f0c3",
 });
-const db = firebase.database();
+const _db = getDatabase(firebaseApp);
+
+// Expose firebase functions to global scope
+window._fbReady = true;
+window._dbRef = (path) => ref(_db, path);
+window._dbSet = (path, data) => set(ref(_db, path), data);
+window._dbGet = (path) => get(ref(_db, path));
+window.dispatchEvent(new CustomEvent('firebaseReady'));
+</script>
+<script>
+// Firebase is initialized in the module script above
+// db operations use window._dbSet, window._dbGet
 
 // ===== MIURA shared checklist (same as THE HOUSE hayama) =====
 const MIURA_AREAS = [
@@ -389,14 +404,14 @@ async function fbSave(propId) {
   const date = staffDate || new Date().toISOString().split('T')[0];
   const key = fbKey(date, propId);
   const data = JSON.parse(JSON.stringify(S[propId]));
-  await db.ref(key).set(data);
+  await window._dbSet(key, data);
 }
 async function fbLoad(date, propId) {
-  const snap = await db.ref(fbKey(date, propId)).once('value');
+  const snap = await window._dbGet(fbKey(date, propId));
   return snap.exists() ? snap.val() : null;
 }
 async function fbLoadDate(date) {
-  const snap = await db.ref(`cleaning/${date.replace(/-/g,'_')}`).once('value');
+  const snap = await window._dbGet(`cleaning/${date.replace(/-/g,'_')}`);
   return snap.exists() ? snap.val() : {};
 }
 
@@ -447,6 +462,13 @@ async function startChecklist() {
     initState(curProp);
     setSyncBar('');
   }
+  // Ensure all areas are initialized
+  P(curProp).areas.forEach(a => {
+    if (!S[curProp].checked) S[curProp].checked = {};
+    if (!S[curProp].flagged) S[curProp].flagged = {};
+    if (!S[curProp].checked[a.id]) S[curProp].checked[a.id] = {};
+    if (!S[curProp].flagged[a.id]) S[curProp].flagged[a.id] = {};
+  });
   S[curProp].staffName = name;
   S[curProp].staffDate = date;
 
@@ -455,6 +477,18 @@ async function startChecklist() {
   document.getElementById('staff-info-bar').textContent = fmt+'　'+name;
   document.getElementById('sscreen-start').classList.remove('active');
   document.getElementById('sscreen-check').style.display = 'block';
+  // 施設タブを無効化
+  document.querySelectorAll('.prop-tab').forEach(t => {
+    t.style.opacity = '0.4';
+    t.style.pointerEvents = 'none';
+  });
+  // 選択中の施設タブだけ表示
+  document.querySelectorAll('.prop-tab').forEach(t => {
+    if (t.classList.contains('active')) {
+      t.style.opacity = '1';
+      t.style.pointerEvents = 'auto';
+    }
+  });
   renderPropTabs();
   renderByNav();
   document.getElementById('scroll-area').scrollTop = 0;
@@ -465,6 +499,11 @@ function resetStart() {
   document.getElementById('sscreen-check').style.display = 'none';
   document.querySelectorAll('.start-prop-btn').forEach(b=>b.classList.remove('selected'));
   document.getElementById('start-form').style.display = 'none';
+  // 施設タブを再有効化
+  document.querySelectorAll('.prop-tab').forEach(t => {
+    t.style.opacity = '';
+    t.style.pointerEvents = '';
+  });
 }
 
 // ===== Mode =====
@@ -493,13 +532,33 @@ function renderPropTabs() {
   ).join('');
 }
 async function selectProp(id) {
+  // 施設タブはチェックリスト開始後は切り替え不可
+  if (document.getElementById('sscreen-check').style.display === 'block') return;
   curProp = id;
   curArea = P(id).areas[0].id;
+  // Ensure state is initialized
+  if (!S[id]) initState(id);
+  // Ensure all areas have checked/flagged objects
+  P(id).areas.forEach(a => {
+    if (!S[id].checked[a.id]) S[id].checked[a.id] = {};
+    if (!S[id].flagged[a.id]) S[id].flagged[a.id] = {};
+  });
   // load from Firebase
   setSyncBar('読み込み中...');
   const saved = await fbLoad(staffDate, id);
-  if (saved) { S[id]=saved; setSyncBar('✓ 読み込み完了'); }
-  else { setSyncBar(''); }
+  if (saved) {
+    S[id] = saved;
+    // Re-ensure areas after loading
+    P(id).areas.forEach(a => {
+      if (!S[id].checked) S[id].checked = {};
+      if (!S[id].flagged) S[id].flagged = {};
+      if (!S[id].checked[a.id]) S[id].checked[a.id] = {};
+      if (!S[id].flagged[a.id]) S[id].flagged[a.id] = {};
+    });
+    setSyncBar('✓ 読み込み完了');
+  } else {
+    setSyncBar('');
+  }
   renderPropTabs();
   renderByNav();
   document.getElementById('scroll-area').scrollTop = 0;
@@ -777,20 +836,6 @@ window.renderOverview  = renderHQ;
 document.getElementById('date-lbl').textContent=new Date().toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'});
 renderPropButtons();
 </script>
-<script>
-// Fallback: if module script fails, show error
-window.addEventListener('error', function(e) {
-  document.getElementById('prop-btn-list').innerHTML = '<p style="color:red;padding:10px">エラー: ' + e.message + '</p>';
-});
-// Check if PROPS loaded after 2 seconds
-setTimeout(function() {
-  var list = document.getElementById('prop-btn-list');
-  if(list && list.innerHTML === '') {
-    list.innerHTML = '<p style="color:red;padding:10px">施設リストの読み込みに失敗しました。ページを再読み込みしてください。</p>';
-    // Try to render manually
-    if(typeof renderPropButtons === 'function') renderPropButtons();
-  }
-}, 2000);
-</script>
+
 </body>
 </html>
