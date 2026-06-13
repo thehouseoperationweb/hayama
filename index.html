@@ -744,5 +744,20 @@ window.renderOverview  = renderHQ;
 document.getElementById('date-lbl').textContent=new Date().toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'});
 renderPropButtons();
 </script>
+<script>
+// Fallback: if module script fails, show error
+window.addEventListener('error', function(e) {
+  document.getElementById('prop-btn-list').innerHTML = '<p style="color:red;padding:10px">エラー: ' + e.message + '</p>';
+});
+// Check if PROPS loaded after 2 seconds
+setTimeout(function() {
+  var list = document.getElementById('prop-btn-list');
+  if(list && list.innerHTML === '') {
+    list.innerHTML = '<p style="color:red;padding:10px">施設リストの読み込みに失敗しました。ページを再読み込みしてください。</p>';
+    // Try to render manually
+    if(typeof renderPropButtons === 'function') renderPropButtons();
+  }
+}, 2000);
+</script>
 </body>
 </html>
