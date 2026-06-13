@@ -250,11 +250,10 @@ input[type="text"]:focus, input[type="date"]:focus { border-color:var(--accent);
   </div>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
-import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-database.js";
-
-const firebaseConfig = {
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+<script>
+firebase.initializeApp({
   apiKey: "AIzaSyDMIeH-2j1fCE2i1J4UsqUdMxWtdc7alkk",
   authDomain: "the-house-cleaning-check.firebaseapp.com",
   databaseURL: "https://the-house-cleaning-check-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -262,9 +261,8 @@ const firebaseConfig = {
   storageBucket: "the-house-cleaning-check.firebasestorage.app",
   messagingSenderId: "305882214266",
   appId: "1:305882214266:web:affa4deb3b2b14d278f0c3",
-};
-const fbApp = initializeApp(firebaseConfig);
-const db = getDatabase(fbApp);
+});
+const db = firebase.database();
 
 // ===== MIURA shared checklist (same as THE HOUSE hayama) =====
 const MIURA_AREAS = [
@@ -391,14 +389,14 @@ async function fbSave(propId) {
   const date = staffDate || new Date().toISOString().split('T')[0];
   const key = fbKey(date, propId);
   const data = JSON.parse(JSON.stringify(S[propId]));
-  await set(ref(db, key), data);
+  await db.ref(key).set(data);
 }
 async function fbLoad(date, propId) {
-  const snap = await get(ref(db, fbKey(date, propId)));
+  const snap = await db.ref(fbKey(date, propId)).once('value');
   return snap.exists() ? snap.val() : null;
 }
 async function fbLoadDate(date) {
-  const snap = await get(ref(db, `cleaning/${date.replace(/-/g,'_')}`));
+  const snap = await db.ref(`cleaning/${date.replace(/-/g,'_')}`).once('value');
   return snap.exists() ? snap.val() : {};
 }
 
@@ -535,7 +533,10 @@ function renderCheck() {
     const isDone = done===a.items.length;
     return`<button class="area-btn${curArea===a.id?' active':''}${isDone?' done':''}" onclick="selArea('${a.id}')">${a.name}${isDone?' ✓':''}</button>`;
   }).join('');
-  const area = prop.areas.find(a=>a.id===curArea);
+  const area = prop.areas.find(a=>a.id===curArea) || prop.areas[0];
+  if(!S[curProp].checked[area.id]) S[curProp].checked[area.id]={};
+  if(!S[curProp].flagged[area.id]) S[curProp].flagged[area.id]={};
+  curArea = area.id;
   const done = Object.values(S[curProp].checked[curArea]||{}).filter(Boolean).length;
   const total = area.items.length;
   document.getElementById('prog-fill').style.width = Math.round(done/total*100)+'%';
@@ -622,11 +623,45 @@ function togglePhoto(i){ S[curProp].photos[i]=!S[curProp].photos[i]; renderSubmi
 window.togglePhoto=togglePhoto;
 
 async function submitReport() {
+  const prop=P();
+  const total=prop.areas.reduce((s,a)=>s+a.items.length,0);
+  const done=prop.areas.reduce((s,a)=>s+Object.values(S[curProp].checked[a.id]||{}).filter(Boolean).length,0);
+  const incomplete=total-done;
+  if(incomplete>0){
+    document.getElementById('incomplete-count').textContent=`未チェック項目が${incomplete}件あります`;
+    document.getElementById('incomplete-reason').value='';
+    const popup=document.getElementById('incomplete-popup');
+    popup.style.display='flex';
+    return;
+  }
+  await doSubmit('');
+}
+window.submitReport=submitReport;
+
+function closeIncompletePopup(){
+  document.getElementById('incomplete-popup').style.display='none';
+}
+window.closeIncompletePopup=closeIncompletePopup;
+
+async function submitWithReason(){
+  const reason=document.getElementById('incomplete-reason').value.trim();
+  if(!reason){
+    document.getElementById('incomplete-reason').focus();
+    document.getElementById('incomplete-reason').style.borderColor='var(--warn)';
+    return;
+  }
+  document.getElementById('incomplete-popup').style.display='none';
+  await doSubmit(reason);
+}
+window.submitWithReason=submitWithReason;
+
+async function doSubmit(reason){
   S[curProp].supply=document.getElementById('supply-txt').value;
   S[curProp].maint=document.getElementById('maint-txt').value;
   S[curProp].memo=document.getElementById('memo-txt').value;
   S[curProp].staffName=staffName;
   S[curProp].staffDate=staffDate;
+  S[curProp].incompleteReason=reason;
   const now=new Date();
   S[curProp].submitted=true;
   S[curProp].submittedAt=now.getHours()+'時'+String(now.getMinutes()).padStart(2,'0')+'分';
@@ -635,7 +670,6 @@ async function submitReport() {
   catch(e){ setSyncBar('⚠ 送信失敗'); }
   renderSubmit(); renderPropTabs();
 }
-window.submitReport=submitReport;
 
 // ===== Trouble =====
 function renderTrouble() {
@@ -716,6 +750,7 @@ async function renderHQ() {
           </div>`).join('')}
         </div>`:''}
         ${hasMemo?`<div class="memo-section">
+          ${ps.incompleteReason?`<div class="memo-row" style="color:var(--warn)"><span class="memo-label">⚠ 未完了理由：</span>${ps.incompleteReason}</div>`:''}
           ${ps.supply?`<div class="memo-row"><span class="memo-label">補充：</span>${ps.supply}</div>`:''}
           ${ps.maint?`<div class="memo-row"><span class="memo-label">修繕：</span>${ps.maint}</div>`:''}
           ${ps.memo?`<div class="memo-row"><span class="memo-label">メモ：</span>${ps.memo}</div>`:''}
