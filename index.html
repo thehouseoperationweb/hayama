@@ -419,6 +419,7 @@ const PROPS = [
 let S = {};
 function initState(pid) {
   const p = PROPS.find(x=>x.id===pid);
+  if (!p.photos) p.photos = ['トイレ','キッチン','お風呂場','冷蔵庫','電子レンジ','アメニティ設置','テラス'];
   S[pid] = { checked:{}, flagged:{}, photos:{}, supply:'', maint:'', memo:'', submitted:false, submittedAt:'', staffName:'', staffDate:'' };
   p.areas.forEach(a=>{ S[pid].checked[a.id]={}; S[pid].flagged[a.id]={}; });
 }
@@ -698,6 +699,8 @@ function renderIssues() {
 // ===== Submit =====
 function renderSubmit() {
   const prop=P(), ps=S[curProp];
+  if (!prop.photos) prop.photos = ['トイレ','キッチン','お風呂場','冷蔵庫','電子レンジ','アメニティ設置','テラス'];
+  if (!ps.photos) ps.photos = {};
   const total=prop.areas.reduce((s,a)=>s+a.items.length,0);
   const done=prop.areas.reduce((s,a)=>s+Object.values(ps.checked[a.id]||{}).filter(Boolean).length,0);
   const flags=prop.areas.reduce((s,a)=>s+Object.values(ps.flagged[a.id]||{}).filter(Boolean).length,0);
@@ -705,10 +708,13 @@ function renderSubmit() {
   document.getElementById('submit-notice').innerHTML=
     `<strong>${prop.name}</strong>　${dateStr}　${staffName}<br>チェック ${done}/${total}件　🚩 要確認 ${flags}件<br>
     <span style="font-size:11px;color:#888">全エリアのチェックと写真確認を終えてから送信してください。</span>`;
-  document.getElementById('photo-grid').innerHTML=prop.photos.map((p,i)=>{
-    const d=ps.photos[i];
-    return`<div class="ph-item${d?' done':''}" onclick="togglePhoto(${i})"><span class="ph-icon">${d?'✅':'📷'}</span>${p}</div>`;
-  }).join('');
+  const photoGridEl = document.getElementById('photo-grid');
+  if (photoGridEl) {
+    photoGridEl.innerHTML=prop.photos.map((p,i)=>{
+      const d=ps.photos[i];
+      return`<div class="ph-item${d?' done':''}" onclick="togglePhoto(${i})"><span class="ph-icon">${d?'✅':'📷'}</span>${p}</div>`;
+    }).join('');
+  }
   document.getElementById('supply-txt').value=ps.supply||'';
   document.getElementById('maint-txt').value=ps.maint||'';
   document.getElementById('memo-txt').value=ps.memo||'';
@@ -716,7 +722,7 @@ function renderSubmit() {
   if(ps.submitted){ btn.textContent='✓ 送信済み（'+ps.submittedAt+'）'; btn.classList.add('sent'); btn.disabled=true; }
   else { btn.textContent='清掃完了・本部へ送信 →'; btn.classList.remove('sent'); btn.disabled=false; }
 }
-function togglePhoto(i){ S[curProp].photos[i]=!S[curProp].photos[i]; renderSubmit(); autoSave(); }
+function togglePhoto(i){ if(!S[curProp].photos) S[curProp].photos={}; S[curProp].photos[i]=!S[curProp].photos[i]; renderSubmit(); autoSave(); }
 window.togglePhoto=togglePhoto;
 
 async function submitReport() {
