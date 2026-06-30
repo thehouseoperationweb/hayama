@@ -772,7 +772,24 @@ async function doSubmit(reason){
   try { await fbSave(curProp); setSyncBar('✓ 送信・保存完了'); }
   catch(e){ setSyncBar('⚠ 送信失敗'); }
   renderSubmit(); renderPropTabs();
+  showCompletionMessage();
 }
+
+function showCompletionMessage(){
+  const wrap = document.createElement('div');
+  wrap.id = 'completion-popup';
+  wrap.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;';
+  wrap.innerHTML = `
+    <div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:340px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,0.2);">
+      <div style="font-size:36px;margin-bottom:12px;">✅</div>
+      <div style="font-size:15px;line-height:1.8;color:#1C1915;margin-bottom:20px;">
+        清掃お疲れ様です。<br>これでお客様も快適に過ごせますね！<br>最後スレへ清掃完了と写真のアップを忘れずに☺️
+      </div>
+      <button onclick="document.getElementById('completion-popup').remove()" style="width:100%;padding:12px;background:#1C1915;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">閉じる</button>
+    </div>`;
+  document.body.appendChild(wrap);
+}
+window.showCompletionMessage=showCompletionMessage;
 
 // ===== Trouble =====
 function renderTrouble() {
