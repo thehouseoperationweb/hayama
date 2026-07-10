@@ -219,7 +219,7 @@ input[type="text"]:focus, input[type="date"]:focus { border-color:var(--accent);
                 <input type="date" id="staff-date-input" style="width:100%;font-size:15px;padding:11px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-family:inherit;">
               </div>
             </div>
-            <button class="submit-btn" onclick="startChecklist()">チェックリストを開始 →</button>
+            <button class="submit-btn" onclick="startChecklist()" style="position:relative;z-index:10;">チェックリストを開始 →</button>
             <!-- Self Check-in Template -->
             <div id="checkin-template-wrap" style="display:none;margin-top:20px;">
               <div style="height:1px;background:var(--border);margin-bottom:16px;"></div>
@@ -784,6 +784,8 @@ async function submitWithReason(){
 }
 window.submitWithReason=submitWithReason;
 
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyAV6Lu0jXcUhsytPxRgD7eCIZfGLQmnFm-9sL4CTFv-xFW0ZFtROzWZOCtNVrz5YXSVQ/exec';
+
 async function doSubmit(reason){
   S[curProp].supply=document.getElementById('supply-txt').value;
   S[curProp].maint=document.getElementById('maint-txt').value;
@@ -797,6 +799,27 @@ async function doSubmit(reason){
   setSyncBar('送信中...');
   try { await fbSave(curProp); setSyncBar('✓ 送信・保存完了'); }
   catch(e){ setSyncBar('⚠ 送信失敗'); }
+  // Googleスプレッドシートにも送信
+  const prop = PROPS.find(x=>x.id===curProp);
+  const ps = S[curProp];
+  const total = prop.areas.reduce((s,a)=>s+a.items.length,0);
+  const done  = prop.areas.reduce((s,a)=>s+Object.values(ps.checked[a.id]||{}).filter(Boolean).length,0);
+  fetch(GAS_URL, {
+    method:'POST', mode:'no-cors',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      propName: prop.name,
+      staffName: staffName,
+      staffDate: staffDate,
+      reqDone: done,
+      reqTotal: total,
+      submittedAt: ps.submittedAt,
+      supply: ps.supply||'',
+      maint: ps.maint||'',
+      memo: ps.memo||'',
+      incompleteReason: reason||''
+    })
+  }).catch(e=>console.log('GAS送信エラー:',e));
   showCompletionMessage();
   renderSubmit(); renderPropTabs();
 }
