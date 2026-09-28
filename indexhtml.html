@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>清掃チェックリスト</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F7F6F2;
+  --surface: #FFFFFF;
+  --surface2: #F0EEE8;
+  --border: #E2DED6;
+  --text: #1A1816;
+  --text2: #6B665E;
+  --text3: #A09B93;
+  --accent: #2C5F4A;
+  --accent-light: #EAF2EE;
+  --accent-text: #1A3D2E;
+  --warn: #C04B2B;
+  --warn-light: #FAEAE5;
+  --warn-text: #7A2E1A;
+  --purple: #4A3F8C;
+  --purple-light: #EDEAF8;
+  --purple-text: #2D2660;
+  --amber: #8C6320;
+  --amber-light: #FBF4E6;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; background: var(--bg); font-family: 'Noto Sans JP', sans-serif; color: var(--text); }
+.app { display: flex; flex-direction: column; height: 100vh; max-width: 480px; margin: 0 auto; }
+.header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 16px; flex-shrink: 0; }
+.header-top { display: flex; align-items: center; justify-content: space-between; }
+.header-title { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -.01em; }
+.header-date { font-size: 11px; color: var(--text3); }
+.mode-bar { display: flex; gap: 6px; margin-top: 10px; }
+.mode-btn { flex: 1; padding: 8px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; font-weight: 700; color: var(--text2); background: transparent; cursor: pointer; transition: all .15s; font-family: inherit; letter-spacing: .02em; }
+.mode-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px 14px 80px; }
+.prop-tabs { display: flex; gap: 5px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+.prop-tabs::-webkit-scrollbar { display: none; }
+.prop-tab { flex-shrink: 0; padding: 7px 13px; border: 1.5px solid var(--border); border-radius: 100px; font-size: 12px; font-weight: 500; color: var(--text2); background: var(--surface); cursor: pointer; white-space: nowrap; transition: all .15s; font-family: inherit; }
+.prop-tab.active { background: var(--purple-light); color: var(--purple-text); border-color: var(--purple); font-weight: 700; }
+.prop-tab.done { border-color: var(--accent); color: var(--accent-text); }
+.sub-nav { display: flex; background: var(--surface2); border-radius: var(--radius); padding: 3px; margin-bottom: 14px; gap: 2px; }
+.sub-btn { flex: 1; padding: 8px 4px; border: none; background: transparent; border-radius: 9px; font-size: 11px; font-weight: 500; color: var(--text3); cursor: pointer; transition: all .15s; font-family: inherit; white-space: nowrap; }
+.sub-btn.active { background: var(--surface); color: var(--text); font-weight: 700; box-shadow: var(--shadow); }
+.area-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+.area-btn { padding: 5px 11px; border: 1.5px solid var(--border); border-radius: 100px; font-size: 11px; font-weight: 500; color: var(--text2); background: var(--surface); cursor: pointer; transition: all .15s; font-family: inherit; }
+.area-btn.active { background: var(--purple-light); color: var(--purple-text); border-color: var(--purple); font-weight: 700; }
+.area-btn.done { border-color: var(--accent); color: var(--accent); }
+.prog-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.prog-bar-wrap { flex: 1; height: 5px; background: var(--border); border-radius: 100px; overflow: hidden; }
+.prog-bar-fill { height: 5px; background: var(--accent); border-radius: 100px; transition: width .3s ease; }
+.prog-label { font-size: 11px; color: var(--text3); white-space: nowrap; }
+.sec-label { font-size: 10px; font-weight: 700; color: var(--text3); letter-spacing: .08em; text-transform: uppercase; margin: 12px 0 6px 2px; }
+.ci { display: flex; align-items: center; gap: 12px; padding: 13px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 5px; cursor: pointer; transition: all .15s; }
+.ci:active { transform: scale(.99); }
+.ci.done { background: var(--surface2); border-color: var(--border); }
+.cb { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .2s; }
+.cb.chk { background: var(--accent); border-color: var(--accent); }
+.cb.chk::after { content: ''; width: 10px; height: 6px; border-left: 2.5px solid #fff; border-bottom: 2.5px solid #fff; transform: rotate(-45deg) translate(1px,-1px); display: block; }
+.cl { font-size: 13px; color: var(--text); flex: 1; line-height: 1.5; }
+.ci.done .cl { color: var(--text3); text-decoration: line-through; }
+.flag-btn { background: none; border: none; cursor: pointer; padding: 4px; color: var(--text3); font-size: 16px; flex-shrink: 0; transition: color .15s; }
+.flag-btn.on { color: var(--warn); }
+.page { display: none; }
+.page.active { display: block; }
+.notice { background: var(--amber-light); border: 1px solid #D4A855; border-radius: var(--radius); padding: 12px 14px; font-size: 12px; color: #6B4E1A; line-height: 1.7; margin-bottom: 14px; white-space: pre-line; }
+.issue-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; background: var(--warn-light); border: 1px solid #F0B8A8; border-radius: var(--radius); margin-bottom: 5px; }
+.issue-item-text { font-size: 13px; color: var(--warn-text); flex: 1; line-height: 1.5; }
+.issue-area { font-size: 11px; color: var(--warn); margin-top: 2px; }
+.submit-notice { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 14px; }
+.photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 14px; }
+.ph-item { border: 1.5px dashed var(--border); border-radius: var(--radius-sm); padding: 14px 6px; text-align: center; font-size: 11px; color: var(--text3); cursor: pointer; background: var(--surface); transition: all .15s; line-height: 1.5; }
+.ph-item.done { border-style: solid; border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.ph-icon { font-size: 20px; display: block; margin: 0 auto 4px; }
+.txt-area { width: 100%; font-size: 13px; padding: 11px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); resize: none; font-family: inherit; margin-bottom: 8px; line-height: 1.6; }
+.txt-area:focus { outline: none; border-color: var(--accent); }
+.submit-btn { width: 100%; padding: 16px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-size: 15px; font-weight: 700; cursor: pointer; transition: all .15s; font-family: inherit; letter-spacing: .02em; }
+.submit-btn:active { opacity: .85; transform: scale(.99); }
+.submit-btn.sent { background: #888; cursor: default; }
+.submit-btn:disabled { opacity: .4; cursor: default; }
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+.mc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
+.ml { font-size: 10px; color: var(--text3); margin-bottom: 4px; font-weight: 500; letter-spacing: .04em; }
+.mv { font-size: 20px; font-weight: 700; color: var(--text); }
+.mv.g { color: var(--accent); }
+.mv.r { color: var(--warn); }
+.prop-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 8px; overflow: hidden; }
+.prop-card-hd { display: flex; align-items: center; gap: 8px; padding: 13px 14px; cursor: pointer; }
+.prop-card-name { font-size: 14px; font-weight: 700; color: var(--text); flex: 1; }
+.prop-card-body { border-top: 1px solid var(--border); padding: 12px 14px; display: none; }
+.prop-card-body.open { display: block; }
+.area-rpt-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+.area-rpt-row:last-child { border-bottom: none; }
+.area-rpt-name { font-size: 12px; color: var(--text); flex: 1; }
+.mini-bar { flex: 0 0 70px; height: 4px; background: var(--border); border-radius: 100px; overflow: hidden; }
+.mini-fill { height: 4px; background: var(--accent); border-radius: 100px; }
+.area-rpt-pct { font-size: 11px; color: var(--text3); min-width: 32px; text-align: right; }
+.flag-section { margin-top: 10px; }
+.flag-row { display: flex; gap: 8px; align-items: flex-start; padding: 6px 0; border-bottom: 1px solid var(--border); }
+.flag-row:last-child { border-bottom: none; }
+.flag-row-text { font-size: 12px; color: var(--warn-text); flex: 1; line-height: 1.4; }
+.flag-row-area { font-size: 10px; color: var(--warn); }
+.memo-section { margin-top: 10px; padding: 10px 12px; background: var(--surface2); border-radius: var(--radius-sm); }
+.memo-row { font-size: 12px; color: var(--text2); line-height: 1.6; }
+.memo-label { font-weight: 700; color: var(--text); }
+.sent-badge { font-size: 11px; color: var(--accent); font-weight: 700; }
+.badge { font-size: 11px; padding: 3px 8px; border-radius: 100px; font-weight: 700; white-space: nowrap; }
+.badge-done { background: var(--accent-light); color: var(--accent-text); }
+.badge-warn { background: var(--warn-light); color: var(--warn-text); }
+.badge-prog { background: var(--purple-light); color: var(--purple-text); }
+.badge-none { background: var(--surface2); color: var(--text3); }
+.tr-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 6px; overflow: hidden; }
+.tr-hd { display: flex; align-items: center; gap: 10px; padding: 13px 14px; cursor: pointer; }
+.tr-title { font-size: 13px; font-weight: 700; color: var(--text); flex: 1; }
+.tr-body { padding: 0 14px 12px; display: none; }
+.tr-body.open { display: block; }
+.step { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; }
+.step-n { width: 22px; height: 22px; background: var(--purple-light); color: var(--purple-text); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.step-t { font-size: 13px; color: var(--text2); line-height: 1.5; padding-top: 2px; }
+.contact-row { display: flex; align-items: center; gap: 12px; padding: 11px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 6px; }
+.contact-name { font-size: 13px; color: var(--text); flex: 1; font-weight: 500; }
+.contact-tel { font-size: 13px; color: var(--purple); font-weight: 700; }
+.contact-icon { font-size: 18px; flex-shrink: 0; }
+.empty { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 14px; }
+.empty-icon { font-size: 36px; display: block; margin: 0 auto 12px; }
+.chev { font-size: 14px; color: var(--text3); transition: transform .2s; }
+.chev.open { transform: rotate(180deg); }
+.start-prop-btn { width:100%; padding:16px; border:1.5px solid var(--border); border-radius:var(--radius); font-size:15px; font-weight:700; color:var(--text); background:var(--surface); cursor:pointer; text-align:left; transition:all .15s; font-family:inherit; }
+.start-prop-btn:active { transform:scale(.99); }
+.start-prop-btn.selected { border-color:var(--accent); background:var(--accent-light); color:var(--accent-text); }
+.start-prop-btn.disabled { opacity:.45; cursor:default; pointer-events:none; }
+input[type="text"], input[type="date"] { outline:none; }
+input[type="text"]:focus, input[type="date"]:focus { border-color:var(--accent); }
+.coming-badge { font-size:10px; font-weight:700; color:#fff; background:#A09B93; padding:2px 7px; border-radius:100px; margin-left:8px; vertical-align:middle; }
+.sync-bar { font-size:11px; color:var(--text3); text-align:right; margin-bottom:6px; min-height:16px; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ===== パスワードゲート ===== -->
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:#F7F6F2;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;font-family:'Noto Sans JP',sans-serif;">
+  <div style="font-size:30px;margin-bottom:8px;">🏠</div>
+  <div style="font-size:15px;font-weight:700;color:#1A1816;margin-bottom:4px;">清掃チェックリスト</div>
+  <div style="font-size:12px;color:#6B665E;margin-bottom:20px;">合言葉を入力してください</div>
+  <input id="gate-input" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="数字を入力"
+    style="width:100%;max-width:280px;font-size:16px;padding:13px 14px;border:1.5px solid #E2DED6;border-radius:8px;background:#fff;color:#1A1816;font-family:inherit;text-align:center;letter-spacing:.05em;">
+  <div id="gate-err" style="font-size:12px;color:#C04B2B;height:18px;margin-top:8px;"></div>
+  <button id="gate-btn"
+    style="width:100%;max-width:280px;padding:14px;background:#2C5F4A;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.02em;margin-top:4px;">
+    入る
+  </button>
+</div>
+
+<script>
+(function(){
+  var PASS = "3855";
+  var input = document.getElementById('gate-input');
+  var btn = document.getElementById('gate-btn');
+  var err = document.getElementById('gate-err');
+  var gate = document.getElementById('gate');
+  function tryOpen(){
+    if(input.value === PASS){
+      gate.style.display = 'none';
+      document.querySelector('.app').style.display = 'flex';
+    } else {
+      err.textContent = '合言葉が違います';
+      input.value = '';
+      input.focus();
+    }
+  }
+  btn.addEventListener('click', tryOpen);
+  input.addEventListener('keydown', function(e){ if(e.key === 'Enter') tryOpen(); });
+  input.focus();
+})();
+</script>
+
+<div class="app" style="display:none;">
+  <div class="header">
+    <div class="header-top">
+      <div class="header-title">🏠 清掃チェックリスト</div>
+      <div class="header-date" id="date-lbl"></div>
+    </div>
+    <div class="mode-bar">
+      <button class="mode-btn active" onclick="setMode('staff')">👤 スタッフ</button>
+      <button class="mode-btn" onclick="setMode('hq')">🏢 本部確認</button>
+    </div>
+  </div>
+
+  <div class="scroll-area" id="scroll-area">
+
+    <!-- STAFF MODE -->
+    <div id="mode-staff" class="page active">
+
+      <!-- START SCREEN -->
+      <div id="sscreen-start" class="page active">
+        <div style="padding:8px 0 20px;">
+          <p style="font-size:13px;color:var(--text2);margin-bottom:16px;">施設を選んでください</p>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;" id="prop-btn-list"></div>
+          <div id="start-form" style="display:none;">
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;">
+              <div style="margin-bottom:14px;">
+                <label style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:6px;">スタッフ名</label>
+                <input type="text" id="staff-name-input" placeholder="例：田中 花子" style="width:100%;font-size:15px;padding:11px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-family:inherit;">
+              </div>
+              <div>
+                <label style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:6px;">日付</label>
+                <input type="date" id="staff-date-input" style="width:100%;font-size:15px;padding:11px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-family:inherit;">
+              </div>
+            </div>
+            <button class="submit-btn" onclick="startChecklist()" style="position:relative;z-index:10;">チェックリストを開始 →</button>
+            <!-- Self Check-in Template -->
+            <div id="checkin-template-wrap" style="display:none;margin-top:20px;">
+              <div style="height:1px;background:var(--border);margin-bottom:16px;"></div>
+              <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">🔑 Self Check-in Template</div>
+              <div id="checkin-template-text" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;font-size:12px;color:var(--text);line-height:1.8;white-space:pre-wrap;max-height:300px;overflow-y:auto;margin-bottom:10px;"></div>
+              <button onclick="copyCheckinText()" style="width:100%;padding:12px;background:var(--text);color:#fff;border:none;border-radius:var(--radius);font-size:11px;font-weight:500;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;font-family:inherit;">📋 テキストをコピー</button>
+              <div id="moroso-warning" style="display:none;margin-top:10px;padding:10px 14px;background:#FFF0F0;border:1px solid #FFAAAA;border-radius:var(--radius);color:#CC0000;font-size:13px;font-weight:700;line-height:1.6;">⚠️ カートの場所、写真を添付必要な場合あり！！！</div>
+              <div id="copy-confirm-start" style="text-align:center;font-size:12px;color:var(--text2);margin-top:8px;display:none;">✅ コピーしました！メッセンジャーに貼り付けてください。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHECKLIST SCREEN -->
+      <div id="sscreen-check" style="display:none;">
+        <div class="sync-bar" id="sync-bar"></div>
+        <div class="prop-tabs" id="prop-tabs"></div>
+        <div style="background:var(--surface2);border-radius:var(--radius);padding:10px 12px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+          <span style="font-size:13px;color:var(--text2);flex:1;" id="staff-info-bar">　</span>
+          <button onclick="resetStart()" style="font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px 6px;">変更</button>
+        </div>
+        <div class="sub-nav">
+          <button class="sub-btn active" onclick="staffNav('check')">✅ チェック</button>
+          <button class="sub-btn" onclick="staffNav('issues')">🚩 要確認</button>
+          <button class="sub-btn" onclick="staffNav('submit')">📤 送信</button>
+          <button class="sub-btn" onclick="staffNav('trouble')">🔧 トラブル</button>
+        </div>
+        <div id="spage-check" class="page active">
+          <div class="area-row" id="area-row"></div>
+          <div class="prog-row">
+            <div class="prog-bar-wrap"><div class="prog-bar-fill" id="prog-fill" style="width:0%"></div></div>
+            <div class="prog-label" id="prog-lbl">0 / 0</div>
+          </div>
+          <div id="check-items"></div>
+        </div>
+        <div id="spage-issues" class="page"><div id="issues-content"></div></div>
+        <div id="spage-submit" class="page">
+          <div class="submit-notice" id="submit-notice"></div>
+          <div class="sec-label">📷 写真撮影チェック</div>
+          <div class="photo-grid" id="photo-grid"></div>
+          <div class="sec-label">補充が必要なもの</div>
+          <textarea class="txt-area" id="supply-txt" rows="2" placeholder="例：ティッシュ、アメニティ"></textarea>
+          <div class="sec-label">修繕・メンテナンス報告</div>
+          <textarea class="txt-area" id="maint-txt" rows="2" placeholder="修繕が必要な箇所など"></textarea>
+          <div class="sec-label">その他メモ</div>
+          <textarea class="txt-area" id="memo-txt" rows="2" placeholder="自由記入"></textarea>
+          <button class="submit-btn" id="submit-btn" onclick="submitReport()">清掃完了・本部へ送信 →</button>
+        </div>
+        <div id="spage-trouble" class="page">          <div id="trouble-content"></div>
+          <div class="sec-label" style="margin-top:14px">📞 緊急連絡先</div>
+          <div class="contact-row"><span class="contact-icon">🔥</span><span class="contact-name">ガス — 岡田さん</span><span class="contact-tel">090-5527-5352</span></div>
+          <div class="contact-row"><span class="contact-icon">⚡</span><span class="contact-name">電気 — 大幸さん</span><span class="contact-tel">090-3224-2084</span></div>
+          <div class="contact-row"><span class="contact-icon">✨</span><span class="contact-name">クリーニング — 宮崎さん</span><span class="contact-tel"></span></div>
+          <div class="contact-row"><span class="contact-icon">❄️</span><span class="contact-name">エアコン — ダイキン</span><span class="contact-tel">0120-881-081</span></div>
+        </div>
+
+        <!-- SELF CHECK-IN PAGE -->
+        <div id="spage-checkin" class="page">
+          <div id="checkin-content"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- HQ MODE -->
+    <div id="mode-hq" class="page">
+      <div class="sync-bar" id="hq-sync-bar"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-size:12px;color:var(--text2);">日付でフィルター</div>
+        <input type="date" id="hq-date-filter" style="font-size:13px;padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-family:inherit;" onchange="renderHQ()">
+      </div>
+      <div class="metrics">
+        <div class="mc"><div class="ml">送信済み</div><div class="mv g" id="hq-sent">0/0</div></div>
+        <div class="mc"><div class="ml">全体進捗</div><div class="mv" id="hq-prog">0%</div></div>
+        <div class="mc"><div class="ml">要確認</div><div class="mv r" id="hq-flags">0</div></div>
+      </div>
+      <div id="hq-cards"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Inline Firebase compat initialization without CDN
+</script>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, set, get, onValue } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const firebaseApp = initializeApp({
+  apiKey: "AIzaSyDMIeH-2j1fCE2i1J4UsqUdMxWtdc7alkk",
+  authDomain: "the-house-cleaning-check.firebaseapp.com",
+  databaseURL: "https://the-house-cleaning-check-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "the-house-cleaning-check",
+  storageBucket: "the-house-cleaning-check.firebasestorage.app",
+  messagingSenderId: "305882214266",
+  appId: "1:305882214266:web:affa4deb3b2b14d278f0c3",
+});
+const _db = getDatabase(firebaseApp);
+
+// Expose firebase functions to global scope
+window._fbReady = true;
+window._dbRef = (path) => ref(_db, path);
+window._dbSet = (path, data) => set(ref(_db, path), data);
+window._dbGet = (path) => get(ref(_db, path));
+window.dispatchEvent(new CustomEvent('firebaseReady'));
+</script>
+<script>
+// Firebase is initialized in the module script above
+// db operations use window._dbSet, window._dbGet
+
+// ===== MIURA shared checklist (same as THE HOUSE hayama) =====
+const MIURA_AREAS = [
+  {id:'t',name:'テラス',items:['ジャグジーの清掃（水滴もとる）','テラスのゴミ、タバコの吸殻','損傷はないか？','お湯は出るか？','溝や隙間、建物の横にゴミは落ちていないか？']},
+  {id:'k',name:'キッチン＆LDK',items:['シンクの清掃（水滴もとる）','新しいスポンジ、ミニタオルの設置','コーヒーメーカーの中のゴミは捨てて掃除したか？','お皿、フォークなどの汚れの確認','電子レンジ、トースターの汚れの確認','冷蔵庫の確認','冷凍庫の確認（氷は綺麗であればそのまま）','ゴミ箱関連（見た目も綺麗に）','キッチンの上の棚と下の引き出しも汚れていないか？','ダイニング＆リビング全体の清掃（ソファーの下にゴミはないか？）','テーブルに指紋などはついてないか？','窓のところにゴミやホコリはないか？','ソファーなどにホコリやチリがあれば、コロコロで']},
+  {id:'to',name:'トイレ',items:['便器のみならず水のところ、ペーパーホルダーもふく','カラータオルを置いたか？','予備のトイレットペーパーは2つあるか？汚物入れの掃除はしたか？']},
+  {id:'b',name:'ベッドルーム',items:['匂いはないか？（枕カバー、毛布）','犬の毛やホコリ、髪の毛はないか？','クッションの下などにもゴミはないか？','各種棚などにホコリはないか？','カーテンレールが外れてないか？']},
+  {id:'a',name:'お風呂＆アメニティ',items:['お風呂は水滴をとったか？床や壁に髪の毛はついていないか？','アメニティーは人数分あるか？バスマットは二つ用意しているか？','洗面台など鏡は汚れてないか？歯磨き粉などくっついてないか？','お湯は出ているか？']},
+  {id:'o',name:'その他',items:['倉庫など整理整頓されているか？','キャンドルの電池は入っているか？','電球は切れていないか？','ティッシュは半分以上は入っているか？','ゴミ箱にゴミは残っていないか？（最後確認）','駐車場側のゴミも目立つものは掃除すること']}
+];
+const MIURA_TROUBLES = [
+  {title:'ブレーカーが落ちた',steps:['電気のブレーカーを確認','ブレーカーを復活させる','復活を確認']},
+  {title:'お風呂のお湯が出ない',steps:['電気のブレーカーを確認','ガスの安全装置を確認','給湯ボタンを確認']}
+];
+const MIURA_PHOTOS = ['トイレ','キッチン','お風呂場','冷蔵庫','電子レンジ','アメニティ設置','テラス'];
+
+const PROPS = [
+  {
+    id:'house', name:'🏠 THE HOUSE', area:'葉山',
+    notice:'※私物・ペットボトルはテラスに置く。\nチェックイン説明：内鍵必須。エアコンリモコン・ジャグジー・電子レンジは同時使用不可。ジャグジーヒーターは使用時のみ。',
+    photos:['トイレ','キッチン','お風呂場','冷蔵庫','電子レンジ','アメニティ設置','テラス'],
+    areas:[
+      {id:'ht',name:'テラス',items:['ジャグジーの清掃（水滴もとる）','テラスのゴミ、タバコの吸殻はないか？','損傷はないか？','お湯は出るか？','溝や隙間、建物の横にゴミは落ちていないか？']},
+      {id:'hk',name:'キッチン＆LDK',items:['シンクの清掃（水滴もとる）','新しいスポンジ、ミニタオルの設置','コーヒーメーカーの中のゴミは捨てて掃除したか？豆、紅茶などの補充','お皿、フォークなどの汚れの確認','電子レンジ、トースターの汚れの確認','冷蔵庫の中は綺麗ですか？（食べ物のソースやチリ汚れもないように）','冷凍庫の確認（氷は綺麗であればそのまま）','ゴミ箱は空でゴミ袋かけてあるか、本体は綺麗か','キッチンの上の棚と下の引き出しも汚れていないか？','ダイニング＆リビング全体の清掃（ソファーの下にゴミはないか？）','テーブルに指紋などはついてないか？','窓のところにゴミやホコリはないか？','ソファーなどにホコリやチリがあれば、コロコロで']},
+      {id:'hto',name:'トイレ',items:['便器のみならず水のところ、ペーパーホルダーもふく','カラータオルを置いたか？','予備のトイレットペーパーは2つあるか？汚物入れの掃除はしたか？']},
+      {id:'hb',name:'2階ベッドルーム',items:['匂いはないか？（枕カバー、毛布）','犬の毛やホコリ、髪の毛はないか？','クッションの下などにもゴミはないか？','各種棚などにホコリはないか？','カーテンレールが外れてないか？']},
+      {id:'ha',name:'お風呂＆アメニティ',items:['バスタブ、床の水は拭き取ってあるか','排水溝は綺麗か、髪の毛がないか','アメニティーは人数分あるか？バスマットは二つ用意しているか？','洗面台周りは綺麗か（歯磨き粉などか飛んでないか注意）','お湯は出ているか？']},
+      {id:'ho',name:'その他',items:['倉庫など整理整頓されているか？','キャンドルの電池は入っているか？','電球は切れていないか？','ティッシュは半分以上は入っているか？','ゴミ箱にゴミは残っていないか？（最後確認）','駐車場側のゴミも目立つものは掃除すること']}
+    ],
+    troubles:[
+      {title:'ブレーカーが落ちた',steps:['電気のブレーカーを確認','ブレーカーを復活させる','復活を確認']},
+      {title:'お風呂のお湯が出ない',steps:['電気のブレーカーを確認','ガスの安全装置を確認','給湯ボタンを確認（お風呂と2階キッチン）']}
+    ]
+  },
+  {
+    id:'beach', name:'🌊 ON THE BEACH', area:'葉山',
+    notice:'※私物・ペットボトルは中庭か3階入口に置く。\nチェックイン説明：暖炉・ジャグジーのヒーターは使用時のみ。\nセルフチェックイン時：室内の明かりをつけ、エアコンを調整。雨の場合は入口にバスタオルを1つ置く。',
+    photos:['トイレ','キッチン','お風呂場','冷蔵庫','電子レンジ','アメニティ設置','テラス'],
+    areas:[
+      {id:'bt',name:'テラス＆1Fエントランスエリア',items:['ジャグジーの清掃（水滴もとる）','テラスが水で濡れてないか？汚れはひどくないか？','どこか損傷はないか？','お湯は出るか？','ラグやクッションが汚れたり、濡れていないか？','ソファや宝箱周りにゴミは落ちていないか？','ジャグジーの裏の清掃（週一）：建物の裏側に回り、ブラシで清掃をお願いします。','ジャグジーの裏の清掃（毎日必須）：ゴミは毎回拾ってください。']},
+      {id:'bk',name:'キッチン＆居室',items:['シンクの清掃（水滴もとる）','新しいスポンジ、タオルの設置','家電製品掃除・豆、紅茶などの補充','お皿、フォークなどの汚れの確認','電子レンジ、トースターの汚れの確認','冷蔵庫の中は綺麗ですか？（食べ物のソースやチリ汚れもないように）','冷凍庫の確認（氷は綺麗であればそのまま）アイスクリームなどないか？','ゴミ箱は空でゴミ袋かけてあるか、本体は綺麗か','キッチンの棚やテーブルは汚れてないか？','ダイニング＆リビング全体の清掃（ソファーの下にゴミはないか？）','窓のところにゴミやホコリはないか？','ソファーなどにホコリやチリがあれば、コロコロで','プフやクッションなどに汚れはないか？']},
+      {id:'bto',name:'トイレ',items:['便器のみならず水のところもふく','カラータオルを置いたか？','予備のトイレットペーパーは2つあるか？汚物入れの掃除はしたか？','洗面所は水をふいてあるか？','最後にトイレクイックルは流したか？']},
+      {id:'bb',name:'ベッドルーム',items:['匂いはないか？（枕カバー、毛布）','犬の毛やホコリ、髪の毛はないか？','ラグは汚れてないか？','クッションの下などにもゴミはないか？','ベッドの下にゴミは落ちていないか？','各種棚などにホコリはないか？','窓ガラスは汚れてないか？']},
+      {id:'ba',name:'お風呂＆アメニティ',items:['バスタブ、床の水は拭き取ってあるか','排水溝は綺麗か、髪の毛がないか','アメニティーは人数分あるか？バスマットは二つ用意しているか？','洗面台周りは綺麗か（歯磨き粉などか飛んでないか注意）','お湯は出ているか？']},
+      {id:'bo',name:'その他',items:['倉庫など鍵を閉めたか？','キャンドルの電池は入っているか？','電球は切れていないか？','ティッシュは半分以上は入っているか？','ゴミ箱にゴミは残っていないか？（最後確認）','駐車場、中庭のゴミはないか？']}
+    ],
+    troubles:[
+      {title:'ブレーカーが落ちた',steps:['電気のブレーカーを確認','ブレーカーを復活させる','復活を確認']},
+      {title:'お風呂のお湯が出ない',steps:['電気のブレーカーを確認','ガスの安全装置を確認','給湯ボタンを確認（お風呂のみ）']}
+    ]
+  },
+  {
+    id:'maison', name:'🏡 MAISON D:E VACANCES HAYAMA', area:'葉山',
+    notice:'※私物・ペットボトルはテラスに置く。\nチェックイン説明：内鍵必須。\nセルフチェックイン時：室内の明かりをつけ、エアコンを調整。雨の場合は入口にバスタオルを1つ置く。',
+    photos:['トイレ','キッチン','お風呂場','冷蔵庫','電子レンジ','アメニティ設置','テラス'],
+    areas:[
+      {id:'mg',name:'全体/はじめに',items:['照明は切れていないか','エアコン作動、給湯器作動チェック']},
+      {id:'me',name:'駐車場・玄関',items:['門や門の鍵など破損はないか、ゴミが飛んできてないか','シャワーは正常に使えるか、洗濯機はカバーがかっているか','玄関、エントランスに落ち葉、砂など残っていないか','植木に水やりがしてあるか','定期的に草むしり','タイルが汚れている場合はハイターかけてブラシで擦る','人数分のスリッパと足拭きマットが準備されているか','玄関マットは綺麗か']},
+      {id:'mt',name:'テラス・ミニプール',items:['ゴミが飛んできてないか、落ち葉は掃いてあるか','ミニプールは綺麗か水滴拭き取ってあるか','ミニプールの水、お湯が出るか、栓確認','BBQコンロは綺麗か','窓は綺麗か、網戸に破損はないか','スリッパ、椅子は人数分出ているか']},
+      {id:'ml',name:'1Fリビング・ダイニング',items:['テレビ、スピーカー、オブジェは綺麗か。埃がかぶっていないか','プロジェクター、テレビの接続、ログイン状況など確認','ゴミ箱は空でゴミ袋かけてあるか、本体は綺麗か','テーブル、椅子は綺麗か','ローテーブルは拭いてあるか、キャンドルは点くか。洋書が整頓されているか','クッションは揃っているか、ソファは綺麗か','加湿器の水、ストーブの灯油は補充されているか（冬季）','窓は綺麗か、窓の下部分に埃や虫の死骸がないか']},
+      {id:'mb1',name:'1階ベッドルーム',items:['匂いはないか？（柔布カバー、毛布）','犬の毛やホコリ、髪の毛はないか？','ベッドの下にゴミや埃はないか','ペット用の柵は設置してあるか（階段下ベッドルーム）','階段下ベッドルームの奥にあるランドリーグッズは綺麗か、整頓されているか','お客様用掃除機は充電されているか、ダストケースは綺麗か','7名以上の場合エキストラベッドは用意してあるか']},
+      {id:'mba',name:'バスルーム・洗面所',items:['バスタブ、床の水は拭き取ってあるか','排水溝は綺麗か、髪の毛がないか','シャワー、蛇口は綺麗に磨かれているか','バスルームのガラス、鏡は磨かれているか','シャンプー、コンディショナー、ボディソープ、ハンドソープ、ボディローション残量確認と補充','タオル、バスマット、歯ブラシ、歯磨き粉は人数分用意されているか','ドライヤーは綺麗にしまってあるか','綿棒、コットンの残量確認と補充','洗面台周りは綺麗か（歯磨き粉などか飛んでないか注意）','壁のカビはないか（あれば必ずカビキラー）']},
+      {id:'mk',name:'キッチン',items:['シンク内、蛇口は綺麗か、シンクシートは敷いてあるか','排水溝の中綺麗か、水切り袋はセットしてあるか','コーヒー豆、紅茶、スティックシュガー、塩、砂糖、岩塩、ブラックペッパー、しょうゆ、オリーブオイルの残量確認、補充','冷蔵庫の中身確認、綺麗か、ブリタは綺麗かセットしてあるか（ブリタのメモリ確認）','オーブンレンジ、コーヒーメーカー、ソーダメーカー、ケトルはきれいか','炊飯器、ホットプレート、IH、魚焼きグリルは綺麗か','スポンジ、タオルは新しいものがセットしてあるか','食器用洗剤、ハンドソープ、アルコールスプレー、キッチンペーパーの残量確認、補充','ゴミ箱は空でゴミ袋かけてあるか、本体は綺麗か','食器棚内、カトラリーの引き出し確認、調理器具棚の中は整っているか','コンポストの中確認、固まってる場合ほぐす']},
+      {id:'mto',name:'トイレ',items:['便器、手洗いスペース、床が綺麗か','予備のトイレットペーパーは2つあるか？汚物入れの掃除はしたか？','タオル、セットされているか','洗面台周りは綺麗か（歯磨き粉などか飛んでないか注意）','ゴミ箱は空でゴミ袋かけてあるか、本体は綺麗か']},
+      {id:'mb2',name:'2階ベッドスペース・階段',items:['匂いはないか？（柔布カバー、毛布）','犬の毛やホコリ、髪の毛はないか？','ベッドの下にゴミや埃はないか','階段の窓は綺麗か、窓の下部分に埃や虫の死骸がないか','テレビは綺麗か、埃など被ってないか','テレビの作動確認','カーペットにコロコロかけてあるか']},
+      {id:'mfin',name:'全体/仕上げ',items:['窓ガラスは綺麗か','高いところに埃、蜘蛛の巣などないか','オブジェなどに埃がかぶっていないか','Wi-Fi、Bluetoothは正常か','ティッシュペーパーの残量確認','オプション（わんちゃん、BBQなど）がある場合用意してあるか','フロアにゴミ、髪の毛、埃が落ちていないか','コロコロ（ラグ、ソファ、ベッド）','殺虫剤はしっかり残量があるか','マニュアルは設置してあるか','ファブリックスプレーはしたか','キャンドルの電池は入っているか？']}
+    ],
+    troubles:[
+      {title:'ブレーカーが落ちた',steps:['電気のブレーカーを確認','ブレーカーを復活させる','復活を確認']},
+      {title:'お風呂のお湯が出ない',steps:['電気のブレーカーを確認','ガスの安全装置を確認','給湯ボタンを確認']}
+    ]
+  },
+  {
+    id:'ph', name:'🏠 THE HOUSE on the beach PENT HOUSE', area:'葉山',
+    notice:'',
+    photos:['入り口周り','ベランダ','リビング','キッチン','トイレ','バスルーム','全体'],
+    areas:[
+      {id:'ph_gen',name:'全体/はじめに',items:['照明は切れていないか','エアコン作動、給湯器作動チェック']},
+      {id:'ph_ent',name:'入り口周り',items:['階段、手すり、壁は綺麗になっているか。ゴミ、虫の死骸はないか','黒い扉のストッパーは置いてあるか','人数分のスリッパは用意されているか']},
+      {id:'ph_ter',name:'ベランダ',items:['破損はないか、ゴミ、鳥の糞が飛んできてないか','サンシェード作動確認（リモコンの電池）','外のソファのクッションは設置してあるか（晴天時）','窓は汚れてないか']},
+      {id:'ph_liv',name:'リビング・ダイニング',items:['カウンター、棚、オブジェ、テーブル、椅子にゴミや埃などないか','窓のサンはきれいか（虫の死骸など注意）','ソファの下にゴミなど落ちていないか、汚れていないか','倉庫前のダイヤルキーはロックしてあるか']},
+      {id:'ph_kit',name:'キッチン',items:['シンク内、蛇口は綺麗か','排水溝の中綺麗か、ネットをかけてあるか','コーヒー豆、紅茶、岩塩、ブラックペッパー、しょうゆ、オリーブオイル、スティックシュガーの残量確認、補充','冷蔵庫の中身確認、綺麗か','トースター、電子レンジ、コーヒーメーカー、ケトルはきれいか','IHは綺麗か、延長コードがあるか','スポンジ、タオルは新しいものがセットしてあるか','食器用洗剤、ハンドソープ、アルコールスプレー、キッチンペーパーの残量確認、補充','ゴミ箱は空でゴミ袋かけてあるか、ゴミ箱本体は綺麗か','食器棚内、シンク下、カトラリーの引き出し確認、中は整っているか']},
+      {id:'ph_toi',name:'トイレ',items:['便器、手洗いスペース、床が綺麗か','トイレットペーパーの量は適切か','サニタリー入れは綺麗か、ゴミ袋がかかっているか','マットがセットされているか']},
+      {id:'ph_bat',name:'バスルーム・洗面所',items:['バスタブ、床の水は拭き取ってあるか','排水溝は綺麗か、髪の毛がないか','シャワー、蛇口は綺麗に磨かれているか','バスルームの鏡は磨かれているか','シャンプー、コンディショナー、ボディソープ、ハンドソープ、ボディローション残量確認と補充','フェイスタオル、バスマットは用意されているか','ゴミ箱は空で綺麗か','ドライヤー整頓されて置いてあるか','洗面台の鏡は綺麗か']},
+      {id:'ph_fin',name:'全体/仕上げ',items:['窓ガラスは綺麗か','高いところに埃、蜘蛛の巣などないか','Wi-Fi、Bluetooth、スピーカー（JBL)は正常か','ティッシュペーパーの残量確認','オプション（わんちゃん、BBQなど）がある場合用意してあるか','フロアにゴミ、髪の毛、埃が落ちていないか','コロコロ（ラグ、ソファ、ベッド）','殺虫剤はしっかり残量があるか','マニュアルは設置してあるか','フレグランススプレーはしてあるか']}
+    ],
+    troubles:[
+      {title:'ブレーカーが落ちた',steps:['電気のブレーカーを確認','ブレーカーを復活させる','復活を確認']},
+      {title:'お風呂のお湯が出ない',steps:['電気のブレーカーを確認','ガスの安全装置を確認','給湯ボタンを確認']}
+    ]
+  },
+  {id:'koajiro_pool',  name:'🏠 THE HOUSE 小網代 Pool and Cave',       area:'三浦', notice:'', photos:MIURA_PHOTOS, areas:MIURA_AREAS.map(a=>({...a,id:'kp_'+a.id})), troubles:MIURA_TROUBLES},
+  {id:'koajiro_shower',name:'🏠 THE HOUSE 小網代 Shower living suite',  area:'三浦', notice:'', photos:MIURA_PHOTOS, areas:MIURA_AREAS.map(a=>({...a,id:'ks_'+a.id})), troubles:MIURA_TROUBLES},
+  {id:'koajiro_bed',   name:'🏠 THE HOUSE 小網代 Bed and bath',         area:'三浦', notice:'', photos:MIURA_PHOTOS, areas:MIURA_AREAS.map(a=>({...a,id:'kb_'+a.id})), troubles:MIURA_TROUBLES},
+  {id:'moroso',        name:'🏠 THE HOUSE 諸磯',                        area:'三浦', notice:'', photos:MIURA_PHOTOS, areas:MIURA_AREAS.map(a=>({...a,id:'mo_'+a.id})), troubles:MIURA_TROUBLES},
+  {id:'mitohama',      name:'🏠 THE HOUSE 三戸浜',                      area:'三浦', notice:'', photos:MIURA_PHOTOS, areas:MIURA_AREAS.map(a=>({...a,id:'mi_'+a.id})), troubles:MIURA_TROUBLES, comingSoon:true},
+  {id:'jogashima',     name:'🏰 MAISON 城ヶ島',                         area:'三浦', notice:'', photos:MIURA_PHOTOS, areas:MIURA_AREAS.map(a=>({...a,id:'jo_'+a.id})), troubles:MIURA_TROUBLES},
+];
+
+// ===== State =====
+let S = {};
+function initState(pid) {
+  const p = PROPS.find(x=>x.id===pid);
+  if (!p.photos) p.photos = ['トイレ','キッチン','お風呂場','冷蔵庫','電子レンジ','アメニティ設置','テラス'];
+  S[pid] = { checked:{}, flagged:{}, photos:{}, supply:'', maint:'', memo:'', submitted:false, submittedAt:'', staffName:'', staffDate:'' };
+  p.areas.forEach(a=>{ S[pid].checked[a.id]={}; S[pid].flagged[a.id]={}; });
+}
+PROPS.forEach(p=>initState(p.id));
+
+let curProp = PROPS[0].id;
+let curArea = PROPS[0].areas[0].id;
+let curMode = 'staff';
+let curNav  = 'check';
+let staffName = '';
+let staffDate = '';
+let startPropId = '';
+
+function P(id){ return PROPS.find(p=>p.id===(id||curProp)); }
+
+// ===== Firebase helpers =====
+function fbKey(date, propId) {
+  return `cleaning/${date.replace(/-/g,'_')}/${propId}`;
+}
+async function fbSave(propId) {
+  const date = staffDate || new Date().toISOString().split('T')[0];
+  const key = fbKey(date, propId);
+  const data = JSON.parse(JSON.stringify(S[propId]));
+  await window._dbSet(key, data);
+}
+async function fbLoad(date, propId) {
+  const snap = await window._dbGet(fbKey(date, propId));
+  return snap.exists() ? snap.val() : null;
+}
+async function fbLoadDate(date) {
+  const snap = await window._dbGet(`cleaning/${date.replace(/-/g,'_')}`);
+  return snap.exists() ? snap.val() : {};
+}
+
+function setSyncBar(msg, isHQ=false) {
+  const id = isHQ ? 'hq-sync-bar' : 'sync-bar';
+  document.getElementById(id).textContent = msg;
+}
+
+// ===== Render prop buttons on start screen =====
+function renderPropButtons() {
+  const container = document.getElementById('prop-btn-list');
+  container.innerHTML = PROPS.map(p => {
+    const cs = p.comingSoon;
+    return `<button class="start-prop-btn${cs?' disabled':''}" onclick="${cs?'':'selectStartProp(\''+p.id+'\')'}" ${cs?'disabled':''}>
+      ${p.name}${cs?'<span class="coming-badge">準備中</span>':''}
+      <span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:6px;">${p.area}</span>
+    </button>`;
+  }).join('');
+}
+
+function selectStartProp(id) {
+  startPropId = id;
+  document.querySelectorAll('.start-prop-btn').forEach(b=>b.classList.remove('selected'));
+  const btns = document.querySelectorAll('.start-prop-btn');
+  PROPS.forEach((p,i)=>{ if(p.id===id) btns[i].classList.add('selected'); });
+  document.getElementById('start-form').style.display = 'block';
+  document.getElementById('staff-date-input').value = new Date().toISOString().split('T')[0];
+  document.getElementById('staff-name-input').focus();
+  // Show self check-in template
+  const ciData = CHECKIN_TEXTS[id];
+  const ciWrap = document.getElementById('checkin-template-wrap');
+  const ciText = document.getElementById('checkin-template-text');
+  if (ciData && ciWrap && ciText) {
+    ciText.textContent = ciData.text;
+    ciWrap.style.display = 'block';
+    const morosoWarn = document.getElementById('moroso-warning');
+    if (morosoWarn) morosoWarn.style.display = (id === 'moroso') ? 'block' : 'none';
+  } else if (ciWrap) {
+    ciWrap.style.display = 'none';
+  }
+}
+
+async function startChecklist() {
+  const name = document.getElementById('staff-name-input').value.trim();
+  const date = document.getElementById('staff-date-input').value;
+  if (!name) { document.getElementById('staff-name-input').focus(); return; }
+  if (!date) { document.getElementById('staff-date-input').focus(); return; }
+  staffName = name;
+  staffDate = date;
+  curProp   = startPropId;
+  curArea   = P(curProp).areas[0].id;
+
+  // Try load existing data from Firebase
+  setSyncBar('データを読み込み中...');
+  const saved = await fbLoad(date, curProp);
+  if (saved) {
+    S[curProp] = saved;
+    setSyncBar('✓ 保存済みデータを読み込みました');
+  } else {
+    initState(curProp);
+    setSyncBar('');
+  }
+  // Ensure all areas are initialized
+  P(curProp).areas.forEach(a => {
+    if (!S[curProp].checked) S[curProp].checked = {};
+    if (!S[curProp].flagged) S[curProp].flagged = {};
+    if (!S[curProp].checked[a.id]) S[curProp].checked[a.id] = {};
+    if (!S[curProp].flagged[a.id]) S[curProp].flagged[a.id] = {};
+  });
+  S[curProp].staffName = name;
+  S[curProp].staffDate = date;
+
+  const d = new Date(date);
+  const fmt = d.toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'});
+  document.getElementById('staff-info-bar').textContent = fmt+'　'+name;
+  document.getElementById('sscreen-start').classList.remove('active');
+  document.getElementById('sscreen-check').style.display = 'block';
+  // 施設タブを無効化
+  document.querySelectorAll('.prop-tab').forEach(t => {
+    t.style.opacity = '0.4';
+    t.style.pointerEvents = 'none';
+  });
+  // 選択中の施設タブだけ表示
+  document.querySelectorAll('.prop-tab').forEach(t => {
+    if (t.classList.contains('active')) {
+      t.style.opacity = '1';
+      t.style.pointerEvents = 'auto';
+    }
+  });
+  renderPropTabs();
+  renderByNav();
+  document.getElementById('scroll-area').scrollTop = 0;
+}
+
+function resetStart() {
+  document.getElementById('sscreen-start').classList.add('active');
+  document.getElementById('sscreen-check').style.display = 'none';
+  document.querySelectorAll('.start-prop-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('start-form').style.display = 'none';
+  // 施設タブを再有効化
+  document.querySelectorAll('.prop-tab').forEach(t => {
+    t.style.opacity = '';
+    t.style.pointerEvents = '';
+  });
+}
+
+// ===== Mode =====
+function setMode(m) {
+  curMode = m;
+  document.querySelectorAll('.mode-btn').forEach((b,i)=>b.classList.toggle('active',['staff','hq'][i]===m));
+  document.getElementById('mode-staff').classList.toggle('active',m==='staff');
+  document.getElementById('mode-hq').classList.toggle('active',m==='hq');
+  document.getElementById('scroll-area').scrollTop = 0;
+  if (m==='hq') {
+    const today = new Date().toISOString().split('T')[0];
+    if (!document.getElementById('hq-date-filter').value) {
+      document.getElementById('hq-date-filter').value = today;
+    }
+    renderHQ();
+  }
+}
+window.setMode = setMode;
+
+// ===== Prop tabs =====
+function renderPropTabs() {
+  document.getElementById('prop-tabs').innerHTML = PROPS.map(p=>
+    `<button class="prop-tab${curProp===p.id?' active':''}${S[p.id].submitted?' done':''}" onclick="selectProp('${p.id}')">
+      ${p.name}${S[p.id].submitted?' ✓':''}
+    </button>`
+  ).join('');
+}
+async function selectProp(id) {
+  // 施設タブはチェックリスト開始後は切り替え不可
+  if (document.getElementById('sscreen-check').style.display === 'block') return;
+  curProp = id;
+  curArea = P(id).areas[0].id;
+  // Ensure state is initialized
+  if (!S[id]) initState(id);
+  // Ensure all areas have checked/flagged objects
+  P(id).areas.forEach(a => {
+    if (!S[id].checked[a.id]) S[id].checked[a.id] = {};
+    if (!S[id].flagged[a.id]) S[id].flagged[a.id] = {};
+  });
+  // load from Firebase
+  setSyncBar('読み込み中...');
+  const saved = await fbLoad(staffDate, id);
+  if (saved) {
+    S[id] = saved;
+    // Re-ensure areas after loading
+    P(id).areas.forEach(a => {
+      if (!S[id].checked) S[id].checked = {};
+      if (!S[id].flagged) S[id].flagged = {};
+      if (!S[id].checked[a.id]) S[id].checked[a.id] = {};
+      if (!S[id].flagged[a.id]) S[id].flagged[a.id] = {};
+    });
+    setSyncBar('✓ 読み込み完了');
+  } else {
+    setSyncBar('');
+  }
+  renderPropTabs();
+  renderByNav();
+  document.getElementById('scroll-area').scrollTop = 0;
+}
+window.selectProp = selectProp;
+
+// ===== Staff nav =====
+function staffNav(tab) {
+  curNav = tab;
+  document.querySelectorAll('.sub-btn').forEach((b,i)=>b.classList.toggle('active',['check','issues','submit','trouble'][i]===tab));
+  ['check','issues','submit','trouble'].forEach(t=>{
+    document.getElementById('spage-'+t).classList.toggle('active',t===tab);
+  });
+  renderByNav();
+  document.getElementById('scroll-area').scrollTop = 0;
+}
+window.staffNav = staffNav;
+
+function renderByNav() {
+  if(curNav==='check')   renderCheck();
+  else if(curNav==='issues')  renderIssues();
+  else if(curNav==='submit')  renderSubmit();
+  else if(curNav==='trouble') renderTrouble();
+}
+
+// ===== Check =====
+function renderCheck() {
+  const prop = P();
+  document.getElementById('area-row').innerHTML = prop.areas.map(a=>{
+    const done = Object.values(S[curProp].checked[a.id]||{}).filter(Boolean).length;
+    const isDone = done===a.items.length;
+    return`<button class="area-btn${curArea===a.id?' active':''}${isDone?' done':''}" onclick="selArea('${a.id}')">${a.name}${isDone?' ✓':''}</button>`;
+  }).join('');
+  const area = prop.areas.find(a=>a.id===curArea) || prop.areas[0];
+  if(!S[curProp].checked[area.id]) S[curProp].checked[area.id]={};
+  if(!S[curProp].flagged[area.id]) S[curProp].flagged[area.id]={};
+  curArea = area.id;
+  const done = Object.values(S[curProp].checked[curArea]||{}).filter(Boolean).length;
+  const total = area.items.length;
+  document.getElementById('prog-fill').style.width = Math.round(done/total*100)+'%';
+  document.getElementById('prog-lbl').textContent = done+' / '+total+' 完了';
+  if (prop.notice) {
+    document.getElementById('check-items').innerHTML =
+      `<div class="notice">${prop.notice}</div>` +
+      area.items.map((text,i)=>{
+        const chk=S[curProp].checked[curArea][i], flg=S[curProp].flagged[curArea][i];
+        return`<div class="ci${chk?' done':''}" onclick="toggleCheck(${i})">
+          <div class="cb${chk?' chk':''}"></div><div class="cl">${text}</div>
+          <button class="flag-btn${flg?' on':''}" onclick="event.stopPropagation();toggleFlag(${i})">🚩</button>
+        </div>`;
+      }).join('');
+  } else {
+    document.getElementById('check-items').innerHTML = area.items.map((text,i)=>{
+      const chk=S[curProp].checked[curArea][i], flg=S[curProp].flagged[curArea][i];
+      return`<div class="ci${chk?' done':''}" onclick="toggleCheck(${i})">
+        <div class="cb${chk?' chk':''}"></div><div class="cl">${text}</div>
+        <button class="flag-btn${flg?' on':''}" onclick="event.stopPropagation();toggleFlag(${i})">🚩</button>
+      </div>`;
+    }).join('');
+  }
+}
+function selArea(id){ curArea=id; renderCheck(); }
+window.selArea = selArea;
+
+function toggleCheck(i) {
+  S[curProp].checked[curArea][i]=!S[curProp].checked[curArea][i];
+  renderCheck();
+  autoSave();
+}
+function toggleFlag(i) {
+  S[curProp].flagged[curArea][i]=!S[curProp].flagged[curArea][i];
+  renderCheck();
+  autoSave();
+}
+window.toggleCheck = toggleCheck;
+window.toggleFlag  = toggleFlag;
+
+let autoSaveTimer = null;
+function autoSave() {
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(async ()=>{
+    setSyncBar('保存中...');
+    try { await fbSave(curProp); setSyncBar('✓ 自動保存済み'); setTimeout(()=>setSyncBar(''),2000); }
+    catch(e){ setSyncBar('⚠ 保存失敗'); }
+  }, 1500);
+}
+
+// ===== Issues =====
+function renderIssues() {
+  const prop=P(), flags=[];
+  prop.areas.forEach(a=>a.items.forEach((text,i)=>{ if(S[curProp].flagged[a.id][i]) flags.push({area:a.name,text}); }));
+  const el=document.getElementById('issues-content');
+  if(!flags.length){ el.innerHTML='<div class="empty"><span class="empty-icon">✅</span>要確認の項目はありません</div>'; return; }
+  el.innerHTML=flags.map(({area,text})=>`
+    <div class="issue-item"><span style="font-size:16px;flex-shrink:0;margin-top:1px">🚩</span>
+    <div><div class="issue-item-text">${text}</div><div class="issue-area">${area}</div></div></div>`).join('');
+}
+
+// ===== Submit =====
+function renderSubmit() {
+  const prop=P(), ps=S[curProp];
+  if (!prop.photos) prop.photos = ['トイレ','キッチン','お風呂場','冷蔵庫','電子レンジ','アメニティ設置','テラス'];
+  if (!ps.photos) ps.photos = {};
+  const total=prop.areas.reduce((s,a)=>s+a.items.length,0);
+  const done=prop.areas.reduce((s,a)=>s+Object.values(ps.checked[a.id]||{}).filter(Boolean).length,0);
+  const flags=prop.areas.reduce((s,a)=>s+Object.values(ps.flagged[a.id]||{}).filter(Boolean).length,0);
+  const dateStr=staffDate?new Date(staffDate).toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'}):'';
+  document.getElementById('submit-notice').innerHTML=
+    `<strong>${prop.name}</strong>　${dateStr}　${staffName}<br>チェック ${done}/${total}件　🚩 要確認 ${flags}件<br>
+    <span style="font-size:11px;color:#888">全エリアのチェックと写真確認を終えてから送信してください。</span>`;
+  const photoGridEl = document.getElementById('photo-grid');
+  if (photoGridEl) {
+    photoGridEl.innerHTML=prop.photos.map((p,i)=>{
+      const d=ps.photos[i];
+      return`<div class="ph-item${d?' done':''}" onclick="togglePhoto(${i})"><span class="ph-icon">${d?'✅':'📷'}</span>${p}</div>`;
+    }).join('');
+  }
+  document.getElementById('supply-txt').value=ps.supply||'';
+  document.getElementById('maint-txt').value=ps.maint||'';
+  document.getElementById('memo-txt').value=ps.memo||'';
+  const btn=document.getElementById('submit-btn');
+  if(ps.submitted){ btn.textContent='✓ 送信済み（'+ps.submittedAt+'）'; btn.classList.add('sent'); btn.disabled=true; }
+  else { btn.textContent='清掃完了・本部へ送信 →'; btn.classList.remove('sent'); btn.disabled=false; }
+}
+function togglePhoto(i){ if(!S[curProp].photos) S[curProp].photos={}; S[curProp].photos[i]=!S[curProp].photos[i]; renderSubmit(); autoSave(); }
+window.togglePhoto=togglePhoto;
+
+async function submitReport() {
+  const prop=P();
+  const total=prop.areas.reduce((s,a)=>s+a.items.length,0);
+  const done=prop.areas.reduce((s,a)=>s+Object.values(S[curProp].checked[a.id]||{}).filter(Boolean).length,0);
+  const incomplete=total-done;
+  if(incomplete>0){
+    document.getElementById('incomplete-count').textContent=`未チェック項目が${incomplete}件あります`;
+    document.getElementById('incomplete-reason').value='';
+    const popup=document.getElementById('incomplete-popup');
+    popup.style.display='flex';
+    return;
+  }
+  await doSubmit('');
+}
+window.submitReport=submitReport;
+
+function closeIncompletePopup(){
+  document.getElementById('incomplete-popup').style.display='none';
+}
+window.closeIncompletePopup=closeIncompletePopup;
+
+async function submitWithReason(){
+  const reason=document.getElementById('incomplete-reason').value.trim();
+  if(!reason){
+    document.getElementById('incomplete-reason').focus();
+    document.getElementById('incomplete-reason').style.borderColor='var(--warn)';
+    return;
+  }
+  document.getElementById('incomplete-popup').style.display='none';
+  await doSubmit(reason);
+}
+window.submitWithReason=submitWithReason;
+
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyAV6Lu0jXcUhsytPxRgD7eCIZfGLQmnFm-9sL4CTFv-xFW0ZFtROzWZOCtNVrz5YXSVQ/exec';
+
+async function doSubmit(reason){
+  S[curProp].supply=document.getElementById('supply-txt').value;
+  S[curProp].maint=document.getElementById('maint-txt').value;
+  S[curProp].memo=document.getElementById('memo-txt').value;
+  S[curProp].staffName=staffName;
+  S[curProp].staffDate=staffDate;
+  S[curProp].incompleteReason=reason;
+  const now=new Date();
+  S[curProp].submitted=true;
+  S[curProp].submittedAt=now.getHours()+'時'+String(now.getMinutes()).padStart(2,'0')+'分';
+  setSyncBar('送信中...');
+  try { await fbSave(curProp); setSyncBar('✓ 送信・保存完了'); }
+  catch(e){ setSyncBar('⚠ 送信失敗'); }
+  // Googleスプレッドシートにも送信
+  const prop = PROPS.find(x=>x.id===curProp);
+  const ps = S[curProp];
+  const total = prop.areas.reduce((s,a)=>s+a.items.length,0);
+  const done  = prop.areas.reduce((s,a)=>s+Object.values(ps.checked[a.id]||{}).filter(Boolean).length,0);
+  fetch(GAS_URL, {
+    method:'POST', mode:'no-cors',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      propName: prop.name,
+      staffName: staffName,
+      staffDate: staffDate,
+      reqDone: done,
+      reqTotal: total,
+      submittedAt: ps.submittedAt,
+      supply: ps.supply||'',
+      maint: ps.maint||'',
+      memo: ps.memo||'',
+      incompleteReason: reason||''
+    })
+  }).catch(e=>console.log('GAS送信エラー:',e));
+  showCompletionMessage();
+  renderSubmit(); renderPropTabs();
+}
+
+function showCompletionMessage(){
+  const old = document.getElementById('completion-popup');
+  if (old) old.remove();
+  const wrap = document.createElement('div');
+  wrap.id = 'completion-popup';
+  wrap.setAttribute('style', 'position:fixed !important;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:999999;padding:20px;');
+  wrap.innerHTML = `
+    <div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,0.3);">
+      <div style="font-size:36px;margin-bottom:12px;">✅</div>
+      <div style="font-size:15px;line-height:1.8;color:#1C1915;margin-bottom:20px;">
+        清掃お疲れ様です。<br>これでお客様も快適に過ごせますね！<br>最後スレへ清掃完了と写真のアップを忘れずに☺️
+      </div>
+      <button onclick="document.getElementById('completion-popup').remove()" style="width:100%;padding:12px;background:#1C1915;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">閉じる</button>
+    </div>`;
+  document.body.appendChild(wrap);
+}
+window.showCompletionMessage=showCompletionMessage;
+
+// ===== Trouble =====
+function renderTrouble() {
+  const prop=P();
+  document.getElementById('trouble-content').innerHTML=prop.troubles.map((t,idx)=>`
+    <div class="tr-card">
+      <div class="tr-hd" onclick="toggleTr(${idx})">
+        <span style="font-size:16px">⚠️</span>
+        <span class="tr-title">${t.title}</span>
+        <span class="chev" id="trchev-${idx}">▼</span>
+      </div>
+      <div class="tr-body" id="trbody-${idx}">
+        ${t.steps.map((s,j)=>`<div class="step"><div class="step-n">${j+1}</div><div class="step-t">${s}</div></div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+function toggleTr(idx){
+  document.getElementById('trbody-'+idx).classList.toggle('open');
+  document.getElementById('trchev-'+idx).classList.toggle('open');
+}
+window.toggleTr=toggleTr;
+
+// ===== Self Check-in =====
+const CHECKIN_TEXTS = {
+  'house': {
+    title: 'THE HOUSE 葉山',
+    text: `〇〇様
+本日はTHE HOUSEをご予約くださりありがとうございます。セルフチェックイン対応のため、メッセージにて室内の説明をさせていただきます。
+
+【駐車場について】
+・お車は施設（黒い建物）に沿って、なるべく壁寄りに停めてください。
+
+【鍵の場所・チェックイン連絡について】
+・鍵の場所：入り口・門の扉右手にキーボックスが設置してあります。
+・暗証番号：暗証番号はお客様の携帯電話番号の下4桁【〇〇〇〇】に設定してあります。そちらで鍵を取り出し、門と玄関の両方を解錠してご入室ください。
+・到着連絡：施設に到着され、無事にご入室されましたら、こちらのメッセージかお電話にてご一報いただければと思います。
+
+【室内設備・お守りいただきたいこと】
+1. 土足厳禁：お履物は玄関で脱いでいただき、玄関入ってすぐ右手シューズラックの上にある使い捨てのスリッパをご利用いただくようお願いいたします。
+2. 注意事項の同意書：玄関目の前のチェストの上に、当施設の注意事項の同意書がございます。今一度ご確認いただき、ご署名をお願いします。
+3. 1階 キッチン・リビング：シンクの上の棚に食器類、シンクの下の棚に調理器具が入っており、ご自由にお使いいただけます。入り口入ってすぐのチェストの引き出しにカトラリー類、下の扉内にIHコンロや炊飯器が入っています。食器用洗剤とスポンジもシンクに用意しております。ご使用後は洗っておいていただけますようお願いいたします。
+4. 家電製品のご利用：ホットプレート、電子レンジ、電気ケトルなどを一度に使用されるとブレーカーが落ちることがありますので、できるだけ分散してご使用いただきたいと思います。
+5. 2階 寝室・バスルーム：タオル、アメニティは2階の洗面台の向かいのラックに用意しています。マッサージチェアの横のキャンドルバーは、ウォーマーで温めて香りをお楽しみいただくものです。点火はなさらないでください。
+6. お湯のご利用（重要）：当施設はプロパンガスのため、お湯を長時間出しっぱなしにしますと給湯器の安全装置が働きお湯が出なくなります。目安は30分位です。一度止めて2〜3分してからまた出す分には問題ありません。
+7. テラス・ビューバスの利用：ビューバスご利用の際も、バスルームにある給湯器をご利用ください。目の前のビーチがプライベートビーチではないため、ビューバスをお使いになる場合は必ず水着着用でご利用ください。
+
+【チェックアウト・緊急連絡について】
+・チェックアウト：明日は10時にスタッフがチェックアウトに参りますので、ご用意してお待ちください。
+・緊急連絡先：1階チェストの上のファイルに連絡先が記入してあります。
+
+それではお気をつけてお越しくださいませ。
+THE HOUSE`
+  },
+  'beach': {
+    title: 'THE HOUSE ON THE BEACH',
+    text: `〇〇様
+本日は、THE HOUSE ON THE BEACHをご利用いただきありがとうございます。セルフチェックイン対応のため、当施設のご案内をさせていただきます。
+
+【駐車場について】
+・お車は施設の白い門の真ん前に停めていただけます。
+・駐車方法については添付の写真を参考にしてください。
+
+【鍵の場所・チェックイン連絡について】
+・鍵の場所：門の鍵と玄関の鍵は、門に備え付けのキーボックスに入れてあります。
+・暗証番号：暗証番号はお客様の携帯電話番号の下4桁【〇〇〇〇】に設定してございます。門・玄関をそれぞれ解錠してご入室ください。
+・到着連絡：無事にご入室されましたら、ご一報いただければと思います。
+
+【室内設備・お守りいただきたいこと】
+1. 土足厳禁：施設内は土足厳禁となっております。玄関のマットの上でお履き物を脱いでいただくようお願いいたします。玄関マット横のシューズラックに使い捨てのスリッパをご用意しておりますのでどうぞご利用ください。
+2. 注意事項の同意書：玄関入ってすぐ正面のチェストの上に、注意事項の同意書を用意しております。ご予約時に一度目を通していただいているとは思いますが、今一度ご確認いただき、ご署名をお願いいたします。
+3. アメニティ・タオル類：バスルームの脱衣所にご用意しております。ドレッサーにドライヤーも置いておりますのでお使いください。
+4. 電気のスイッチ：電気類のスイッチは、1階はバスルームの入り口横、2階はキッチンの冷蔵庫の横にそれぞれ集合してございます。
+5. お湯のご利用（重要）：当施設はプロパンガスでお湯を出す仕組みになっております。長時間お湯を出したままにいたしますと、安全装置が働きお湯が出なくなってしまいます。目安は20分です。シャワーをご利用になる際などご注意ください。一旦お湯を止めて1分くらいしてからまた出す分には問題ありませんので、そのようにご使用ください。
+6. テラス・ビューバスの利用：テラスは自由にご利用いただけますが、ビューバスご使用の際は水着の着用をお願いしております。なお、21時以降のテラスでのご歓談は、近隣住民のご迷惑になる場合がございますのでお控えください。
+7. キッチン・食器類：2階のキッチンに置いてある食器、調理器具類はご自由にご利用ください。使用後は備え付けの洗剤にて洗っていただき、棚には戻さずにカウンターの上に置いておいていただけると助かります。
+
+【チェックアウト・夜間の緊急連絡について】
+・チェックアウト：明日のチェックアウトは10:00です。10:00にスタッフがチェックアウトに参ります。
+・夜間の緊急連絡：玄関正面のチェストの上のファイルに記載されております緊急連絡先にご連絡をお願いいたします。
+
+それではお気をつけてお越しくださいませ。
+THE HOUSE`
+  },
+  'maison': {
+    title: 'MAISON D\'E VACANCES 葉山',
+    text: `　　　　　さま
+セルフチェックイン対応のため、当施設のご案内をさせていただきます。
+
+【駐車場・道路について】
+・周辺道路が狭いのでお気をつけください。必ず下記の地図をご確認の上現地にお進みください。GoogleMapは違う道を選ぶように案内されますので、決して参照されないでください。
+https://thehousehayama.com/Maisondevacanceshayama_map.pdf
+・お車は施設の門の前の空きスペースに停めていただけます。
+・駐車スペースは白く塗られた床からはみ出ないようにお願いします。
+
+【鍵の場所・チェックイン連絡について】
+・門・玄関の鍵：門は施錠されていませんので開いております。玄関の鍵は、玄関の取っ手に付けたキーボックスに入れてあります。
+・暗証番号：暗証番号はお客様の携帯電話番号の下4桁【〇〇〇〇】に設定してございます。
+・到着連絡：無事にご入室されましたら、ご一報いただければと思います。
+
+【室内設備・アメニティについて】
+1. 土足厳禁：玄関入ってすぐの所に使い捨てのスリッパをご用意しております。
+2. 注意事項の確認：ダイニングスペースのテーブルの上にご注意事項がございます。今一度ご確認をお願いします。
+3. アメニティ・タオル類：1階のバスルームのチェストにご用意しております。
+4. テラスの利用：テラスは自由にご利用いただけます。土足厳禁ですので、テラス用のサンダルをご利用ください。20時以降のテラスでのご歓談は近隣住民のご迷惑になる場合がございますのでお控えください。
+5. ゴミ・生ゴミコンポスト：シンクの下にそれぞれ分別ごとに分けたゴミ箱を用意しています。
+6. キッチン・食器類：キッチンに置いてある食器、調理器具類はご自由にご利用ください。使用後は備え付けの洗剤にて洗っていただき、棚には戻さずにカウンターの上に置いておいていただけると助かります。
+7. 電化製品のマニュアル：ダイニングテーブルの上に用意したファイルに入っております。
+8. 虫対策グッズ：1階リビングのテレビ台の中に虫対策のグッズが入っています。
+
+【チェックアウト・緊急連絡について】
+・チェックアウト：明日は10時にスタッフがチェックアウトに伺います。
+・緊急連絡先：玄関正面のチェストの上のファイルに記載されております。
+
+それではお気をつけてお越しくださいませ。
+THE HOUSE MAISON D'E VACANCES HAYAMA`
+  },
+  'koajiro_pool': {
+    title: 'THE HOUSE 小網代 Pool and Cave',
+    text: `　　　　　　　　　様
+本日チェックインされるお部屋ですが、施設内を入った正面「pool and cave suite」というお部屋になります。以下、セルフチェックインのご案内となります。お部屋の準備は完了しております。いつでもチェックインできますので、お気をつけてお越しくださいませ。
+
+【駐車場について】
+こちらをご確認くださいませ。
+https://thehousehayama.my.canva.site/daho3xz8fdc
+
+【チェックイン動画・ジャグジー・プロジェクター利用方法について】
+https://thehousehayama.my.canva.site/daho4a07f2i
+
+【鍵の場所・チェックイン連絡について】
+・鍵の場所：扉の黒いキーボックスに鍵がございます。
+・暗証番号：暗証番号はお客様の携帯電話番号の下4桁【——】でございます。
+・到着連絡：入室されましたら、入室完了のご連絡をSMSにて小林までお送りくださいませ。
+
+【ご留意事項】
+1. 室内ファイル：お部屋の机に注意事項を記載したファイルがございます。必ずお読みください。
+2. ペット同伴の方へ：ペット同伴代¥6,600は、チェックアウト時にフロントにてご精算をお願いいたします。冷凍庫の中にワンちゃん用のワンバーグが入っております。電子レンジで少し温めていただけましたらそのまま食べられます。
+3. 周辺環境：周辺は個人のお宅となっておりますので、駐車場等に入る、通り抜けるなどはご遠慮ください。
+4. 駐車場：駐車場敷地内6台分は当敷地のものですので、空いている場所にお停めください。
+5. 火気厳禁：当施設内は火気厳禁です。
+6. キッチン・食器類：お使いになられた食器は手洗いしていただき、キッチンに置いておいてくださいませ。
+7. 夜間の制限・チェックアウト：21時以降の外出はお控えください。明日のチェックアウトは10時です。敷地内のフロントにお立ち寄りください。
+
+それではお気をつけてお越しくださいませ。
+THE HOUSE`
+  },
+  'koajiro_shower': {
+    title: 'THE HOUSE 小網代 Shower Living Suite',
+    text: `　　　　　　　　　様
+本日チェックインされるお部屋ですが、施設内中庭を入り右側の入り口で建物にお入りください。その左側の「Shower living suite」というお部屋になります。以下、セルフチェックインのご案内となります。お部屋の準備は完了しております。いつでもチェックインできますので、お気をつけてお越しくださいませ。
+
+【駐車場について】
+こちらをご確認くださいませ。
+https://thehousehayama.my.canva.site/daho3xz8fdc
+
+【鍵の場所・チェックイン連絡について】
+・鍵の場所：施設内の門を入った先の扉の黒いキーボックスに鍵がございます。
+・暗証番号：暗証番号はお客様の携帯電話番号の下4桁【——】でございます。
+・到着連絡：入室されましたら、入室完了のご連絡をSMSにて小林090-1419-8518までお送りくださいませ。
+
+【ご留意事項】
+1. 室内ファイル：お部屋の机に注意事項を記載したファイルがございます。必ずお読みください。
+2. ペット同伴の方へ：ペット同伴代¥6,600は、チェックアウト時にフロントにてご精算をお願いいたします。冷凍庫の中にワンちゃん用のワンバーグが入っております。
+3. 周辺環境：周辺は個人のお宅となっておりますので、駐車場等に入る、通り抜けるなどはご遠慮ください。
+4. 駐車場：駐車場敷地内6台分は当敷地のものですので、空いている場所にお停めください。
+5. 火気厳禁：当施設内は火気厳禁です。
+6. キッチン・食器類：お使いになられた食器は手洗いしていただき、キッチンに置いておいてくださいませ。
+7. 夜間の制限・チェックアウト：21時以降の外出はお控えください。明日のチェックアウトは10時です。敷地内のフロントにお立ち寄りください。
+
+それではお気をつけてお越しくださいませ。
+THE HOUSE`
+  },
+  'koajiro_bed': {
+    title: 'THE HOUSE 小網代 Bed and Bath',
+    text: `　　　　　　　　　様
+本日チェックインされるお部屋ですが、施設内中庭を入り右側の入り口で建物にお入りください。その右側の「Bed and bath room」というお部屋になります。以下、セルフチェックインのご案内となります。お部屋の準備は完了しております。いつでもチェックインできますので、お気をつけてお越しくださいませ。
+
+【駐車場について】
+こちらをご確認くださいませ。
+https://thehousehayama.my.canva.site/daho3xz8fdc
+
+【鍵の場所・チェックイン連絡について】
+・鍵の場所：施設内の門を入った先の扉の黒いキーボックスに鍵がございます。
+・暗証番号：暗証番号はお客様の携帯電話番号の下4桁【——】でございます。
+・到着連絡：入室されましたら、入室完了のご連絡をSMSにて小林090-1419-8518までお送りくださいませ。
+
+【ご留意事項】
+1. 室内ファイル：お部屋の机に注意事項を記載したファイルがございます。必ずお読みください。
+2. ペット同伴の方へ：ペット同伴代¥6,600は、チェックアウト時にフロントにてご精算をお願いいたします。冷凍庫の中にワンちゃん用のワンバーグが入っております。
+3. 周辺環境：周辺は個人のお宅となっておりますので、駐車場等に入る、通り抜けるなどはご遠慮ください。
+4. 駐車場：駐車場敷地内6台分は当敷地のものですので、空いている場所にお停めください。
+5. 火気厳禁：当施設内は火気厳禁です。
+6. キッチン・食器類：お使いになられた食器は手洗いしていただき、キッチンに置いておいてくださいませ。
+7. 夜間の制限・チェックアウト：21時以降の外出はお控えください。明日のチェックアウトは10時です。敷地内のフロントにお立ち寄りください。
+
+それではお気をつけてお越しくださいませ。
+THE HOUSE`
+  },
+  'moroso': {
+    title: 'THE HOUSE 諸磯',
+    text: `　　　　　　　　様
+以下、セルフチェックインのご案内となります。お部屋の準備は完了しております。いつでもチェックインできますので、お気をつけてお越しくださいませ。
+
+【施設までの道順】
+https://thehousehayama.my.canva.site/the-house-map
+動画もございます：https://x.gd/37Mm6
+
+【鍵の場所・チェックイン連絡について】
+・鍵の場所：外の門を開けていただき、上に上がって左側に入っていくと玄関があります。その玄関扉横にキーボックスがございます。
+・暗証番号：キーボックスの番号は携帯の下4桁で『ーーー』となります。
+・到着連絡：チェックインされましたら、本部（090-1419-8518）へSMSにてその旨をご連絡くださいませ。
+
+【室内設備・お守りいただきたいこと】
+1. 施設マニュアル・Wi-Fi：ダイニングテーブルの上にございます。
+2. デッキでの注意：手すりのあるところ以外、デッキに出ないようにお願いいたします。崖になっており大変危険です。
+3. 給湯器（お湯）：電気温水器です。湯量が減った場合、キッチン横の給湯器リモコンの「わきあげ機能」ボタンで追加沸き上げができます。
+4. プロジェクター：電源をつけた状態でご用意しております。iPadからYouTubeなどお好きなものをご利用ください。※Netflixはお客様ご自身のID・PWが必要となります。
+5. アメニティ・虫除け：お風呂の外の洗面所横の扉にございます。
+6. キッチン・食器類：ご利用されたものは洗っていただき（食洗機もご利用いただけます）、キッチンの上に置いていただければ幸いです。
+7. ブレーカー：通路の左側、トイレ横の扉の中の右上にございます。
+8. 緊急連絡：本部（090-1419-8518）までご連絡ください。
+9. ゴミの分別：ゴミ箱はシンク下にございます。
+10. 火器厳禁（禁煙）：施設敷地内は火器厳禁となります。
+11. 夜間の騒音：夜21時以降は、屋外で大きな声や音を出さないようお願いいたします。
+
+【チェックアウトにつきまして】
+施錠していただき、鍵をキーボックスへお戻しください。その後本部（090-1419-8518）へSMSにてご連絡くださいませ。
+
+それではお気をつけてお越しくださいませ。
+THE HOUSE`
+  },
+  'jogashima': {
+    title: 'MAISON 城ヶ島',
+    text: `　　　さま
+以下、セルフチェックインのご案内となります。お部屋の準備は完了しております。いつでもチェックインできますので、お気をつけてお越しくださいませ。
+
+【鍵の場所・チェックイン連絡について】
+・鍵の場所：駐車場扉の横にキーボックスがございます。
+・暗証番号：暗証番号はお客様の携帯電話番号の下4桁【——】でございます。
+・到着連絡：チェックインされましたら、本部（090-1419-8518）へSMSにてその旨をご連絡くださいませ。
+
+【室内設備・お守りいただきたいこと】
+1. 施設マニュアル・Wi-Fi：2階のダイニングテーブルの上にございます。
+2. プロジェクター：電源をつけた状態でご用意しております。チェックアウト時のログアウトを必ずお願いいたします。
+3. アメニティ・虫除け：シューズボックスの扉の中にございます。
+4. キッチン・食器類：ご利用されたものは洗っていただき（食洗機もご利用いただけます）、キッチンの上に置いていただければ幸いです。
+5. ゴミの分別：ゴミ箱はシンク下にございます。
+6. ジャグジー：給湯器のスイッチは1階エアコンの下にございます。
+7. 火器厳禁（禁煙）：施設敷地内は火器厳禁となります。
+8. 夜間の騒音：夜21時以降は、屋外で大きな声や音を出さないようお願いいたします。
+
+【チェックアウトにつきまして】
+施錠していただき、鍵をキーボックスへお戻しください。その後本部（090-1419-8518）へSMSにてご連絡くださいませ。
+
+それではお気をつけてお越しくださいませ。
+THE HOUSE`
+  }
+};
+
+function renderCheckin() {
+  const prop = P();
+  const data = CHECKIN_TEXTS[prop.id];
+  const el = document.getElementById('checkin-content');
+  if (!data) {
+    el.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--text3);font-size:13px;">この施設のセルフチェックイン文言はまだ登録されていません</div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div style="margin-bottom:12px;">
+      <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;">Self Check-in Template</div>
+      <div style="font-family:var(--serif, Georgia);font-size:17px;font-weight:500;color:var(--text);">${data.title}</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px;font-size:13px;color:var(--text);line-height:1.8;white-space:pre-wrap;">${data.text}</div>
+    <button onclick="copyCheckinText('${prop.id}')" style="width:100%;padding:13px;background:var(--text);color:#fff;border:none;border-radius:var(--radius);font-size:12px;font-weight:500;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;font-family:inherit;">📋 テキストをコピー</button>
+    <div id="copy-confirm" style="text-align:center;font-size:12px;color:var(--text2);margin-top:8px;display:none;">✅ コピーしました！メッセンジャーに貼り付けてください。</div>
+  `;
+}
+window.renderCheckin = renderCheckin;
+
+function copyCheckinText(propId) {
+  const id = propId || startPropId;
+  const data = CHECKIN_TEXTS[id];
+  if (!data) return;
+  navigator.clipboard.writeText(data.text).then(()=>{
+    showCopyConfirm();
+  }).catch(()=>{
+    const ta = document.createElement('textarea');
+    ta.value = data.text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showCopyConfirm();
+  });
+}
+function showCopyConfirm() {
+  ['copy-confirm', 'copy-confirm-start'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.display='block'; setTimeout(()=>{ el.style.display='none'; }, 3000); }
+  });
+}
+window.copyCheckinText = copyCheckinText;
+window.showCopyConfirm = showCopyConfirm;
+async function renderHQ() {
+  const date=document.getElementById('hq-date-filter').value;
+  if(!date) return;
+  setSyncBar('読み込み中...', true);
+  const allData=await fbLoadDate(date);
+  setSyncBar('', true);
+
+  // merge into local S for display
+  PROPS.forEach(p=>{
+    if(allData[p.id]){ S[p.id]=allData[p.id]; }
+  });
+
+  const activePROPS=PROPS.filter(p=>!p.comingSoon);
+  const sent=activePROPS.filter(p=>S[p.id]&&S[p.id].submitted).length;
+  const totalAll=activePROPS.reduce((s,p)=>s+p.areas.reduce((ss,a)=>ss+a.items.length,0),0);
+  const doneAll=activePROPS.reduce((s,p)=>s+p.areas.reduce((ss,a)=>ss+Object.values((S[p.id]&&S[p.id].checked&&S[p.id].checked[a.id])||{}).filter(Boolean).length,0),0);
+  const flagsAll=activePROPS.reduce((s,p)=>s+p.areas.reduce((ss,a)=>ss+Object.values((S[p.id]&&S[p.id].flagged&&S[p.id].flagged[a.id])||{}).filter(Boolean).length,0),0);
+  document.getElementById('hq-sent').textContent=sent+'/'+activePROPS.length;
+  document.getElementById('hq-prog').textContent=totalAll?Math.round(doneAll/totalAll*100)+'%':'0%';
+  document.getElementById('hq-flags').textContent=flagsAll;
+
+  document.getElementById('hq-cards').innerHTML=activePROPS.map((p,pi)=>{
+    const ps=S[p.id]||{checked:{},flagged:{},submitted:false};
+    const total=p.areas.reduce((s,a)=>s+a.items.length,0);
+    const done=p.areas.reduce((s,a)=>s+Object.values((ps.checked&&ps.checked[a.id])||{}).filter(Boolean).length,0);
+    const flags=p.areas.reduce((s,a)=>s+Object.values((ps.flagged&&ps.flagged[a.id])||{}).filter(Boolean).length,0);
+    const pct=Math.round(done/total*100);
+    const bc=ps.submitted?'badge-done':flags>0?'badge-warn':pct>0?'badge-prog':'badge-none';
+    const bt=ps.submitted?'送信済み ✓':flags>0?`要確認 ${flags}件`:pct>0?`${pct}%`:'未着手';
+    const flagItems=[];
+    p.areas.forEach(a=>a.items.forEach((text,i)=>{ if(ps.flagged&&ps.flagged[a.id]&&ps.flagged[a.id][i]) flagItems.push({area:a.name,text}); }));
+    const hasMemo=ps.supply||ps.maint||ps.memo;
+    return`<div class="prop-card">
+      <div class="prop-card-hd" onclick="toggleHQCard(${pi})">
+        <span class="prop-card-name">${p.name}</span>
+        ${ps.submitted?`<span class="sent-badge">${ps.submittedAt}　${ps.staffName||''}</span>`:''}
+        <span class="badge ${bc}">${bt}</span>
+        <span class="chev" id="hqchev-${pi}">▼</span>
+      </div>
+      <div class="prop-card-body" id="hqbody-${pi}">
+        ${p.areas.map(a=>{
+          const ad=Object.values((ps.checked&&ps.checked[a.id])||{}).filter(Boolean).length;
+          const at=a.items.length;
+          return`<div class="area-rpt-row">
+            <span class="area-rpt-name">${a.name}</span>
+            <div class="mini-bar"><div class="mini-fill" style="width:${Math.round(ad/at*100)}%"></div></div>
+            <span class="area-rpt-pct">${ad}/${at}</span>
+          </div>`;
+        }).join('')}
+        ${flagItems.length?`<div class="flag-section">
+          <div class="sec-label" style="margin-top:10px">🚩 要確認</div>
+          ${flagItems.map(f=>`<div class="flag-row">
+            <span style="font-size:13px;flex-shrink:0">🚩</span>
+            <div><div class="flag-row-text">${f.text}</div><div class="flag-row-area">${f.area}</div></div>
+          </div>`).join('')}
+        </div>`:''}
+        ${hasMemo?`<div class="memo-section">
+          ${ps.incompleteReason?`<div class="memo-row" style="color:var(--warn)"><span class="memo-label">⚠ 未完了理由：</span>${ps.incompleteReason}</div>`:''}
+          ${ps.supply?`<div class="memo-row"><span class="memo-label">補充：</span>${ps.supply}</div>`:''}
+          ${ps.maint?`<div class="memo-row"><span class="memo-label">修繕：</span>${ps.maint}</div>`:''}
+          ${ps.memo?`<div class="memo-row"><span class="memo-label">メモ：</span>${ps.memo}</div>`:''}
+        </div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+window.renderHQ=renderHQ;
+
+function toggleHQCard(idx){
+  document.getElementById('hqbody-'+idx).classList.toggle('open');
+  document.getElementById('hqchev-'+idx).classList.toggle('open');
+}
+window.toggleHQCard=toggleHQCard;
+
+// ===== Window exports =====
+window.selectStartProp = selectStartProp;
+window.startChecklist  = startChecklist;
+window.resetStart      = resetStart;
+window.renderOverview  = renderHQ;
+
+// ===== Init =====
+document.getElementById('date-lbl').textContent=new Date().toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'});
+renderPropButtons();
+</script>
+
+</body>
+</html>
